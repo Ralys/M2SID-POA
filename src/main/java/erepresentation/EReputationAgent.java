@@ -29,12 +29,12 @@ public class EReputationAgent extends SuperAgent {
             @Override
             public void action() {
                 ACLMessage message = EReputationAgent.this.receive();
+                if(message == null) return;
                 
-                if (message != null) {
-                    System.out.println(myAgent.getLocalName() + "Message reçu : " + message.getContent() + " from " + message.getSender().getName());
-                    EReputationAgent.this.traiterMessage(message);
-                    block();
-                }
+                String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
+                Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, receptionMessage);
+                EReputationAgent.this.traiterMessage(message);
+                block();
             }
         });
     }
@@ -49,22 +49,45 @@ public class EReputationAgent extends SuperAgent {
             JSONObject object = (JSONObject) parser.parse(content);
             
             if(object.containsKey("demandeAvis")) 
-                this.traiterDemandeAvis(object, message.getSender());
+                this.traiterDemandeAvis((JSONObject)object.get("demandeAvis"), message.getSender());
             
             if(object.containsKey("donnerAvis"))
-                this.traiterDonnerAvis(object, message.getSender());
+                this.traiterDonnerAvis((JSONObject)object.get("donnerAvis"), message.getSender());
             
         } catch (ParseException ex) {
-            Logger.getLogger(EReputationAgent.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EReputationAgent.class.getName()).log(Level.WARNING, "Format de message invalide");
         }
     }
     
     private void traiterDemandeAvis(JSONObject demandeAvis, AID agent) {
-        // TODO
+        // TODO recherche en base de données
+        
+        // ajout de la propriété avis
+        demandeAvis.put("avis", 3);
+        
+        // création de la réponse
+        JSONObject reponse = new JSONObject();
+        reponse.put("retourAvis", demandeAvis);
+        
+        // transformation de la réponse en JSON
+        String reponseJSON = reponse.toString();
+        
+        // envoi de la réponse
+        this.sendMessage(reponseJSON, agent);
+        
+        String envoiMessage = "(" + this.getLocalName() + ") Message envoyé : " + reponseJSON;
+        Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
     }
     
     private void traiterDonnerAvis(JSONObject donnerAvis, AID agent) {
         // TODO
+    }
+    
+    private void sendMessage(String contenu, AID destinataire) {
+        ACLMessage messsage = new ACLMessage(ACLMessage.REQUEST);
+        messsage.setContent(contenu);
+        messsage.addReceiver(destinataire);
+        this.send(messsage);
     }
     
 }

@@ -60,6 +60,20 @@ public class EReputationAgent extends SuperAgent {
     }
     
     private void traiterDemandeAvis(JSONObject demandeAvis, AID agent) {
+        // Récupération du type (Fournisseur, Vendeur, Produit)
+        String type = demandeAvis.get("type").toString();
+        
+        switch(type) {
+            case TypeAgent.Fournisseur:
+            case TypeAgent.Vendeur:
+                String nom = demandeAvis.get("nom").toString();
+                break;
+            
+            case "Produit":
+                Long idProduit = (Long) demandeAvis.get("id");
+                break;
+        }
+        
         // TODO recherche en base de données
         
         // ajout de la propriété avis
@@ -73,7 +87,7 @@ public class EReputationAgent extends SuperAgent {
         String reponseJSON = reponse.toString();
         
         // envoi de la réponse
-        this.sendMessage(reponseJSON, agent);
+        this.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + this.getLocalName() + ") Message envoyé : " + reponseJSON;
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
@@ -83,8 +97,8 @@ public class EReputationAgent extends SuperAgent {
         // TODO
     }
     
-    private void sendMessage(String contenu, AID destinataire) {
-        ACLMessage messsage = new ACLMessage(ACLMessage.REQUEST);
+    private void sendMessage(int typeMessage, String contenu, AID destinataire) {
+        ACLMessage messsage = new ACLMessage(typeMessage);
         messsage.setContent(contenu);
         messsage.addReceiver(destinataire);
         this.send(messsage);

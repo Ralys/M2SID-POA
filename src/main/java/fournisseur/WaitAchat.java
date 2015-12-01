@@ -37,12 +37,12 @@ public class WaitAchat extends CyclicBehaviour {
 
                 if (stockOk) {
                     //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
-                    replyJson.put("commandeOK", replyContenu);
                     replyContenu.put("idProduit", idProduit);
                     replyContenu.put("nomProduit", nomProduit);
                     replyContenu.put("prix", prix);
                     replyContenu.put("quantite", quantite);
                     replyContenu.put("date", date);
+                    replyJson.put("commandeOK", replyContenu);
                     replyMessage.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                 } else {
                     //{“commandePasOK”:{“raison”:”Stock insuffisant”}}

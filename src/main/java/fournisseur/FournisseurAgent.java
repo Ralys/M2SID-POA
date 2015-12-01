@@ -2,16 +2,8 @@ package fournisseur;
 
 import common.SuperAgent;
 import common.TypeAgent;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.DataStore;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -31,6 +23,10 @@ public class FournisseurAgent extends SuperAgent {
         WaitAchat waitAchatBehavior = new WaitAchat();
         waitAchatBehavior.setDataStore(catalogue);
         this.addBehaviour(waitAchatBehavior);
+        
+        WaitRequestStrategie1 WaitRequestBehaviorStrategie = new WaitRequestStrategie1();
+        WaitRequestBehaviorStrategie.setDataStore(catalogue);
+        this.addBehaviour(WaitRequestBehaviorStrategie);
         
     }
 

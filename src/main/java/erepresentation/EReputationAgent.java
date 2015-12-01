@@ -2,7 +2,7 @@ package erepresentation;
 
 import common.SuperAgent;
 import common.TypeAgent;
-import erepresentation.controller.RequeteAgent;
+import erepresentation.controller.EReputationController;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -18,12 +18,15 @@ import org.json.simple.parser.ParseException;
  */
 public class EReputationAgent extends SuperAgent {
     
+    private EReputationController controller;
+    
     /**
      * Méthode de mise en place de l'agent
      */
     @Override
     protected void setup() {
         this.registerService(TypeAgent.EReputation);
+        this.controller = new EReputationController();
         
         this.addBehaviour(new CyclicBehaviour(this) {
             
@@ -64,15 +67,16 @@ public class EReputationAgent extends SuperAgent {
         // Récupération du type (Fournisseur, Vendeur, Produit)
         String type = demandeAvis.get("type").toString();
         String reponseJSON = "";
+        
         switch(type) {
             case TypeAgent.Fournisseur:
-                reponseJSON = RequeteAgent.demandeAvisFourniseur(demandeAvis, agent);
+                reponseJSON = this.controller.demandeAvisFourniseur(demandeAvis, agent);
                 break;
             case TypeAgent.Vendeur:
-                reponseJSON = RequeteAgent.demandeAvisVendeur(demandeAvis, agent);
+                reponseJSON = this.controller.demandeAvisVendeur(demandeAvis, agent);
                 break;
             case "Produit":
-                reponseJSON = RequeteAgent.demandeAvisProduit(demandeAvis, agent);
+                reponseJSON = this.controller.demandeAvisProduit(demandeAvis, agent);
                 break;
         }
         // envoi de la réponse

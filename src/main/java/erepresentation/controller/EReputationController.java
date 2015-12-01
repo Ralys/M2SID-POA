@@ -15,9 +15,9 @@ import org.json.simple.JSONObject;
  *
  * @author greg
  */
-public class RequeteAgent {
+public class EReputationController {
     //demande avis d'un fournisseur
-    public static String demandeAvisFourniseur(JSONObject demandeAvis, AID agent){
+    public String demandeAvisFourniseur(JSONObject demandeAvis, AID agent){
         String nomFournisseur = demandeAvis.get("nom").toString();
         
         // TODO recherche en base de données
@@ -34,7 +34,7 @@ public class RequeteAgent {
         return retourAvis.toJSONString();
     }
     //demande avis d'un vendeur
-    public static String demandeAvisVendeur(JSONObject demandeAvis, AID agent){
+    public String demandeAvisVendeur(JSONObject demandeAvis, AID agent){
         String nomFournisseur = demandeAvis.get("nom").toString();
         
         // TODO recherche en base de données
@@ -52,7 +52,7 @@ public class RequeteAgent {
         return retourAvis.toJSONString();
     }
     //demande avis sur un produit
-    public static String demandeAvisProduit(JSONObject demandeAvis, AID agent){
+    public String demandeAvisProduit(JSONObject demandeAvis, AID agent){
         String idProduit = demandeAvis.get("id").toString();
         
         // TODO recherche en base de données
@@ -71,7 +71,7 @@ public class RequeteAgent {
         return retourAvis.toJSONString();
     }
     //donne avis sur un vendeur
-    public static void donneAvisVendeur(JSONObject donneAvis, AID agent){
+    public String donneAvisVendeur(JSONObject donneAvis, AID agent){
         String nomVendeur = donneAvis.get("nom").toString();
         
         // TODO insertion en base de données
@@ -82,9 +82,12 @@ public class RequeteAgent {
         //insert(type, name, avis);
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO,  AID.AGENT_CLASSNAME+"donne avis vendeur");
         //*********
+        
+        // retourne JSON contenant SQL
+        return null;
     }
     //donne avis sur un fournisseur
-    public static void donneAvisFournisseur(JSONObject donneAvis, AID agent){
+    public String donneAvisFournisseur(JSONObject donneAvis, AID agent){
         String nomFournisseur = donneAvis.get("nom").toString();
         
         // TODO insertion en base de données
@@ -95,9 +98,12 @@ public class RequeteAgent {
         //insert(type, name, avis);
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, AID.AGENT_CLASSNAME+"donne avis fournisseur");
         //*********
+        
+        // retourne JSON contenant SQL
+        return null;
     }
     //donne avis sur un produit
-    public static void donneAvisProduit(JSONObject donneAvis, AID agent){
+    public String donneAvisProduit(JSONObject donneAvis, AID agent){
         String idProduit = donneAvis.get("id").toString();
         
         // TODO insertion en base de données
@@ -108,5 +114,8 @@ public class RequeteAgent {
         //insert(type, name, avis);
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO,  AID.AGENT_CLASSNAME+"donne avis produit");
         //*********
+        
+        // retourne JSON contenant SQL
+        return null;
     }
 }

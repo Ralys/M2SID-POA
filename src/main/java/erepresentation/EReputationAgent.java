@@ -2,6 +2,7 @@ package erepresentation;
 
 import common.SuperAgent;
 import common.TypeAgent;
+import erepresentation.controller.EReputationController;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -17,12 +18,15 @@ import org.json.simple.parser.ParseException;
  */
 public class EReputationAgent extends SuperAgent {
     
+    private EReputationController controller;
+    
     /**
      * Méthode de mise en place de l'agent
      */
     @Override
     protected void setup() {
         this.registerService(TypeAgent.EReputation);
+        this.controller = new EReputationController();
         
         this.addBehaviour(new CyclicBehaviour(this) {
             
@@ -62,30 +66,19 @@ public class EReputationAgent extends SuperAgent {
     private void traiterDemandeAvis(JSONObject demandeAvis, AID agent) {
         // Récupération du type (Fournisseur, Vendeur, Produit)
         String type = demandeAvis.get("type").toString();
+        String reponseJSON = "";
         
         switch(type) {
             case TypeAgent.Fournisseur:
-            case TypeAgent.Vendeur:
-                String nom = demandeAvis.get("nom").toString();
+                reponseJSON = this.controller.demandeAvisFourniseur(demandeAvis, agent);
                 break;
-            
+            case TypeAgent.Vendeur:
+                reponseJSON = this.controller.demandeAvisVendeur(demandeAvis, agent);
+                break;
             case "Produit":
-                Long idProduit = (Long) demandeAvis.get("id");
+                reponseJSON = this.controller.demandeAvisProduit(demandeAvis, agent);
                 break;
         }
-        
-        // TODO recherche en base de données
-        
-        // ajout de la propriété avis
-        demandeAvis.put("avis", 3);
-        
-        // création de la réponse
-        JSONObject reponse = new JSONObject();
-        reponse.put("retourAvis", demandeAvis);
-        
-        // transformation de la réponse en JSON
-        String reponseJSON = reponse.toString();
-        
         // envoi de la réponse
         this.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         

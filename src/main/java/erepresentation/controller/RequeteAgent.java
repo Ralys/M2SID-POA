@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package erepresentation.controler;
+package erepresentation.controller;
 
 import erepresentation.EReputationAgent;
 import jade.core.AID;

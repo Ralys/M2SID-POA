@@ -11,14 +11,14 @@ import java.util.Iterator;
 public class Stocks extends DataStore {
 
     public boolean verifierStock(int idProduit, int qte) {
-        int qteDispo = (int) this.get(getIdProduit(idProduit));
+        int qteDispo = (int) this.get(getProduitById(idProduit));
         if (qteDispo < qte) {
             return false;
         }
         return true;
     }
 
-    public Produit getIdProduit(int idProduit) {
+    public Produit getProduitById(int idProduit) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {

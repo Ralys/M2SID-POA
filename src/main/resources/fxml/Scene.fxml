@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -31,21 +33,37 @@
                             </AnchorPane>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="185.0" prefWidth="982.0">
                                <children>
-                                  <ComboBox fx:id="choixProd" layoutX="20.0" layoutY="24.0" prefHeight="25.0" prefWidth="194.0" promptText="Type de produit" />
-                                  <Label layoutX="261.0" layoutY="29.0" text="Recherche : " />
-                                  <TextField fx:id="nomProd" layoutX="340.0" layoutY="24.0" prefHeight="27.0" prefWidth="212.0" />
-                                  <ComboBox fx:id="choixQte" layoutX="632.0" layoutY="25.0" prefHeight="25.0" prefWidth="177.0" promptText="Choisir la quantité" />
-                                    <Button fx:id="btnValider" alignment="CENTER" contentDisplay="CENTER" layoutX="337.0" layoutY="118.0" onAction="#handlebtProd" prefHeight="27.0" prefWidth="278.0" text="Valider" textAlignment="CENTER" />
-                                    <Label fx:id="messageErreur" alignment="CENTER" contentDisplay="CENTER" layoutX="214.0" layoutY="159.0" prefHeight="24.0" prefWidth="540.0" text="Message d'erreur" textAlignment="CENTER" visible="false">
+                                  <ComboBox fx:id="choixProd" layoutX="143.0" layoutY="69.0" prefHeight="25.0" prefWidth="194.0" promptText="Type de produit" />
+                                  <Label layoutX="143.0" layoutY="27.0" text="Recherche : " />
+                                  <TextField fx:id="nomProd" layoutX="221.0" layoutY="22.0" prefHeight="27.0" prefWidth="212.0" />
+                                    <Label layoutX="617.0" layoutY="25.0" text="Référence :" />
+                                    <TextField fx:id="reference" disable="true" layoutX="695.0" layoutY="21.0" prefHeight="27.0" prefWidth="212.0" />
+                                    <RadioButton fx:id="rbRecherche" layoutX="73.0" layoutY="27.0" mnemonicParsing="false" onAction="#handleTypeRechercheClassique" selected="true">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="choixTypeRecherche" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="rbReference" layoutX="547.0" layoutY="24.0" mnemonicParsing="false" onAction="#handleTypeRechercheReference" toggleGroup="$choixTypeRecherche" />
+                                    <Line endX="450.0" layoutX="45.0" layoutY="14.0" />
+                                    <Line endX="450.0" layoutX="45.0" layoutY="104.0" />
+                                    <Line endY="10.0" layoutX="45.0" layoutY="4.0" startY="100.0" />
+                                    <Line endY="10.0" layoutX="495.0" layoutY="4.0" startY="100.0" />
+                                    <Line endX="450.0" layoutX="515.0" layoutY="14.0" />
+                                    <Line endX="450.0" layoutX="515.0" layoutY="104.0" />
+                                    <Line endY="10.0" layoutX="515.0" layoutY="4.0" startY="100.0" />
+                                    <Line endY="10.0" layoutX="965.0" layoutY="4.0" startY="100.0" />
+                                  <ComboBox fx:id="choixQte" layoutX="239.0" layoutY="142.0" prefHeight="25.0" prefWidth="212.0" promptText="Choisir la quantité" />
+                                    <Button fx:id="btnValider" alignment="CENTER" contentDisplay="CENTER" layoutX="591.0" layoutY="143.0" onAction="#handlebtProd" prefHeight="27.0" prefWidth="278.0" text="Valider" textAlignment="CENTER" />
+                                    <Label fx:id="messageErreur" alignment="CENTER" contentDisplay="CENTER" layoutX="240.0" layoutY="190.0" prefHeight="24.0" prefWidth="540.0" text="Message d'erreur" textAlignment="CENTER" visible="false">
                                        <font>
                                           <Font size="19.0" />
                                        </font>
                                     </Label>
                                </children>
                             </AnchorPane>
-                            <AnchorPane layoutX="10.0" layoutY="10.0" minHeight="0.0" minWidth="0.0" prefHeight="216.0" prefWidth="585.0">
+                            <AnchorPane layoutX="10.0" layoutY="10.0" maxHeight="300.0" minHeight="300.0" minWidth="0.0" prefHeight="300.0" prefWidth="998.0">
                                <children>
-                                    <ListView fx:id="log" layoutX="50.0" prefHeight="325.0" prefWidth="890.0" />
+                                    <ListView fx:id="log" layoutX="50.0" layoutY="15.0" prefHeight="263.0" prefWidth="890.0" />
                                </children>
                             </AnchorPane>
                         </items>

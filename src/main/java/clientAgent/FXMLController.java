@@ -26,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import common.TypeAgent;
+import javafx.scene.control.RadioButton;
 
 public class FXMLController implements Initializable {
 
@@ -64,6 +65,15 @@ public class FXMLController implements Initializable {
 
     @FXML
     private AnchorPane selecCli;
+    
+    @FXML
+    private TextField reference;
+    
+    @FXML
+    private RadioButton rbRecherche;
+    
+    @FXML
+    private RadioButton rbReference;
 
     @FXML
     private ListView log;
@@ -123,27 +133,45 @@ public class FXMLController implements Initializable {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    
+    @FXML
+    private void handleTypeRechercheClassique(ActionEvent event) {
+        reference.setDisable(true);
+        nomProd.setDisable(false);
+        choixProd.setDisable(false);
+        
+    }
+    
+     @FXML
+    private void handleTypeRechercheReference(ActionEvent event) {
+        nomProd.setDisable(true);
+        choixProd.setDisable(true);
+        reference.setDisable(false);
+    }
 
 
     public boolean valider() {
         boolean valide = false;
         
         // vérification de la selection du type de produit
-        if (choixProd.getSelectionModel().getSelectedIndex() != -1
-            && choixClient.getSelectionModel().getSelectedIndex() != -1
+        if (choixClient.getSelectionModel().getSelectedIndex() != -1
             && choixVendeur.getSelectionModel().getSelectedIndex() != -1
             && choixQte.getSelectionModel().getSelectedIndex() != -1
             && !ip.getText().isEmpty()
             && !port.getText().isEmpty()
             && !nomAgent.getText().isEmpty()
-            && !nomProd.getText().isEmpty()){
+            && ((rbRecherche.isSelected()
+            && !nomProd.getText().isEmpty() 
+            && choixProd.getSelectionModel().getSelectedIndex() != -1)
+            || (rbReference.isSelected()
+            && !reference.getText().isEmpty()))){
             
             valide = true;
-            
+            messageErreur.setVisible(false); 
+         
             // verrouillage du bouton de validation
             //btnValider.setDisable(true);
-            
-            messageErreur.setVisible(false);
 
         }else{
             messageErreur.setText("Merci de remplir tous les champs !");

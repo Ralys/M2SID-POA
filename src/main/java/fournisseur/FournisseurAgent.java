@@ -2,7 +2,6 @@ package fournisseur;
 
 import common.SuperAgent;
 import common.TypeAgent;
-import jade.core.behaviours.DataStore;
 import jade.lang.acl.ACLMessage;
 
 /**
@@ -11,7 +10,7 @@ import jade.lang.acl.ACLMessage;
  */
 public class FournisseurAgent extends SuperAgent {
 
-    private DataStore catalogue = new DataStore();
+    private Stocks catalogue = new Stocks();
 
     /**
      * Méthode de mise en place de l'agent

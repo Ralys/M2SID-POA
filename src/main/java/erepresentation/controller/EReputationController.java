@@ -127,7 +127,7 @@ public class EReputationController {
         
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO,  AID.AGENT_CLASSNAME+"donne avis vendeur");
         
-        return this.insertSQL(agent.getName(), type+"_"+nomVendeur, avis);
+        return this.insertAvisSQL(agent.getName(), type+"_"+nomVendeur, avis);
     }
     
     /**
@@ -144,7 +144,7 @@ public class EReputationController {
         
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, AID.AGENT_CLASSNAME+"donne avis fournisseur");
         
-        return this.insertSQL(agent.getName(), type+"_"+nomFournisseur, avis);
+        return this.insertAvisSQL(agent.getName(), type+"_"+nomFournisseur, avis);
     }
    
     /**
@@ -161,10 +161,10 @@ public class EReputationController {
         
         Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO,  AID.AGENT_CLASSNAME+"donne avis produit");
         
-        return this.insertSQL(agent.getName(), type+"_"+refProduit, avis);
+        return this.insertAvisSQL(agent.getName(), type+"_"+refProduit, avis);
     }
     
-    private String insertSQL(String nomEmetteur, String nomDestinataire, Long avis) {
+    private String insertAvisSQL(String nomEmetteur, String nomDestinataire, Long avis) {
         String sql = "INSERT INTO AVIS(NOM_EMETTEUR, NOM_DESTINATAIRE, AVIS) VALUES(" + nomEmetteur + "," + nomDestinataire + "," +  avis + ")";
         
         JSONObject request = new JSONObject();

@@ -26,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import common.TypeAgent;
+import common.TypeProduit;
 import javafx.scene.control.RadioButton;
 
 public class FXMLController implements Initializable {
@@ -83,8 +84,7 @@ public class FXMLController implements Initializable {
     private final ObservableList<String> listQte = FXCollections.observableArrayList(
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
-    private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(
-            "CD", "DVD", "Téléphone", "Jeux-vidéo","Appareil photo");
+    private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.tabTypeProduit);
 
     private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse,TypeAgentClient.Econome);
     

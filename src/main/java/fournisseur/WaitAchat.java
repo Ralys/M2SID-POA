@@ -57,7 +57,7 @@ public class WaitAchat extends CyclicBehaviour {
                 String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
-                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, null, "Format de message invalide");
+                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide" );
             }
         } else {
             block();

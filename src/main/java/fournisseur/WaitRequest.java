@@ -62,9 +62,10 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 myAgent.send(replyMessage);
                 //Log
                 String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
+                System.out.println(envoiMessage);
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
-                Logger.getLogger(WaitRequest.class.getName()).log(Level.SEVERE, null, "Format de message invalide");
+                Logger.getLogger(WaitRequest.class.getName()).log(Level.SEVERE, "Format de message invalide");
             }
 
         } else {

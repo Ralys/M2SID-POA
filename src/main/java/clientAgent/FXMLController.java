@@ -1,6 +1,5 @@
 package clientAgent;
 
-
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -27,6 +26,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import common.TypeAgent;
 import common.TypeProduit;
+import java.util.Observable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.RadioButton;
 
 public class FXMLController implements Initializable {
@@ -57,7 +59,7 @@ public class FXMLController implements Initializable {
 
     @FXML
     private TextField nomProd;
-    
+
     @FXML
     private Button btnValider;
 
@@ -66,32 +68,31 @@ public class FXMLController implements Initializable {
 
     @FXML
     private AnchorPane selecCli;
-    
+
     @FXML
     private TextField reference;
-    
+
     @FXML
     private RadioButton rbRecherche;
-    
+
     @FXML
     private RadioButton rbReference;
 
     @FXML
     private ListView log;
 
-    private final ObservableList<String> listTypeAgentVend = FXCollections.observableArrayList(TypeAgent.Fournisseur,TypeAgent.Vendeur);
+    private final ObservableList<String> listTypeAgentVend = FXCollections.observableArrayList(TypeAgent.Fournisseur, TypeAgent.Vendeur);
 
     private final ObservableList<String> listQte = FXCollections.observableArrayList(
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
     private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.tabTypeProduit);
 
-    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse,TypeAgentClient.Econome);
-    
-    
+    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome);
+
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
-    
-    
+
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         choixProd.setItems(listTypeProduit);
@@ -99,14 +100,13 @@ public class FXMLController implements Initializable {
         choixVendeur.setItems(listTypeAgentVend);
         choixQte.setItems(listQte);
         log.setItems(listLog);
-        
+
         // remplissage par default
         ip.setText("192.168.0.13");
         port.setText("1099");
         nomAgent.setText("Bob");
     }
-    
-    
+
     @FXML
     private void handlebtProd(ActionEvent event) {
         try {
@@ -119,70 +119,71 @@ public class FXMLController implements Initializable {
                 Profile p = new ProfileImpl();
                 p.setParameter(Profile.MAIN_HOST, ip.getText());
                 p.setParameter(Profile.MAIN_PORT, port.getText());
+
+                // on recuprère l'information sur le type de recherche
+                // true: recherche false:recherche par reference
+                boolean typeRecherche = rbRecherche.isSelected();
+
                 AgentContainer ac = rt.createAgentContainer(p);
-                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(),choixProd.getValue(),nomProd.getText(),choixQte.getValue()};
-                
+                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), choixQte.getValue(), typeRecherche};
+
                 // création de l'agent
                 AgentController agent = ac.createNewAgent(nomAgent.getText(), "clientAgent.Client", arguments);
                 // lancement de l'agent
                 agent.start();
-                
 
             }
         } catch (StaleProxyException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
     @FXML
     private void handleTypeRechercheClassique(ActionEvent event) {
         reference.setDisable(true);
         nomProd.setDisable(false);
         choixProd.setDisable(false);
-        
+
     }
-    
-     @FXML
+
+    @FXML
     private void handleTypeRechercheReference(ActionEvent event) {
         nomProd.setDisable(true);
         choixProd.setDisable(true);
         reference.setDisable(false);
     }
 
-
     public boolean valider() {
         boolean valide = false;
-        
+
         // vérification de la selection du type de produit
         if (choixClient.getSelectionModel().getSelectedIndex() != -1
-            && choixVendeur.getSelectionModel().getSelectedIndex() != -1
-            && choixQte.getSelectionModel().getSelectedIndex() != -1
-            && !ip.getText().isEmpty()
-            && !port.getText().isEmpty()
-            && !nomAgent.getText().isEmpty()
-            && ((rbRecherche.isSelected()
-            && !nomProd.getText().isEmpty() 
-            && choixProd.getSelectionModel().getSelectedIndex() != -1)
-            || (rbReference.isSelected()
-            && !reference.getText().isEmpty()))){
-            
-            valide = true;
-            messageErreur.setVisible(false); 
-         
-            // verrouillage du bouton de validation
-            //btnValider.setDisable(true);
+                && choixVendeur.getSelectionModel().getSelectedIndex() != -1
+                && choixQte.getSelectionModel().getSelectedIndex() != -1
+                && !ip.getText().isEmpty()
+                && !port.getText().isEmpty()
+                && !nomAgent.getText().isEmpty()
+                && ((rbRecherche.isSelected()
+                && !nomProd.getText().isEmpty()
+                && choixProd.getSelectionModel().getSelectedIndex() != -1)
+                || (rbReference.isSelected()
+                && !reference.getText().isEmpty()))) {
 
-        }else{
+            valide = true;
+            messageErreur.setVisible(false);
+
+            // verrouillage du bouton de validation
+            btnValider.setDisable(true);
+            
+        } else {
             messageErreur.setText("Merci de remplir tous les champs !");
             messageErreur.setVisible(true);
         }
 
-       
         return valide;
     }
     
     
-    
+
 
 }

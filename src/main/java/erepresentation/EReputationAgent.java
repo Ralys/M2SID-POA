@@ -2,6 +2,7 @@ package erepresentation;
 
 import common.SuperAgent;
 import common.TypeAgent;
+import erepresentation.controller.RequeteAgent;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -62,30 +63,18 @@ public class EReputationAgent extends SuperAgent {
     private void traiterDemandeAvis(JSONObject demandeAvis, AID agent) {
         // Récupération du type (Fournisseur, Vendeur, Produit)
         String type = demandeAvis.get("type").toString();
-        
+        String reponseJSON = "";
         switch(type) {
             case TypeAgent.Fournisseur:
-            case TypeAgent.Vendeur:
-                String nom = demandeAvis.get("nom").toString();
+                reponseJSON = RequeteAgent.demandeAvisFourniseur(demandeAvis, agent);
                 break;
-            
+            case TypeAgent.Vendeur:
+                reponseJSON = RequeteAgent.demandeAvisVendeur(demandeAvis, agent);
+                break;
             case "Produit":
-                Long idProduit = (Long) demandeAvis.get("id");
+                reponseJSON = RequeteAgent.demandeAvisProduit(demandeAvis, agent);
                 break;
         }
-        
-        // TODO recherche en base de données
-        
-        // ajout de la propriété avis
-        demandeAvis.put("avis", 3);
-        
-        // création de la réponse
-        JSONObject reponse = new JSONObject();
-        reponse.put("retourAvis", demandeAvis);
-        
-        // transformation de la réponse en JSON
-        String reponseJSON = reponse.toString();
-        
         // envoi de la réponse
         this.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         

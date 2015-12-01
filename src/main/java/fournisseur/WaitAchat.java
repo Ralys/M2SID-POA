@@ -29,7 +29,8 @@ public class WaitAchat extends CyclicBehaviour {
 
                 //Vérifier les stocks
                 boolean stockOk = true;
-
+                //TODO
+                
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
@@ -49,9 +50,12 @@ public class WaitAchat extends CyclicBehaviour {
                     replyContenu.put("raison", "Stock insuffisant");
                     replyMessage.setPerformative(ACLMessage.REFUSE);
                 }
-
-                replyMessage.setContent(replyJson.toJSONString());
+                String contenuMessage = replyJson.toJSONString();
+                replyMessage.setContent(contenuMessage);
                 myAgent.send(replyMessage);
+                //Log
+                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
+                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, null, "Format de message invalide");
             }

@@ -39,10 +39,14 @@ public class Client extends SuperAgent {
         Object[] arguments = getArguments();
         typeAgentClient = arguments[0].toString();
         typeAgentCible = arguments[1].toString();
-        String typeProduit = arguments[2].toString();
+        String typeProduit ="";
+        if(arguments[2] != null){
+             typeProduit = arguments[2].toString();
+        }
         String recherche = arguments[3].toString();
-        int quantite = Integer.parseInt(arguments[4].toString());
-        String typeRecherche = arguments[5].toString();
+        String reference = arguments[4].toString();
+        int quantite = Integer.parseInt(arguments[5].toString());
+        String typeRecherche = arguments[6].toString();
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
 
@@ -63,6 +67,8 @@ public class Client extends SuperAgent {
         if (typeRecherche.equalsIgnoreCase("true")) {
             // on lance la recherche
             this.jeCherche(typeAgentCible, typeProduit, recherche, quantite);
+        }else{
+            this.jeChercheReference(typeAgentCible, reference , quantite);
         }
 
     }
@@ -109,6 +115,26 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeCherche.toString();
+            Jade.envoyerMessage(this, f, message);
+            nbRechercheEnvoye++;
+            Jade.loggerEnvoi(message);
+        }
+    }
+    
+    public void jeChercheReference(String typeAgent, String reference, int quantite) {
+
+        // construction de l'objet JSON à envoyé
+        JSONObject jeChercheReference = new JSONObject();
+        JSONObject elementRecherche = new JSONObject();
+        elementRecherche.put("quantite", quantite);
+        elementRecherche.put("reference", reference);
+        jeChercheReference.put("jeChercheRef", elementRecherche);
+
+        // envoi du message de recherche à tous les agents
+        // du type choisi
+        AID[] agent = Jade.searchDF(this, typeAgentCible);
+        for (AID f : agent) {
+            String message = jeChercheReference.toString();
             Jade.envoyerMessage(this, f, message);
             nbRechercheEnvoye++;
             Jade.loggerEnvoi(message);

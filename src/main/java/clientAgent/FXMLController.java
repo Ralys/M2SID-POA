@@ -125,7 +125,7 @@ public class FXMLController implements Initializable {
                 boolean typeRecherche = rbRecherche.isSelected();
 
                 AgentContainer ac = rt.createAgentContainer(p);
-                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), choixQte.getValue(), typeRecherche};
+                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(),reference.getText(), choixQte.getValue(), typeRecherche};
 
                 // création de l'agent
                 AgentController agent = ac.createNewAgent(nomAgent.getText(), "clientAgent.Client", arguments);

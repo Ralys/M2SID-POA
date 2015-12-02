@@ -1,9 +1,9 @@
-package erepresentation;
+package ereputation;
 
 import common.SuperAgent;
 import common.TypeAgent;
-import erepresentation.behaviours.InformBehaviour;
-import erepresentation.behaviours.RequestBehaviour;
+import ereputation.behaviours.InformBehaviour;
+import ereputation.behaviours.RequestBehaviour;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;

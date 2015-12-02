@@ -1,4 +1,4 @@
-package AgentVendor;
+package vendeur;
 import common.SuperAgent;
 import jade.core.AID;
 import jade.core.Agent;

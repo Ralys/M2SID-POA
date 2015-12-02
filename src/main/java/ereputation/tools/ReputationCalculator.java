@@ -1,4 +1,4 @@
-package erepresentation.tools;
+package ereputation.tools;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -2,7 +2,7 @@
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
-package clientAgent;
+package client;
 
 import jade.core.AID;
 import jade.core.Agent;

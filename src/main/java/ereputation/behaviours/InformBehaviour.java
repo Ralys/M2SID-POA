@@ -1,9 +1,9 @@
 
-package erepresentation.behaviours;
+package ereputation.behaviours;
 
 import common.TypeAgent;
-import erepresentation.EReputationAgent;
-import erepresentation.tools.QueryBuilder;
+import ereputation.EReputationAgent;
+import ereputation.tools.QueryBuilder;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;

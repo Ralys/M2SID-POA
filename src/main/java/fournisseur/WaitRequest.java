@@ -40,16 +40,16 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     String typeProduit = requete.get("typeProduit").toString();
                     String recherche = requete.get("recherche").toString();
                     quantite = Integer.valueOf(requete.get("quantite").toString());
-
+                    
                     //Récupération de tout ce que peut etre proposé pour la recherche
-                    listProduit = new ArrayList<>(); //TODO
+                    listProduit = ((Stocks) getDataStore()).rechercheProduit(recherche, typeProduit, quantite);
                 } else if (object.containsKey("jeCherche")) {
                     JSONObject requete = (JSONObject) object.get("jeChercheRef");
                     int reference = Integer.valueOf(requete.get("reference").toString());
                     quantite = Integer.valueOf(requete.get("quantite").toString());
                     listProduit.add(((Stocks) getDataStore()).getProduitById(reference));
                 } else {
-                    throw new ParseException(0);
+                    throw new ParseException(0);//TODO Exception moins sale ?
                 }
 
                 //Json réponse

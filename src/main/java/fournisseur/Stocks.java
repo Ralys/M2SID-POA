@@ -2,6 +2,7 @@ package fournisseur;
 
 import jade.core.behaviours.DataStore;
 import jade.util.leap.Set;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -30,7 +31,7 @@ public class Stocks extends DataStore {
         return null;
     }
     
-    public Produit[] rechercheProduit(String motRecherche, int qte){
+    public ArrayList<Produit> rechercheProduit(String motRecherche,String typeProduit, int qte){
         return null; //TODO
     }
 }

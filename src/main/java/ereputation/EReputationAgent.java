@@ -44,15 +44,14 @@ public class EReputationAgent extends SuperAgent {
     
     public AID getBDDAgent() {
         if(this.BDDAgent == null) {
-            this.BDDAgent = findBDDAgent();
+            AID[] agents = this.findAgentsFromService(TypeAgent.BDD);
+            
+            if(agents != null) {
+                this.BDDAgent = agents[0];
+            }
         }
         
         return this.BDDAgent;
-    }
-    
-    private AID findBDDAgent() {
-        // temporaire
-        return new AID("BDD", AID.ISLOCALNAME);
     }
     
     public ACLMessage sendMessage(int typeMessage, String contenu, AID destinataire) {

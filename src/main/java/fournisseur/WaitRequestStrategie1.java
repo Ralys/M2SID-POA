@@ -7,7 +7,7 @@ package fournisseur;
 public class WaitRequestStrategie1 extends WaitRequest{
 
     @Override
-    public int definirPrix(int idProduit, int quantite) {
+    public double definirPrix(int idProduit, int quantite, int delai) {
         return 0;
     }
     

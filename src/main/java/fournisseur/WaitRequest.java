@@ -43,7 +43,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     
                     //Récupération de tout ce que peut etre proposé pour la recherche
                     listProduit = ((Stocks) getDataStore()).rechercheProduit(recherche, typeProduit, quantite);
-                } else if (object.containsKey("jeCherche")) {
+                } else if (object.containsKey("jeChercheRef")) {
                     JSONObject requete = (JSONObject) object.get("jeChercheRef");
                     int reference = Integer.valueOf(requete.get("reference").toString());
                     quantite = Integer.valueOf(requete.get("quantite").toString());
@@ -74,7 +74,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 // Si on a une réponse, on envoie un tableau Json de tout les produits a proposer
                 if (!listProduit.isEmpty()) {
                     replyJson.put("jePropose", tabProduit);
-                    String contenuMessage = replyJson.toJSONString();
+                    String contenuMessage = replyJson.toJSONString().replace("\\", "");
 
                     //Envoie de la réponse
                     ACLMessage replyMessage = msg.createReply();
@@ -97,6 +97,6 @@ public abstract class WaitRequest extends CyclicBehaviour {
     }
 
     //Méthode défini par une stratégie
-    public abstract int definirPrix(int idProduit, int quantite, int delai);
+    public abstract double definirPrix(int idProduit, int quantite, int delai);
 
 }

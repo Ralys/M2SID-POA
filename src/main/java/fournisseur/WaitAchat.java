@@ -25,7 +25,7 @@ public class WaitAchat extends CyclicBehaviour {
                 String nomProduit = achat.get("nomProduit").toString();
                 String date = achat.get("date").toString();
                 int quantite = Integer.valueOf(achat.get("quantite").toString());
-                int prix = Integer.valueOf(achat.get("prix").toString());
+                double prix = Double.valueOf(achat.get("prix").toString());
 
                 //Vérifier les stocks
                 boolean stockOk = ((Stocks) getDataStore()).verifierStock(idProduit, quantite);
@@ -50,7 +50,7 @@ public class WaitAchat extends CyclicBehaviour {
                     replyContenu.put("raison", "Stock insuffisant");
                     replyMessage.setPerformative(ACLMessage.REFUSE);
                 }
-                String contenuMessage = replyJson.toJSONString();
+                String contenuMessage = replyJson.toJSONString().replace("\\", "");
                 replyMessage.setContent(contenuMessage);
                 myAgent.send(replyMessage);
                 //Log

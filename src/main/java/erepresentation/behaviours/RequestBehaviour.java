@@ -11,6 +11,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -76,10 +77,11 @@ public class RequestBehaviour extends CyclicBehaviour {
         
         // recherche en base de données
         ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.selectAvis(type, nom), erep.getBDDAgent(), true);
-        JSONObject resultatBDD = (JSONObject) this.parser.parse(messageBDD.getContent());
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
         JSONObject retourAvis = demandeAvis;
-        retourAvis.put("avis", resultatBDD.get("AVIS"));
+        retourAvis.put("avis", resultat.get("AVIS"));
         
         JSONObject reponse = new JSONObject();
         reponse.put("retourAvis", retourAvis);
@@ -101,10 +103,11 @@ public class RequestBehaviour extends CyclicBehaviour {
         
         // recherche en base de données
         ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.selectDateSortie(ref), erep.getBDDAgent(), true);
-        JSONObject resultatBDD = (JSONObject) this.parser.parse(messageBDD.getContent());
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
         JSONObject retourReputation = demandeReputation;
-        retourReputation.put("reputation", ReputationCalculator.execute(resultatBDD.get("DATE_SORTIE").toString()));
+        retourReputation.put("reputation", ReputationCalculator.execute(resultat.get("DATE_SORTIE").toString()));
         
         JSONObject reponse = new JSONObject();
         reponse.put("retourReputation", retourReputation);

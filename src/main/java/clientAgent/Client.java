@@ -19,7 +19,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import common.*;
 
-
 /**
  *
  * @author Aymeric
@@ -33,23 +32,27 @@ public class Client extends SuperAgent {
     private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
     private String typeAgentClient;
     private String typeAgentCible;
-    
 
     protected void setup() {
-        
+
         // initailisation des attributs
         Object[] arguments = getArguments();
         typeAgentClient = arguments[0].toString();
         typeAgentCible = arguments[1].toString();
-        String typeProduit = arguments[2].toString();
+        String typeProduit ="";
+        if(arguments[2] != null){
+             typeProduit = arguments[2].toString();
+        }
         String recherche = arguments[3].toString();
-        int quantite = Integer.parseInt(arguments[4].toString());
+        String reference = arguments[4].toString();
+        int quantite = Integer.parseInt(arguments[5].toString());
+        String typeRecherche = arguments[6].toString();
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
 
         // enregistrement du service
         registerService(monService);
-        
+
         // écoute des messages
         addBehaviour(new CyclicBehaviour(this) {
             public void action() {
@@ -60,19 +63,21 @@ public class Client extends SuperAgent {
                 }
             }
         });
-        
-        // on lance la recherche
-        this.jeCherche(typeAgentCible, typeProduit, recherche, quantite);
-    }
 
-    
+        if (typeRecherche.equalsIgnoreCase("true")) {
+            // on lance la recherche
+            this.jeCherche(typeAgentCible, typeProduit, recherche, quantite);
+        }else{
+            this.jeChercheReference(typeAgentCible, reference , quantite);
+        }
+
+    }
 
     public void traiterMessage(ACLMessage message) {
 
         try {
             JSONParser parser = new JSONParser();
             JSONObject object = (JSONObject) parser.parse(message.getContent());
-            
 
             if (object.containsKey("jePropose")) {
                 JSONArray array = (JSONArray) object.get("jePropose");
@@ -82,13 +87,13 @@ public class Client extends SuperAgent {
 
             if (object.containsKey("commandeOk")) {
                 JSONObject obj = (JSONObject) object.get("commandeOk");
-                afficherAchat(obj,message);
+                afficherAchat(obj, message);
                 // laisser avis erep
             }
 
             if (object.containsKey("commandePasOK")) {
                 JSONObject obj = (JSONObject) object.get("commandePasOK");
-                afficherRaison(obj,message);
+                afficherRaison(obj, message);
             }
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -96,15 +101,15 @@ public class Client extends SuperAgent {
     }
 
     public void jeCherche(String typeAgent, String typeProduit, String recherche, int quantite) {
-        
+
         // construction de l'objet JSON à envoyé
         JSONObject jeCherche = new JSONObject();
         JSONObject elementRecherche = new JSONObject();
         elementRecherche.put("quantite", quantite);
         elementRecherche.put("recherche", recherche);
         elementRecherche.put("typeProduit", typeProduit);
-        jeCherche.put("jeCherche",elementRecherche);
-        
+        jeCherche.put("jeCherche", elementRecherche);
+
         // envoi du message de recherche à tous les agents
         // du type choisi
         AID[] agent = Jade.searchDF(this, typeAgentCible);
@@ -115,22 +120,42 @@ public class Client extends SuperAgent {
             Jade.loggerEnvoi(message);
         }
     }
+    
+    public void jeChercheReference(String typeAgent, String reference, int quantite) {
+
+        // construction de l'objet JSON à envoyé
+        JSONObject jeChercheReference = new JSONObject();
+        JSONObject elementRecherche = new JSONObject();
+        elementRecherche.put("quantite", quantite);
+        elementRecherche.put("reference", reference);
+        jeChercheReference.put("jeChercheRef", elementRecherche);
+
+        // envoi du message de recherche à tous les agents
+        // du type choisi
+        AID[] agent = Jade.searchDF(this, typeAgentCible);
+        for (AID f : agent) {
+            String message = jeChercheReference.toString();
+            Jade.envoyerMessage(this, f, message);
+            nbRechercheEnvoye++;
+            Jade.loggerEnvoi(message);
+        }
+    }
 
     public void jeChoisis(Produit p) {
-        
+
         AID aid = new AID(p.getProvenance());
-        
+
         // construction de l'objet JSON à envoyé
         JSONObject jeChoisi = new JSONObject();
-        jeChoisi.put("jeChoisis",p.getJSONObject());
+        jeChoisi.put("jeChoisis", p.getJSONObject());
 
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this, aid, jeChoisi.toString());
         Jade.loggerEnvoi(jeChoisi.toString());
     }
 
-    public void ajouterProposition(JSONArray array, ACLMessage message ) {
-        
+    public void ajouterProposition(JSONArray array, ACLMessage message) {
+
         String provenance = message.getSender().getName();
 
         for (Object obj : array.toArray()) {
@@ -178,8 +203,8 @@ public class Client extends SuperAgent {
 
     }
 
-    public void afficherAchat(JSONObject jsonObj,  ACLMessage message) {
-        
+    public void afficherAchat(JSONObject jsonObj, ACLMessage message) {
+
         String date = jsonObj.get("date").toString().replace("\\", "");
         StringBuilder sb = new StringBuilder("Achat effectué chez : ");
         sb.append(message.getSender().getName());
@@ -205,7 +230,7 @@ public class Client extends SuperAgent {
         doDelete();
     }
 
-    public void afficherRaison(JSONObject obj,ACLMessage message) {
+    public void afficherRaison(JSONObject obj, ACLMessage message) {
         StringBuilder sb = new StringBuilder("Commande impossible chez : ");
         sb.append("message.getSender().getName()\n");
         sb.append("Raison : ");
@@ -247,8 +272,7 @@ public class Client extends SuperAgent {
         }
         return produitChoisi;
     }
-    
-    
+
     protected void takeDown() {
         // on se retire du registre de service afin q'un autre
         // agent du même nom puisse se lancer
@@ -258,11 +282,10 @@ public class Client extends SuperAgent {
             @Override
             public void run() {
                 // deverrouillage du bouton de validation
+                // FXMLController.btnValider.setDisable(false);
             }
         });
 
     }
-
-    
 
 }

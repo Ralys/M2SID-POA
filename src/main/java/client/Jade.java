@@ -61,8 +61,8 @@ public class Jade {
         }
     }
     
-    public static void envoyerMessage(Agent client, AID receiver, String message) {
-        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+    public static void envoyerMessage(Agent client,int typeMessage, AID receiver, String message) {
+        ACLMessage msg = new ACLMessage(typeMessage);
         msg.setContent(message);
         msg.addReceiver(receiver);
         client.send(msg);

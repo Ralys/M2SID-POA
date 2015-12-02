@@ -115,7 +115,7 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeCherche.toString();
-            Jade.envoyerMessage(this, f, message);
+            Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
             Jade.loggerEnvoi(message);
         }
@@ -135,7 +135,7 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeChercheReference.toString();
-            Jade.envoyerMessage(this, f, message);
+            Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
             Jade.loggerEnvoi(message);
         }
@@ -150,22 +150,20 @@ public class Client extends SuperAgent {
         jeChoisi.put("jeChoisis", p.getJSONObject());
 
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this, aid, jeChoisi.toString());
+        Jade.envoyerMessage(this,ACLMessage.ACCEPT_PROPOSAL, aid, jeChoisi.toString());
         Jade.loggerEnvoi(jeChoisi.toString());
     }
 
     public void ajouterProposition(JSONArray array, ACLMessage message) {
 
-        String provenance = message.getSender().getName();
-
         for (Object obj : array.toArray()) {
             JSONObject jsonObject = (JSONObject) obj;
-            
-            Produit p = new Produit(jsonObject,provenance);
+
+            Produit p = new Produit(jsonObject, nomAgent(message));
             lproposition.add(p);
         }
 
-        lAgentsRepond.add(provenance);
+        lAgentsRepond.add(nomAgent(message));
         Jade.loggerReception(message.getContent());
 
     }
@@ -194,7 +192,7 @@ public class Client extends SuperAgent {
 
         String date = jsonObj.get("date").toString().replace("\\", "");
         StringBuilder sb = new StringBuilder("Achat effectué chez : ");
-        sb.append(message.getSender().getName());
+        sb.append(nomAgent(message));
         sb.append("\n");
         sb.append("Nom produit : ");
         sb.append(jsonObj.get("nomProduit").toString());
@@ -229,8 +227,24 @@ public class Client extends SuperAgent {
         // choisir la meilleur proposition suivante si il y en a
     }
 
-    public void donneAvis(String typeAgent, String nomAgent) {
-
+    public void donneAvis(ACLMessage message,String typeAgent) {
+        AID aid = new AID(message.getSender().getName());
+        
+        int avis = 0;
+        
+        // construction de l'objet JSON à envoyé
+        JSONObject donneAvis = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("type", typeAgent);
+        contenu.put("nom", nomAgent(message));
+        contenu.put("avis", avis);
+        donneAvis.put("donneAvis", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
+        Jade.loggerEnvoi(donneAvis.toString());
+        
+        
     }
 
     /**
@@ -278,6 +292,10 @@ public class Client extends SuperAgent {
             }
         });
 
+    }
+    
+    public String nomAgent(ACLMessage message){
+        return message.getSender().getLocalName();
     }
 
 }

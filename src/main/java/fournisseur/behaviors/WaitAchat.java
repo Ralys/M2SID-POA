@@ -1,7 +1,7 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
-import fournisseur.Stocks;
+import fournisseur.StocksEtTransaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -16,14 +16,12 @@ public class WaitAchat extends CyclicBehaviour {
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
         ACLMessage msg = myAgent.receive(mt);
-        
-        String messageContent = msg.getContent();
-        String sender = msg.getSender().toString();
-
-        String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit achat : " + messageContent + "de" + sender;
-        Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
 
         if (msg != null) { //Acceptation d'un achat reçu
+            String messageContent = msg.getContent();
+            String sender = msg.getSender().toString();
+            String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit achat : " + messageContent + "de" + sender;
+            Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
             try {
                 ACLMessage replyMessage = msg.createReply();
                 //{“jeChoisis”:{”idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:3,”prix”:20.0,”date”:”20/02/2105”}}
@@ -37,11 +35,14 @@ public class WaitAchat extends CyclicBehaviour {
                 double prix = Double.valueOf(achat.get("prix").toString());
 
                 //Vérifier les stocks
-                boolean stockOk = ((Stocks) getDataStore()).verifierStock(idProduit, quantite);
+                boolean stockOk = ((StocksEtTransaction) getDataStore()).verifierStock(idProduit, quantite);
 
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
+
+                int delai = 0;
+                ((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, delai, sender);
 
                 if (stockOk) {
                     //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
@@ -52,6 +53,10 @@ public class WaitAchat extends CyclicBehaviour {
                     replyContenu.put("date", date);
                     replyJson.put("commandeOK", replyContenu);
                     replyMessage.setPerformative(ACLMessage.CONFIRM);
+                    
+                    ((StocksEtTransaction) getDataStore()).decrementerStock(idProduit, quantite);
+                    
+                    //TODO incrementation des pesos
                 } else {
                     //{“commandePasOK”:{“raison”:”Stock insuffisant”}}
                     replyJson.put("commandePasOK", replyContenu);
@@ -62,7 +67,7 @@ public class WaitAchat extends CyclicBehaviour {
                 replyMessage.setContent(contenuMessage);
                 myAgent.send(replyMessage);
                 //Log
-                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à "+sender;
+                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide");

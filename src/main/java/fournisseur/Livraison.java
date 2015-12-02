@@ -15,7 +15,7 @@ public class Livraison {
     static{
         prixLivraison = new HashMap<>();
         prixLivraison.put(10, 0.0);
-        prixLivraison.put(11, 10.0);
+        prixLivraison.put(1, 10.0);
         prixLivraison.put(3, 5.0);
     }
 

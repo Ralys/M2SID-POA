@@ -4,7 +4,6 @@ import fournisseur.behaviors.WaitAchat;
 import fournisseur.behaviors.WaitRequestStrategie1;
 import common.SuperAgent;
 import common.TypeAgent;
-import jade.lang.acl.ACLMessage;
 
 /**
  *
@@ -12,7 +11,7 @@ import jade.lang.acl.ACLMessage;
  */
 public class FournisseurAgent extends SuperAgent {
 
-    private Stocks catalogue = new Stocks();
+    private StocksEtTransaction catalogue = new StocksEtTransaction();
 
     /**
      * Méthode de mise en place de l'agent
@@ -29,15 +28,13 @@ public class FournisseurAgent extends SuperAgent {
         WaitRequestBehaviorStrategie.setDataStore(catalogue);
         this.addBehaviour(WaitRequestBehaviorStrategie);
 
-        
-        
-       this.creationCatalogue();
+        this.creationCatalogue();
 
     }
-    
-    private void creationCatalogue(){
+
+    private void creationCatalogue() {
         //Ajout dans le catalogue par la BDD
-         Produit p = new Produit(0, "Chibre", 5.0, "CD");
+        Produit p = new Produit(0, "Chibre", 5.0, "CD");
         catalogue.put(p, 0);
     }
 

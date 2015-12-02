@@ -1,6 +1,8 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
+import fournisseur.StocksEtTransaction;
+import fournisseur.Transaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -24,13 +26,13 @@ public abstract class WaitNegociation extends CyclicBehaviour {
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
         ACLMessage msg = myAgent.receive(mt);
-        String messageContent = msg.getContent();
-        String sender = msg.getSender().toString();
-        
-        String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit négociation : " + messageContent + "de" + sender;
-        Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
-        
+
         if (msg != null) { //Négociation d'un client/vendeur
+            String messageContent = msg.getContent();
+            String sender = msg.getSender().toString();
+
+            String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit négociation : " + messageContent + "de" + sender;
+            Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
             try {
                 ACLMessage replyMessage = msg.createReply();
                 //{“jeNegocie”:{”idProduit”:”67D”,”prix”:20.0,”date”:”20/02/2105”}}
@@ -47,6 +49,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
 
+                //TODO reponse
                 String contenuMessage = replyJson.toJSONString().replace("\\", "");
                 replyMessage.setContent(contenuMessage);
                 replyMessage.setPerformative(ACLMessage.PROPOSE);

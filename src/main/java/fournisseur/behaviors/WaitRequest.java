@@ -3,7 +3,8 @@ package fournisseur.behaviors;
 import fournisseur.FournisseurAgent;
 import fournisseur.Livraison;
 import fournisseur.Produit;
-import fournisseur.Stocks;
+import fournisseur.StocksEtTransaction;
+import fournisseur.Transaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -52,12 +53,12 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     quantite = Integer.valueOf(requete.get("quantite").toString());
 
                     //Récupération de tout ce que peut etre proposé pour la recherche
-                    listProduit = ((Stocks) getDataStore()).rechercheProduit(recherche, typeProduit, quantite);
+                    listProduit = ((StocksEtTransaction) getDataStore()).rechercheProduit(recherche, typeProduit, quantite);
                 } else if (object.containsKey("jeChercheRef")) {
                     JSONObject requete = (JSONObject) object.get("jeChercheRef");
                     int reference = Integer.valueOf(requete.get("reference").toString());
                     quantite = Integer.valueOf(requete.get("quantite").toString());
-                    listProduit.add(((Stocks) getDataStore()).getProduitById(reference));
+                    listProduit.add(((StocksEtTransaction) getDataStore()).getProduitById(reference));
                 } else {
                     throw new ParseException(0);//TODO Exception moins sale ?
                 }
@@ -72,6 +73,10 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
                     //Pour les trois date possible
                     for (Integer delai : listDelai) {
+
+                        Transaction t = new Transaction(p.getIdProduit(), delai, sender);
+                        ((StocksEtTransaction) getDataStore()).put(t, p);
+
                         JSONObject produitJson = new JSONObject();
                         produitJson.put("idProduit", p.getIdProduit());
                         produitJson.put("nomProduit", p.getNomProduit());

@@ -51,12 +51,12 @@ public class WaitAchat extends CyclicBehaviour {
                     replyContenu.put("quantite", quantite);
                     replyContenu.put("date", date);
                     replyJson.put("commandeOK", replyContenu);
-                    replyMessage.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+                    replyMessage.setPerformative(ACLMessage.CONFIRM);
                 } else {
                     //{“commandePasOK”:{“raison”:”Stock insuffisant”}}
                     replyJson.put("commandePasOK", replyContenu);
                     replyContenu.put("raison", "Stock insuffisant");
-                    replyMessage.setPerformative(ACLMessage.REFUSE);
+                    replyMessage.setPerformative(ACLMessage.DISCONFIRM);
                 }
                 String contenuMessage = replyJson.toJSONString().replace("\\", "");
                 replyMessage.setContent(contenuMessage);

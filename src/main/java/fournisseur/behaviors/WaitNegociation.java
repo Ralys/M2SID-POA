@@ -49,6 +49,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
 
                 String contenuMessage = replyJson.toJSONString().replace("\\", "");
                 replyMessage.setContent(contenuMessage);
+                replyMessage.setPerformative(ACLMessage.PROPOSE);
                 myAgent.send(replyMessage);
                 //Log
                 String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + msg.getSender().toString();

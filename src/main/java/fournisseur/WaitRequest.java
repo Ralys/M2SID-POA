@@ -3,7 +3,11 @@ package fournisseur;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -16,7 +20,9 @@ import org.json.simple.parser.ParseException;
  * @author Tom
  */
 public abstract class WaitRequest extends CyclicBehaviour {
-
+    
+    private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+    
     @Override
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
@@ -49,17 +55,21 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONArray tabProduit = new JSONArray();
+                HashMap<Integer, Date> listDate = DateLivraison.getListeDateLivraison();
+                Set<Integer> listDelai = listDate.keySet();
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
-                    JSONObject produitJson = new JSONObject();
-                    produitJson.put("idProduit", p.getIdProduit());
-                    produitJson.put("nomProduit", p.getNomProduit());
-                    produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite));
-                    produitJson.put("quantite", quantite);
-                    produitJson.put("date", "");//TODO définir date => Strategie
-                    tabProduit.add(produitJson);
-
+                    //Pour les trois date possible
+                    for (Integer delai : listDelai) {
+                        JSONObject produitJson = new JSONObject();
+                        produitJson.put("idProduit", p.getIdProduit());
+                        produitJson.put("nomProduit", p.getNomProduit());
+                        produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
+                        produitJson.put("quantite", quantite);
+                        produitJson.put("date", formater.format(listDate.get(delai)));
+                        tabProduit.add(produitJson);
+                    }
                 }
                 // Si on a une réponse, on envoie un tableau Json de tout les produits a proposer
                 if (!listProduit.isEmpty()) {
@@ -75,7 +85,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
                     System.out.println(envoiMessage);
                     Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
-                }else{
+                } else {
                     Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, "Aucun produit correspondant à la recherche");
                 }
             } catch (ParseException ex) {
@@ -87,6 +97,6 @@ public abstract class WaitRequest extends CyclicBehaviour {
     }
 
     //Méthode défini par une stratégie
-    public abstract int definirPrix(int idProduit, int quantite);
+    public abstract int definirPrix(int idProduit, int quantite, int delai);
 
 }

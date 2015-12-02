@@ -115,7 +115,7 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeCherche.toString();
-            Jade.envoyerMessage(this, f, message);
+            Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
             Jade.loggerEnvoi(message);
         }
@@ -135,7 +135,7 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeChercheReference.toString();
-            Jade.envoyerMessage(this, f, message);
+            Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
             Jade.loggerEnvoi(message);
         }
@@ -150,7 +150,7 @@ public class Client extends SuperAgent {
         jeChoisi.put("jeChoisis", p.getJSONObject());
 
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this, aid, jeChoisi.toString());
+        Jade.envoyerMessage(this,ACLMessage.ACCEPT_PROPOSAL, aid, jeChoisi.toString());
         Jade.loggerEnvoi(jeChoisi.toString());
     }
 

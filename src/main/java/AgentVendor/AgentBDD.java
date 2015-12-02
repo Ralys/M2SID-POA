@@ -71,11 +71,6 @@ public class AgentBDD extends SuperAgent {
          }
      }
 
-    @Override
-    protected void traiterMessage(ACLMessage message) {
-        // CETTE METHODE EST NULLE :D
-    }
-
     private class ExecuteRequest extends CyclicBehaviour {
          public void action() {
              ACLMessage msg = receive();

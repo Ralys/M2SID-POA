@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author DreamTeam MIAGE
+ * @author Team EReputation
  */
 public class ReputationCalculator {
     

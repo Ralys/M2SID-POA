@@ -17,7 +17,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  *
- * @author DreamTeam MIAGE
+ * @author Team EReputation
  */
 public class RequestBehaviour extends CyclicBehaviour {
     

@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 
 /**
  *
- * @author DreamTeam MIAGE
+ * @author Team EReputation
  */
 public class QueryBuilder {
 

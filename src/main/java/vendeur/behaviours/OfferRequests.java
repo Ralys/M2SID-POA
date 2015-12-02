@@ -6,6 +6,7 @@ import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,18 +71,22 @@ public class OfferRequests extends CyclicBehaviour {
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
 
         JSONObject reponse = new JSONObject();
+        JSONArray list = new JSONArray();
         for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext();) {
             JSONObject resultat = (JSONObject) iterator.next();
             JSONObject retourRecherche = jsonObject;
+            retourRecherche.put("ref_produit", resultat.get("REF_PRODUIT"));
             retourRecherche.put("nom_produit", resultat.get("NOM_PRODUIT"));
-
-            reponse.put("jePropose", retourRecherche);
+            retourRecherche.put("prix", resultat.get("PRIX_UNITAIRE"));
+            retourRecherche.put("qte", resultat.get("QTE"));
+            list.add(retourRecherche);
         }
+        reponse.put("jePropose", list);
 
         String reponseJSON = reponse.toJSONString();
 
         // envoi de la réponse
-        vendeur.sendMessage(ACLMessage.INFORM, reponseJSON, sender);
+        vendeur.sendMessage(ACLMessage.PROPOSE, reponseJSON, sender);
 
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
         Logger.getLogger(VendeurAgent.class.getName()).log(Level.INFO, envoiMessage);

@@ -27,6 +27,7 @@ public class WaitAchat extends CyclicBehaviour {
             String sender = msg.getSender().getName();
             String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit achat : " + messageContent + "de" + sender;
             Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
+
             try {
                 ACLMessage replyMessage = msg.createReply();
                 //{“jeChoisis”:{”idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:3,”prix”:20.0,”date”:”20/02/2105”}}

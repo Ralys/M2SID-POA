@@ -33,6 +33,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
 
             String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit négociation : " + messageContent + "de" + sender;
             Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
+
             try {
                 ACLMessage replyMessage = msg.createReply();
                 //{“jeNegocie”:{”idProduit”:”67D”,”prix”:20.0,”date”:”20/02/2105”}}

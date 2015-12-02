@@ -34,7 +34,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
         ACLMessage msg = myAgent.receive(mt);
         if (msg != null) {            //Reception d'une demande de produit
             String messageContent = msg.getContent();
-            String sender = msg.getSender().toString();
+            String sender = msg.getSender().getName();
 
             String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit requête : " + messageContent + " de " + sender;
             Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
@@ -98,7 +98,6 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     myAgent.send(replyMessage);
                     //Log
                     String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
-                    System.out.println(envoiMessage);
                     Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, envoiMessage);
                 } else {
                     Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, "Aucun produit correspondant à la recherche");

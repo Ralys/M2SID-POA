@@ -29,7 +29,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
 
         if (msg != null) { //Négociation d'un client/vendeur
             String messageContent = msg.getContent();
-            String sender = msg.getSender().toString();
+            String sender = msg.getSender().getName();
 
             String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit négociation : " + messageContent + "de" + sender;
             Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);

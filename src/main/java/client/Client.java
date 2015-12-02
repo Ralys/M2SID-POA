@@ -151,8 +151,14 @@ public class Client extends SuperAgent {
         Jade.loggerEnvoi(jeChoisi.toString());
     }
 
-    public void donneAvis(ACLMessage message,String typeAgent) {
-        AID aid = new AID(message.getSender().getName());
+    /**
+     * Méthode d'envoi d'avis sur un agent fournisseur ou vendeur
+     * @param adresseAgentErep adresse de l'agent ereputation : Erep@10.10.135.8/JADE
+     * @param nomAgent nom de l'agent sur lequel on donne notre l'avis
+     * @param typeAgent type de l'agent sur lequel on donne notre l'avis
+     */
+    public void donneAvis(String adresseAgentErep,String typeAgent,String nomAgent) {
+        AID aid = new AID(adresseAgentErep);
         
         int avis = 0;
         
@@ -160,17 +166,84 @@ public class Client extends SuperAgent {
         JSONObject donneAvis = new JSONObject();
         JSONObject contenu = new JSONObject();
         contenu.put("type", typeAgent);
-        contenu.put("nom", nomAgent(message));
+        contenu.put("nom", nomAgent);
         contenu.put("avis", avis);
         donneAvis.put("donneAvis", contenu);
         
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
         Jade.loggerEnvoi(donneAvis.toString());
-        
-        
     }
-
+    
+    public void donneAvisProduit(String adresseAgentErep,String idProduit) {
+        AID aid = new AID(adresseAgentErep);
+        
+        int avis = 0;
+        
+        // construction de l'objet JSON à envoyé
+        JSONObject donneAvis = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("type","Produit");
+        contenu.put("id", idProduit);
+        contenu.put("avis", avis);
+        donneAvis.put("donneAvis", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
+        Jade.loggerEnvoi(donneAvis.toString());
+    }
+    
+    /**
+     * Méthode de demande d'avis sur un vendeur ou un fournisseur
+     * @param adresseAgentErep adresse de l'agent ereputation : Erep@10.10.135.8/JADE
+     * @param typeAgent type de l'agent auquel on veux l'avis
+     * @param nomAgent nom de l'agent auquel on veux l'avis
+     */
+    public void demandeAvis(String adresseAgentErep,String typeAgent,String nomAgent){
+        AID aid = new AID(adresseAgentErep);
+        
+         // construction de l'objet JSON à envoyé
+        JSONObject demandeAvis = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("type",typeAgent);
+        contenu.put("nom",nomAgent);
+        demandeAvis.put("demandeAvis", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeAvis.toString());
+        Jade.loggerEnvoi(demandeAvis.toString());
+    }
+    
+    public void demandeAvisProduit(String adresseAgentErep, String idProduit){
+        AID aid = new AID(adresseAgentErep);
+        
+         // construction de l'objet JSON à envoyé
+        JSONObject demandeAvis = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("type","Produit");
+        contenu.put("id",idProduit);
+        demandeAvis.put("demandeAvis", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeAvis.toString());
+        Jade.loggerEnvoi(demandeAvis.toString());
+    }
+    
+    public void demandeReputation(String adresseAgentErep, String idProduit){
+        AID aid = new AID(adresseAgentErep);
+        
+         // construction de l'objet JSON à envoyé
+        JSONObject demandeReputation = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("type","Produit");
+        contenu.put("id",idProduit);
+        demandeReputation.put("demandeReputation", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeReputation.toString());
+        Jade.loggerEnvoi(demandeReputation.toString());
+    }
+    
     
     // **************************************************************** //
     //
@@ -213,7 +286,7 @@ public class Client extends SuperAgent {
         for (Object obj : array.toArray()) {
             JSONObject jsonObject = (JSONObject) obj;
 
-            Produit p = new Produit(jsonObject, nomAgent(message));
+            Produit p = new Produit(jsonObject, message.getSender().getName());
             lproposition.add(p);
         }
 

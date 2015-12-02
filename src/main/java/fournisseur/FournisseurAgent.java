@@ -29,11 +29,4 @@ public class FournisseurAgent extends SuperAgent {
         
     }
 
-    @Override
-    protected void traiterMessage(ACLMessage message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-
 }

@@ -20,19 +20,25 @@ import org.json.simple.parser.ParseException;
  * @author Tom
  */
 public abstract class WaitRequest extends CyclicBehaviour {
-    
+
     private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
-    
+
     @Override
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage msg = myAgent.receive(mt);
         if (msg != null) {            //Reception d'une demande de produit
+            String messageContent = msg.getContent();
+            String sender = msg.getSender().toString();
+
+            String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit requête : " + messageContent + " de " + sender;
+            Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
+
             try {
                 //{“jeCherche”:{“typeProduit”:”DVD”,”recherche”:”Spectre”,”quantite”:1}}
                 //{“jeChercheRef”:{”reference”:”67D”,”quantite”:1}}
                 JSONParser parser = new JSONParser();
-                JSONObject object = (JSONObject) parser.parse(msg.getContent());
+                JSONObject object = (JSONObject) parser.parse(messageContent);
                 ArrayList<Produit> listProduit = new ArrayList<>();
                 int quantite;
                 if (object.containsKey("jeCherche")) {
@@ -40,7 +46,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     String typeProduit = requete.get("typeProduit").toString();
                     String recherche = requete.get("recherche").toString();
                     quantite = Integer.valueOf(requete.get("quantite").toString());
-                    
+
                     //Récupération de tout ce que peut etre proposé pour la recherche
                     listProduit = ((Stocks) getDataStore()).rechercheProduit(recherche, typeProduit, quantite);
                 } else if (object.containsKey("jeChercheRef")) {
@@ -82,14 +88,14 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     replyMessage.setContent(contenuMessage);
                     myAgent.send(replyMessage);
                     //Log
-                    String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
+                    String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
                     System.out.println(envoiMessage);
-                    Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
+                    Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, envoiMessage);
                 } else {
-                    Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, "Aucun produit correspondant à la recherche");
+                    Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, "Aucun produit correspondant à la recherche");
                 }
             } catch (ParseException ex) {
-                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide");
+                Logger.getLogger(WaitRequest.class.getName()).log(Level.SEVERE, "Format de message invalide");
             }
         } else {
             block();

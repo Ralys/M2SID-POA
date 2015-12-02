@@ -14,12 +14,19 @@ public class WaitAchat extends CyclicBehaviour {
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
         ACLMessage msg = myAgent.receive(mt);
+        
+        String messageContent = msg.getContent();
+        String sender = msg.getSender().toString();
+
+        String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit achat : " + messageContent + "de" + sender;
+        Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
+
         if (msg != null) { //Acceptation d'un achat reçu
             try {
                 ACLMessage replyMessage = msg.createReply();
                 //{“jeChoisis”:{”idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:3,”prix”:20.0,”date”:”20/02/2105”}}
                 JSONParser parser = new JSONParser();
-                JSONObject object = (JSONObject) parser.parse(msg.getContent());
+                JSONObject object = (JSONObject) parser.parse(messageContent);
                 JSONObject achat = (JSONObject) object.get("jeChoisis");
                 int idProduit = Integer.valueOf(achat.get("idProduit").toString());
                 String nomProduit = achat.get("nomProduit").toString();
@@ -29,8 +36,7 @@ public class WaitAchat extends CyclicBehaviour {
 
                 //Vérifier les stocks
                 boolean stockOk = ((Stocks) getDataStore()).verifierStock(idProduit, quantite);
-                
-                
+
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
@@ -54,10 +60,10 @@ public class WaitAchat extends CyclicBehaviour {
                 replyMessage.setContent(contenuMessage);
                 myAgent.send(replyMessage);
                 //Log
-                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
+                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à "+sender;
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
-                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide" );
+                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide");
             }
         } else {
             block();

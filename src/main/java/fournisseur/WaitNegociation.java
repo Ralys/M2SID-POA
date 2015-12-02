@@ -23,6 +23,12 @@ public abstract class WaitNegociation extends CyclicBehaviour {
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
         ACLMessage msg = myAgent.receive(mt);
+        String messageContent = msg.getContent();
+        String sender = msg.getSender().toString();
+        
+        String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit négociation : " + messageContent + "de" + sender;
+        Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
+        
         if (msg != null) { //Négociation d'un client/vendeur
             try {
                 ACLMessage replyMessage = msg.createReply();
@@ -35,8 +41,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
 
                 int idProduit = Integer.valueOf(achat.get("idProduit").toString());
                 double prix = Double.valueOf(achat.get("prix").toString());
-                
-                
+
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
@@ -45,18 +50,18 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 replyMessage.setContent(contenuMessage);
                 myAgent.send(replyMessage);
                 //Log
-                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage;
+                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + msg.getSender().toString();
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
-                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide");
+                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide" + " de " + msg.getSender().toString());
             } catch (java.text.ParseException ex) {
-                Logger.getLogger(WaitNegociation.class.getName()).log(Level.SEVERE, "Format de date incorrect" + ex.getLocalizedMessage());
+                Logger.getLogger(WaitNegociation.class.getName()).log(Level.SEVERE, "Format de date incorrect" + ex.getLocalizedMessage() + " de " + msg.getSender().toString());
             }
         } else {
             block();
         }
     }
 
-    public abstract int définirNouveauPrix(int idProduit, int delai, String sender);
+    public abstract double définirNouveauPrix(int idProduit, int delai, String sender);
 
 }

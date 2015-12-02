@@ -7,10 +7,7 @@ package client;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.core.behaviours.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -29,9 +26,14 @@ public class Client extends SuperAgent {
     private ArrayList<Produit> lproposition;
     private ArrayList<String> lAgentsRepond;
     private int nbRechercheEnvoye = 0;
-    private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
     private String typeAgentClient;
     private String typeAgentCible;
+    
+    // **************************************************************** //
+    //
+    //  Méthodes d'exécution de l'agent
+    //
+    // **************************************************************** //
 
     protected void setup() {
 
@@ -72,33 +74,28 @@ public class Client extends SuperAgent {
         }
 
     }
+    
+    protected void takeDown() {
+        // on se retire du registre de service afin q'un autre
+        // agent du même nom puisse se lancer
+        Jade.deRegisterService(this);
 
-    public void traiterMessage(ACLMessage message) {
-
-        try {
-            JSONParser parser = new JSONParser();
-            JSONObject object = (JSONObject) parser.parse(message.getContent());
-
-            if (object.containsKey("jePropose")) {
-                JSONArray array = (JSONArray) object.get("jePropose");
-                ajouterProposition(array, message);
-                effectuerChoix();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                // deverrouillage du bouton de validation
+                // FXMLController.btnValider.setDisable(false);
             }
+        });
 
-            if (object.containsKey("commandeOk")) {
-                JSONObject obj = (JSONObject) object.get("commandeOk");
-                afficherAchat(obj, message);
-                // laisser avis erep
-            }
-
-            if (object.containsKey("commandePasOK")) {
-                JSONObject obj = (JSONObject) object.get("commandePasOK");
-                afficherRaison(obj, message);
-            }
-        } catch (org.json.simple.parser.ParseException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
+    
+    // **************************************************************** //
+    //
+    //  Méthodes liées à l'envoi de message
+    //
+    // **************************************************************** //
+    
 
     public void jeCherche(String typeAgent, String typeProduit, String recherche, int quantite) {
 
@@ -154,6 +151,63 @@ public class Client extends SuperAgent {
         Jade.loggerEnvoi(jeChoisi.toString());
     }
 
+    public void donneAvis(ACLMessage message,String typeAgent) {
+        AID aid = new AID(message.getSender().getName());
+        
+        int avis = 0;
+        
+        // construction de l'objet JSON à envoyé
+        JSONObject donneAvis = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("type", typeAgent);
+        contenu.put("nom", nomAgent(message));
+        contenu.put("avis", avis);
+        donneAvis.put("donneAvis", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
+        Jade.loggerEnvoi(donneAvis.toString());
+        
+        
+    }
+
+    
+    // **************************************************************** //
+    //
+    //  Méthodes de traitement
+    //
+    // **************************************************************** //
+    
+    public void traiterMessage(ACLMessage message) {
+
+        try {
+            JSONParser parser = new JSONParser();
+            JSONObject object = (JSONObject) parser.parse(message.getContent());
+
+            if (object.containsKey("jePropose")) {
+                JSONArray array = (JSONArray) object.get("jePropose");
+                ajouterProposition(array, message);
+                effectuerChoix();
+            }
+
+            if (object.containsKey("commandeOk")) {
+                JSONObject obj = (JSONObject) object.get("commandeOk");
+                afficherAchat(obj, message);
+                // laisser avis erep
+            }
+
+            if (object.containsKey("commandePasOK")) {
+                JSONObject obj = (JSONObject) object.get("commandePasOK");
+                afficherRaison(obj, message);
+                
+                // retirer la proposition
+                // choisir la meilleur proposition suivante si il y en a
+            }
+        } catch (org.json.simple.parser.ParseException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void ajouterProposition(JSONArray array, ACLMessage message) {
 
         for (Object obj : array.toArray()) {
@@ -187,7 +241,14 @@ public class Client extends SuperAgent {
         }
 
     }
-
+    
+    
+    // **************************************************************** //
+    //
+    //  Méthodes d'affichage
+    //
+    // **************************************************************** //
+    
     public void afficherAchat(JSONObject jsonObj, ACLMessage message) {
 
         String date = jsonObj.get("date").toString().replace("\\", "");
@@ -215,36 +276,23 @@ public class Client extends SuperAgent {
         // arrêt de l'agent 
         doDelete();
     }
-
+    
     public void afficherRaison(JSONObject obj, ACLMessage message) {
         StringBuilder sb = new StringBuilder("Commande impossible chez : ");
         sb.append("message.getSender().getName()\n");
         sb.append("Raison : ");
         sb.append(obj.get("raison").toString());
         Jade.loggerCommandeAnnulee(sb.toString());
-
-        // retirer la proposition
-        // choisir la meilleur proposition suivante si il y en a
     }
-
-    public void donneAvis(ACLMessage message,String typeAgent) {
-        AID aid = new AID(message.getSender().getName());
-        
-        int avis = 0;
-        
-        // construction de l'objet JSON à envoyé
-        JSONObject donneAvis = new JSONObject();
-        JSONObject contenu = new JSONObject();
-        contenu.put("type", typeAgent);
-        contenu.put("nom", nomAgent(message));
-        contenu.put("avis", avis);
-        donneAvis.put("donneAvis", contenu);
-        
-        // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
-        Jade.loggerEnvoi(donneAvis.toString());
-        
-        
+    
+    // **************************************************************** //
+    //
+    //  Méthodes outils
+    //
+    // **************************************************************** //
+    
+    public String nomAgent(ACLMessage message){
+        return message.getSender().getLocalName();
     }
 
     /**
@@ -278,24 +326,4 @@ public class Client extends SuperAgent {
         }
         return produitChoisi;
     }
-
-    protected void takeDown() {
-        // on se retire du registre de service afin q'un autre
-        // agent du même nom puisse se lancer
-        Jade.deRegisterService(this);
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                // deverrouillage du bouton de validation
-                // FXMLController.btnValider.setDisable(false);
-            }
-        });
-
-    }
-    
-    public String nomAgent(ACLMessage message){
-        return message.getSender().getLocalName();
-    }
-
 }

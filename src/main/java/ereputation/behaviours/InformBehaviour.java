@@ -1,4 +1,3 @@
-
 package ereputation.behaviours;
 
 import common.TypeAgent;
@@ -50,7 +49,7 @@ public class InformBehaviour extends CyclicBehaviour {
                 this.donneAvis((JSONObject)object.get("donneAvis"), message.getSender());
             
         } catch (ParseException ex) {
-            Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
+            Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide " + ex);
         }
     }
     

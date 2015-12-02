@@ -9,10 +9,10 @@ import java.util.HashMap;
  * @author tom
  */
 public class Livraison {
-    
-    private static HashMap<Integer,Double> prixLivraison;
-    
-    static{
+
+    private static HashMap<Integer, Double> prixLivraison;
+
+    static {
         prixLivraison = new HashMap<>();
         prixLivraison.put(10, 0.0);
         prixLivraison.put(1, 10.0);
@@ -41,11 +41,32 @@ public class Livraison {
         cal.add(Calendar.DATE, days);
         return cal.getTime();
     }
-    
-    public static double prixLivraisonByDelai(int delai){
+
+    public static int countDelai(Date date) {
+        Calendar calJour = Calendar.getInstance();
+        calJour.setTime(new Date());
+
+        Calendar calDelai = Calendar.getInstance();
+        calDelai.setTime(date);
+
+        calJour.add(Calendar.DATE, 1);
+        if (calJour.get(Calendar.DATE) == calDelai.get(Calendar.DATE)) {
+            return 1;
+        }
+        calJour.add(Calendar.DATE, 2);
+        if (calJour.get(Calendar.DATE) == calDelai.get(Calendar.DATE)) {
+            return 3;
+        }
+        calJour.add(Calendar.DATE, 7);
+        if (calJour.get(Calendar.DATE) == calDelai.get(Calendar.DATE)) {
+            return 10;
+        }
+        return -1;
+    }
+
+    public static double prixLivraisonByDelai(int delai) {
         return prixLivraison.get(delai);
     }
-    
-    
+
     //TODO recalcul du délai :/
 }

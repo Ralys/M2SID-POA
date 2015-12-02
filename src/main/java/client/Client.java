@@ -39,9 +39,9 @@ public class Client extends SuperAgent {
         Object[] arguments = getArguments();
         typeAgentClient = arguments[0].toString();
         typeAgentCible = arguments[1].toString();
-        String typeProduit ="";
-        if(arguments[2] != null){
-             typeProduit = arguments[2].toString();
+        String typeProduit = "";
+        if (arguments[2] != null) {
+            typeProduit = arguments[2].toString();
         }
         String recherche = arguments[3].toString();
         String reference = arguments[4].toString();
@@ -67,8 +67,8 @@ public class Client extends SuperAgent {
         if (typeRecherche.equalsIgnoreCase("true")) {
             // on lance la recherche
             this.jeCherche(typeAgentCible, typeProduit, recherche, quantite);
-        }else{
-            this.jeChercheReference(typeAgentCible, reference , quantite);
+        } else {
+            this.jeChercheReference(typeAgentCible, reference, quantite);
         }
 
     }
@@ -120,7 +120,7 @@ public class Client extends SuperAgent {
             Jade.loggerEnvoi(message);
         }
     }
-    
+
     public void jeChercheReference(String typeAgent, String reference, int quantite) {
 
         // construction de l'objet JSON à envoyé
@@ -160,22 +160,9 @@ public class Client extends SuperAgent {
 
         for (Object obj : array.toArray()) {
             JSONObject jsonObject = (JSONObject) obj;
-            String idProduit = jsonObject.get("idProduit").toString();
-            String nomProduit = jsonObject.get("nomProduit").toString();
-            int quantite = Integer.parseInt(jsonObject.get("quantite").toString());
-            double prix = Double.parseDouble(jsonObject.get("prix").toString());
-            // supression des backslashes ajoutés autmatiquement au passe en json
-            String date = jsonObject.get("date").toString().replace("\\", "");
-            Date dateLivraison;
-
-            try {
-                dateLivraison = formater.parse(date);
-                Produit p = new Produit(provenance, idProduit, nomProduit, quantite, prix, dateLivraison);
-                lproposition.add(p);
-            } catch (ParseException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
+            
+            Produit p = new Produit(jsonObject,provenance);
+            lproposition.add(p);
         }
 
         lAgentsRepond.add(provenance);
@@ -223,6 +210,7 @@ public class Client extends SuperAgent {
 
         Jade.loggerAchat(sb.toString());
 
+        // laisser avis
         lproposition.clear();
         lAgentsRepond.clear();
 
@@ -239,6 +227,10 @@ public class Client extends SuperAgent {
 
         // retirer la proposition
         // choisir la meilleur proposition suivante si il y en a
+    }
+
+    public void donneAvis(String typeAgent, String nomAgent) {
+
     }
 
     /**

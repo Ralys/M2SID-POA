@@ -21,15 +21,15 @@ public class WaitAchat extends CyclicBehaviour {
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(msg.getContent());
                 JSONObject achat = (JSONObject) object.get("jeChoisis");
-                String idProduit = achat.get("idProduit").toString();
+                int idProduit = Integer.valueOf(achat.get("idProduit").toString());
                 String nomProduit = achat.get("nomProduit").toString();
                 String date = achat.get("date").toString();
                 int quantite = Integer.valueOf(achat.get("quantite").toString());
                 int prix = Integer.valueOf(achat.get("prix").toString());
 
                 //Vérifier les stocks
-                boolean stockOk = true;
-                //TODO
+                boolean stockOk = ((Stocks) getDataStore()).verifierStock(idProduit, quantite);
+                
                 
                 //Json réponse
                 JSONObject replyJson = new JSONObject();

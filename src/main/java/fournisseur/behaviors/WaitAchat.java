@@ -16,14 +16,14 @@ public class WaitAchat extends CyclicBehaviour {
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
         ACLMessage msg = myAgent.receive(mt);
-        
-        String messageContent = msg.getContent();
-        String sender = msg.getSender().toString();
-
-        String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit achat : " + messageContent + "de" + sender;
-        Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
-
+       
         if (msg != null) { //Acceptation d'un achat reçu
+            String messageContent = msg.getContent();
+            String sender = msg.getSender().toString();
+
+            String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit achat : " + messageContent + "de" + sender;
+            Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
+            
             try {
                 ACLMessage replyMessage = msg.createReply();
                 //{“jeChoisis”:{”idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:3,”prix”:20.0,”date”:”20/02/2105”}}

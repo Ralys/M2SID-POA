@@ -1,7 +1,7 @@
 package fournisseur.behaviors;
 
 import fournisseur.Livraison;
-import fournisseur.Stocks;
+import fournisseur.StocksEtTransaction;
 
 /**
  *
@@ -13,7 +13,7 @@ public class WaitRequestStrategie1 extends WaitRequest{
     
     @Override
     public double definirPrix(int idProduit, int quantite, int delai) {
-        double prixBase = ((Stocks)getDataStore()).getProduitById(idProduit).getPrixdeBase();
+        double prixBase = ((StocksEtTransaction)getDataStore()).getProduitById(idProduit).getPrixdeBase();
         return ((prixBase * margeBase) * (1-(reductionQte*quantite)))+Livraison.prixLivraisonByDelai(delai);
     }
     

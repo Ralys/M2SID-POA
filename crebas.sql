@@ -14,6 +14,8 @@ drop table if exists TAGS;
 
 drop table if exists VENTE;
 
+drop table if exists AVIS;
+
 /*==============================================================*/
 /* Table : CATEGORIE                                            */
 /*==============================================================*/
@@ -67,4 +69,11 @@ create table VENTE
    PROVIDER             varchar(255) not null,
    ACHETEUR             varchar(255) not null,
    primary key (ID)
+);
+
+create table AVIS (
+  NOM_EMETTEUR longtext not null,
+  NOM_DESTINATAIRE longtext not null,
+  AVIS int not null,
+  PRIMARY KEY (NOM_EMETTEUR, NOM_DESTINATAIRE)
 );

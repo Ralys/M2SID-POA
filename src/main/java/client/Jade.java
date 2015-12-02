@@ -2,7 +2,7 @@
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
-package clientAgent;
+package client;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -61,8 +61,8 @@ public class Jade {
         }
     }
     
-    public static void envoyerMessage(Agent client,int typeMessage, AID receiver, String message) {
-        ACLMessage msg = new ACLMessage(typeMessage);
+    public static void envoyerMessage(Agent client, AID receiver, String message) {
+        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
         msg.setContent(message);
         msg.addReceiver(receiver);
         client.send(msg);

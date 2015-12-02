@@ -5,13 +5,12 @@ import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
-import jade.lang.acl.ACLMessage;
 
 /**
  *
  * @author Mazzei Stéphane
  */
-public abstract class SuperAgent extends Agent {
+public class SuperAgent extends Agent {
 
     /**
      * Enregistrement des services
@@ -34,10 +33,4 @@ public abstract class SuperAgent extends Agent {
             doDelete();
         }
     }
-    
-    /**
-     * Méthode implémentant le comportement personnalisé pour les messages reçus
-     * @param message, message reçu
-     */
-    protected abstract void traiterMessage(ACLMessage message);
 }

@@ -1,4 +1,4 @@
-package clientAgent;
+package client;
 
 import jade.core.Profile;
 import jade.core.ProfileImpl;

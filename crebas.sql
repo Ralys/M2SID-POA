@@ -33,6 +33,7 @@ create table POSSEDE
 (
    ID_TAG               int not null,
    REF_PRODUIT          longtext not null,
+   DATE_CREATION        timestamp,
    primary key (ID_TAG, REF_PRODUIT)
 );
 

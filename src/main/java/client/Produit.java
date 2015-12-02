@@ -4,8 +4,11 @@
  */
 package client;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 /**
@@ -30,6 +33,21 @@ public class Produit {
         this.quantite = quantite;
         this.prix = prix;
         this.dateLivraison = dateLivraison;
+    }
+    
+    public Produit(JSONObject jsonObject, String provenance){
+        try {
+            this.provenance = provenance;
+            this.id = jsonObject.get("idProduit").toString();
+            this.nom = jsonObject.get("nomProduit").toString();
+            this.quantite = Integer.parseInt(jsonObject.get("quantite").toString());
+            this.prix = Double.parseDouble(jsonObject.get("prix").toString());
+            // supression des backslashes ajoutés autmatiquement au passe en json
+            String date = jsonObject.get("date").toString().replace("\\", "");
+            this.dateLivraison = formater.parse(date);
+        } catch (ParseException ex) {
+            Logger.getLogger(Produit.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public JSONObject getJSONObject(){

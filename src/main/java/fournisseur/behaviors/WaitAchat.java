@@ -1,5 +1,7 @@
-package fournisseur;
+package fournisseur.behaviors;
 
+import fournisseur.FournisseurAgent;
+import fournisseur.Stocks;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;

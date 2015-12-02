@@ -1,5 +1,9 @@
-package fournisseur;
+package fournisseur.behaviors;
 
+import fournisseur.FournisseurAgent;
+import fournisseur.Livraison;
+import fournisseur.Produit;
+import fournisseur.Stocks;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -61,7 +65,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONArray tabProduit = new JSONArray();
-                HashMap<Integer, Date> listDate = DateLivraison.getListeDateLivraison();
+                HashMap<Integer, Date> listDate = Livraison.getListeDateLivraison();
                 Set<Integer> listDelai = listDate.keySet();
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}

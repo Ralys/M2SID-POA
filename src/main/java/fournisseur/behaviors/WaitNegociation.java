@@ -1,6 +1,7 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
+import fournisseur.Livraison;
 import fournisseur.StocksEtTransaction;
 import fournisseur.Transaction;
 import jade.core.behaviours.CyclicBehaviour;
@@ -42,15 +43,21 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 JSONObject achat = (JSONObject) object.get("jeNegocie");
 
                 Date date = formater.parse(achat.get("date").toString());
-
                 int idProduit = Integer.valueOf(achat.get("idProduit").toString());
                 double prix = Double.valueOf(achat.get("prix").toString());
-
+                int delai = Livraison.countDelai(date);
+                
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
 
-                //TODO reponse
+                //{"jeNégocie": {"idProduit": "67D","prix": 20,"date": "20/02/2105"}}
+                replyContenu.put("idProduit", idProduit);
+                replyContenu.put("prix", this.définirNouveauPrix(idProduit, delai,sender,prix));
+                replyContenu.put("date", formater.format(achat.get("date").toString()));
+                
+                replyJson.put("jeNegocie", replyContenu);
+                
                 String contenuMessage = replyJson.toJSONString().replace("\\", "");
                 replyMessage.setContent(contenuMessage);
                 replyMessage.setPerformative(ACLMessage.PROPOSE);
@@ -68,6 +75,6 @@ public abstract class WaitNegociation extends CyclicBehaviour {
         }
     }
 
-    public abstract double définirNouveauPrix(int idProduit, int delai, String sender);
+    public abstract double définirNouveauPrix(int idProduit, int delai, String sender, double prixDemande);
 
 }

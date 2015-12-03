@@ -5,16 +5,19 @@ package fournisseur;
  * @author Tom
  */
 public class Transaction {
+
     private int idProduit;
     private int delai;
     private String client;
     private int nbNego;
+    private int qte;
 
-    public Transaction(int idProduit, int delai, String client) {
+    public Transaction(int idProduit, int delai, String client,int qte) {
         this.idProduit = idProduit;
         this.delai = delai;
         this.client = client;
         this.nbNego = 0;
+        this.qte =qte;
     }
 
     public int getIdProduit() {
@@ -33,10 +36,11 @@ public class Transaction {
         return nbNego;
     }
 
+    public int getQte() {
+        return qte;
+    }
+    
     public void incNbNego() {
         this.nbNego++;
     }
-    
-    
-   
 }

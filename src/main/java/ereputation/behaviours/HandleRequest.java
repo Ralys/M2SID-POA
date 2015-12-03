@@ -58,7 +58,7 @@ public class HandleRequest extends CyclicBehaviour {
                 this.demandeReputation((JSONObject)object.get("demandeReputation"), message.getSender());
             
             if(object.containsKey("demandeSolde"))
-                this.demandeReputation((JSONObject)object.get("demandeSolde"), message.getSender());
+                this.demandeSolde((JSONObject)object.get("demandeSolde"), message.getSender());
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
             TypeLog.logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());

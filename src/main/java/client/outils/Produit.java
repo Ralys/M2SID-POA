@@ -2,7 +2,7 @@
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
-package client;
+package client.outils;
 
 import java.sql.Timestamp;
 import java.text.ParseException;

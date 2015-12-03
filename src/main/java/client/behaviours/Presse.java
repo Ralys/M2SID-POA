@@ -4,10 +4,10 @@
  */
 package client.behaviours;
 
-import client.Client;
-import client.Jade;
-import client.Produit;
-import client.TypeAgentClient;
+import client.ClientAgent;
+import client.outils.Log;
+import client.outils.Produit;
+import client.outils.TypeAgentClient;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -24,13 +24,13 @@ import org.json.simple.parser.JSONParser;
  */
 public class Presse extends CyclicBehaviour {
 
-    private final Client presse;
+    private final ClientAgent presse;
     private final double facteurPrixMax = 1.2;
     // 1J
     private final int facteurDateMax = 86400000;
 
     public Presse(Agent agent) {
-        this.presse = (Client) agent;
+        this.presse = (ClientAgent) agent;
     }
 
     @Override
@@ -75,13 +75,13 @@ public class Presse extends CyclicBehaviour {
                     if (presse.offreInteressante(produitAnnule.getDateLivraison()+facteurDateMax)) {
                         presse.jeChoisis(presse.plusTot());
                     } else {
-                        Jade.loggerArretRecherche();
+                        Log.arretRecherche();
                         presse.takeDown();
                     }
                 }
             }
         } catch (org.json.simple.parser.ParseException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

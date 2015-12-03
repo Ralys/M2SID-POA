@@ -2,34 +2,18 @@
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
-package client;
+package client.outils;
 
-import jade.core.AID;
-import jade.core.Agent;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.SearchConstraints;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAException;
-import jade.lang.acl.ACLMessage;
+import client.UI.FXMLController;
 import javafx.application.Platform;
 
 /**
  *
  * @author Aymeric
  */
-public class Jade {
+public class Log {
     
-    
-    public static void envoyerMessage(Agent client,int typeMessage, AID receiver, String message) {
-        ACLMessage msg = new ACLMessage(typeMessage);
-        msg.setContent(message);
-        msg.addReceiver(receiver);
-        client.send(msg);
-    }
-    
-    
-    public static void loggerAchat(final String message) {
+    public static void achat(final String message) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -39,7 +23,7 @@ public class Jade {
         
     }
 
-    public static void loggerEnvoi(final String AgentDestinataire ,final String message) {
+    public static void envoi(final String AgentDestinataire ,final String message) {
 
         Platform.runLater(new Runnable() {
             @Override
@@ -50,7 +34,7 @@ public class Jade {
 
     }
 
-    public static void loggerReception(final String AgentExpediteur , final String message) {
+    public static void reception(final String AgentExpediteur , final String message) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -60,7 +44,7 @@ public class Jade {
 
     }
     
-    public static void loggerCommandeAnnulee(final String message) {
+    public static void commandeAnnulee(final String message) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -71,7 +55,7 @@ public class Jade {
     }
     
     
-    public static void loggerArretRecherche() {
+    public static void arretRecherche() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

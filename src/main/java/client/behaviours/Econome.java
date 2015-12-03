@@ -4,10 +4,10 @@
  */
 package client.behaviours;
 
-import client.Client;
-import client.Jade;
-import client.Produit;
-import client.TypeAgentClient;
+import client.ClientAgent;
+import client.outils.Log;
+import client.outils.Produit;
+import client.outils.TypeAgentClient;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -24,11 +24,11 @@ import org.json.simple.parser.JSONParser;
  */
 public class Econome extends CyclicBehaviour {
 
-    private final Client econome;
+    private final ClientAgent econome;
     private final double facteurPrixMax = 1.2;
 
     public Econome(Agent agent) {
-        this.econome = (Client) agent;
+        this.econome = (ClientAgent) agent;
     }
 
     @Override
@@ -72,13 +72,13 @@ public class Econome extends CyclicBehaviour {
                     if (econome.offreInteressante(produitAnnule.getPrix() * facteurPrixMax)) {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
-                        Jade.loggerArretRecherche();
+                        Log.arretRecherche();
                         econome.takeDown();
                     }
                 }
             }
         } catch (org.json.simple.parser.ParseException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

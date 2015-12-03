@@ -56,6 +56,9 @@ public class HandleRequest extends CyclicBehaviour {
             
             if(object.containsKey("demandeReputation"))
                 this.demandeReputation((JSONObject)object.get("demandeReputation"), message.getSender());
+            
+            if(object.containsKey("demandeSolde"))
+                this.demandeReputation((JSONObject)object.get("demandeSolde"), message.getSender());
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
             TypeLog.logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());
@@ -128,9 +131,9 @@ public class HandleRequest extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
 
-    private void demandeSolde(JSONObject demandeReputation, AID agent) throws ParseException{
-         String dateDebut = demandeReputation.get("date_debut").toString(),
-                 dateFin = demandeReputation.get("date_fin").toString();
+    private void demandeSolde(JSONObject demandeSolde, AID agent) throws ParseException{
+         String dateDebut = demandeSolde.get("date_debut").toString(),
+                 dateFin = demandeSolde.get("date_fin").toString();
          int nbJourDemande = Timestamp.valueOf(dateFin).compareTo(Timestamp.valueOf(dateDebut));
          
          EReputationAgent erep = (EReputationAgent)myAgent;

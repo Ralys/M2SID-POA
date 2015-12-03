@@ -107,7 +107,7 @@ public class Client extends SuperAgent {
 
         // envoi du message de recherche à tous les agents
         // du type choisi
-        AID[] agent = Jade.searchDF(this, typeAgentCible);
+        AID[] agent = findAgentsFromService(typeAgentCible);
         for (AID f : agent) {
             String message = jeCherche.toString();
             Jade.envoyerMessage(this, ACLMessage.REQUEST, f, message);
@@ -127,7 +127,7 @@ public class Client extends SuperAgent {
 
         // envoi du message de recherche à tous les agents
         // du type choisi
-        AID[] agent = Jade.searchDF(this, typeAgentCible);
+        AID[] agent = findAgentsFromService(typeAgentCible);
         for (AID f : agent) {
             String message = jeChercheReference.toString();
             Jade.envoyerMessage(this, ACLMessage.REQUEST, f, message);
@@ -275,7 +275,6 @@ public class Client extends SuperAgent {
 
         Jade.loggerReception(nomAgent(message), message.getContent());
 
-        String date = jsonObj.get("date").toString().replace("\\", "");
         StringBuilder sb = new StringBuilder("Achat effectué chez : ");
         sb.append(nomAgent(message));
         sb.append("\n");
@@ -288,8 +287,8 @@ public class Client extends SuperAgent {
         sb.append("Prix : ");
         sb.append(jsonObj.get("prix").toString());
         sb.append("\n");
-        sb.append("Date Livraison : ");
-        sb.append(date);
+        sb.append("Date Livraison : "); 
+        sb.append(jsonObj.get("date").toString());
 
         Jade.loggerAchat(sb.toString());
 
@@ -360,11 +359,11 @@ public class Client extends SuperAgent {
     }
     
     
-    public boolean offreInteressante(Date dateMaximum) {
+    public boolean offreInteressante(int dateMaximum) {
         boolean res = false;
 
         for (Produit produit : lproposition) {
-            if (produit.getDateLivraison().before(dateMaximum)) {
+            if (produit.getDateLivraison()<=dateMaximum) {
                 res = true;
             }
         }
@@ -380,7 +379,7 @@ public class Client extends SuperAgent {
     public Produit plusTot() {
         Produit produitChoisi = lproposition.get(0);
         for (Produit produit : lproposition) {
-            if (produit.getDateLivraison().before(produitChoisi.getDateLivraison())) {
+            if (produit.getDateLivraison()<produitChoisi.getDateLivraison()) {
                 produitChoisi = produit;
             }
         }

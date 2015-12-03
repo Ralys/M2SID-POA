@@ -26,7 +26,8 @@ public class Presse extends CyclicBehaviour {
 
     private final Client presse;
     private final double facteurPrixMax = 1.2;
-    private final int facteurDateMax = 1;
+    // 1J
+    private final int facteurDateMax = 86400000;
 
     public Presse(Agent agent) {
         this.presse = (Client) agent;
@@ -70,10 +71,8 @@ public class Presse extends CyclicBehaviour {
 
                 // choisir la meilleur proposition suivante si il y en a
                 if (presse.getLproposition().size() > 0) {
-                    Date max = produitAnnule.getDateLivraison();
-                    max.setDate(max.getDate() + facteurDateMax);
 
-                    if (presse.offreInteressante(max)) {
+                    if (presse.offreInteressante(produitAnnule.getDateLivraison()+facteurDateMax)) {
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Jade.loggerArretRecherche();

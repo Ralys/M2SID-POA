@@ -4,6 +4,7 @@
  */
 package client;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,11 +23,10 @@ public class Produit {
     private String nom;
     private double prix;
     private int quantite;
-    private Date dateLivraison;
+    private int dateLivraison;
 
-    private SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
 
-    public Produit(String provenance, String id, String nom, int quantite, double prix, Date dateLivraison) {
+    public Produit(String provenance, String id, String nom, int quantite, double prix, int dateLivraison) {
         this.provenance = provenance;
         this.id = id;
         this.nom = nom;
@@ -36,18 +36,12 @@ public class Produit {
     }
     
     public Produit(JSONObject jsonObject, String provenance){
-        try {
             this.provenance = provenance;
             this.id = jsonObject.get("idProduit").toString();
             this.nom = jsonObject.get("nomProduit").toString();
             this.quantite = Integer.parseInt(jsonObject.get("quantite").toString());
             this.prix = Double.parseDouble(jsonObject.get("prix").toString());
-            // supression des backslashes ajoutés autmatiquement au passe en json
-            String date = jsonObject.get("date").toString().replace("\\", "");
-            this.dateLivraison = formater.parse(date);
-        } catch (ParseException ex) {
-            Logger.getLogger(Produit.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            this.dateLivraison = Integer.parseInt(jsonObject.get("date").toString());
     }
 
     public JSONObject getJSONObject(){
@@ -56,7 +50,7 @@ public class Produit {
         obj.put("nomProduit", this.getNom());
         obj.put("quantite", this.getQuantite());
         obj.put("prix", this.getPrix());
-        obj.put("date", this.getDateLivraisonToString());
+        obj.put("date", this.getDateLivraison());
         
         return obj;
     }
@@ -68,7 +62,7 @@ public class Produit {
            && this.provenance.equalsIgnoreCase(p.getProvenance())
            && this.nom.equalsIgnoreCase(p.getNom())
            && this.prix == p.getPrix()
-           && this.dateLivraison.toString().equalsIgnoreCase(p.getDateLivraison().toString())
+           && this.dateLivraison == p.getDateLivraison()
            && this.quantite == p.getQuantite()){
            res = true;
         }
@@ -109,15 +103,11 @@ public class Produit {
         this.prix = prix;
     }
 
-    public Date getDateLivraison() {
+    public int getDateLivraison() {
         return this.dateLivraison;
     }
 
-    public String getDateLivraisonToString() {
-        return formater.format(dateLivraison);
-    }
-
-    public void setDateLivraison(Date dateLivraison) {
+    public void setDateLivraison(int dateLivraison) {
         this.dateLivraison = dateLivraison;
     }
 

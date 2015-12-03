@@ -21,39 +21,6 @@ import javafx.application.Platform;
 public class Jade {
     
     
-    /**
-     * Méthode qui retourne tous les agents du service en paramètre
-     *
-     * @param client
-     * @param service
-     * @return
-     */
-    public static AID[] searchDF(Agent client,String service) {
-        DFAgentDescription dfd = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType(service);
-        dfd.addServices(sd);
-
-        SearchConstraints ALL = new SearchConstraints();
-        ALL.setMaxResults(new Long(-1));
-
-        try {
-            DFAgentDescription[] result = DFService.search(client, dfd, ALL);
-            AID[] agents = new AID[result.length];
-            for (int i = 0; i < result.length; i++) {
-                agents[i] = result[i].getName();
-            }
-            return agents;
-
-        } catch (FIPAException fe) {
-            fe.printStackTrace();
-        }
-
-        return null;
-    }
-    
-    
-    
     public static void envoyerMessage(Agent client,int typeMessage, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(typeMessage);
         msg.setContent(message);

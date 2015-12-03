@@ -114,7 +114,7 @@ public class Client extends SuperAgent {
             String message = jeCherche.toString();
             Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
-            Jade.loggerEnvoi(message);
+            Jade.loggerEnvoi(nomAgent(f.getName()),message);
         }
     }
 
@@ -134,7 +134,7 @@ public class Client extends SuperAgent {
             String message = jeChercheReference.toString();
             Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
-            Jade.loggerEnvoi(message);
+            Jade.loggerEnvoi(nomAgent(f.getName()),message);
         }
     }
 
@@ -148,7 +148,7 @@ public class Client extends SuperAgent {
 
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.ACCEPT_PROPOSAL, aid, jeChoisi.toString());
-        Jade.loggerEnvoi(jeChoisi.toString());
+        Jade.loggerEnvoi(nomAgent(p.getProvenance()),jeChoisi.toString());
     }
 
     /**
@@ -172,7 +172,7 @@ public class Client extends SuperAgent {
         
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
-        Jade.loggerEnvoi(donneAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep),donneAvis.toString());
     }
     
     public void donneAvisProduit(String adresseAgentErep,String idProduit) {
@@ -190,7 +190,7 @@ public class Client extends SuperAgent {
         
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
-        Jade.loggerEnvoi(donneAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep),donneAvis.toString());
     }
     
     /**
@@ -211,7 +211,7 @@ public class Client extends SuperAgent {
         
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeAvis.toString());
-        Jade.loggerEnvoi(demandeAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep),demandeAvis.toString());
     }
     
     public void demandeAvisProduit(String adresseAgentErep, String idProduit){
@@ -226,7 +226,7 @@ public class Client extends SuperAgent {
         
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeAvis.toString());
-        Jade.loggerEnvoi(demandeAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep),demandeAvis.toString());
     }
     
     public void demandeReputation(String adresseAgentErep, String idProduit){
@@ -241,7 +241,7 @@ public class Client extends SuperAgent {
         
         // envoi du message + afficahge dans les logs
         Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeReputation.toString());
-        Jade.loggerEnvoi(demandeReputation.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep),demandeReputation.toString());
     }
     
     
@@ -291,7 +291,7 @@ public class Client extends SuperAgent {
         }
 
         lAgentsRepond.add(nomAgent(message));
-        Jade.loggerReception(message.getContent());
+        Jade.loggerReception(nomAgent(message),message.getContent());
 
     }
 
@@ -324,6 +324,8 @@ public class Client extends SuperAgent {
     
     public void afficherAchat(JSONObject jsonObj, ACLMessage message) {
 
+        Jade.loggerReception(nomAgent(message),message.getContent());
+        
         String date = jsonObj.get("date").toString().replace("\\", "");
         StringBuilder sb = new StringBuilder("Achat effectué chez : ");
         sb.append(nomAgent(message));
@@ -366,6 +368,12 @@ public class Client extends SuperAgent {
     
     public String nomAgent(ACLMessage message){
         return message.getSender().getLocalName();
+    }
+    
+    
+     public String nomAgent(String adresseAgent){
+         String split[]=adresseAgent.split("@");
+        return split[0];
     }
 
     /**

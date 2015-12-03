@@ -79,22 +79,22 @@ public class Jade {
         
     }
 
-    public static void loggerEnvoi(final String message) {
+    public static void loggerEnvoi(final String AgentDestinataire ,final String message) {
 
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                FXMLController.listLog.add("Envoi : " + message);
+                FXMLController.listLog.add("Envoi à "+AgentDestinataire+" : "+ message);
             }
         });
 
     }
 
-    public static void loggerReception(final String message) {
+    public static void loggerReception(final String AgentExpediteur , final String message) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                FXMLController.listLog.add("Reception : " + message);
+                FXMLController.listLog.add("Reception de "+AgentExpediteur+" : "+ message);
             }
         });
 

@@ -2,8 +2,8 @@ package ereputation;
 
 import common.SuperAgent;
 import common.TypeAgent;
-import ereputation.behaviours.InformBehaviour;
-import ereputation.behaviours.RequestBehaviour;
+import ereputation.behaviours.HandleInform;
+import ereputation.behaviours.HandleRequest;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -29,8 +29,8 @@ public class EReputationAgent extends SuperAgent {
     protected void setup() {
         this.registerService(TypeAgent.EReputation);
        
-        this.addBehaviour(new RequestBehaviour(this));
-        this.addBehaviour(new InformBehaviour(this));
+        this.addBehaviour(new HandleRequest(this));
+        this.addBehaviour(new HandleInform(this));
     }
     
     @Override
@@ -44,15 +44,14 @@ public class EReputationAgent extends SuperAgent {
     
     public AID getBDDAgent() {
         if(this.BDDAgent == null) {
-            this.BDDAgent = findBDDAgent();
+            AID[] agents = this.findAgentsFromService(TypeAgent.BDD);
+            
+            if(agents != null) {
+                this.BDDAgent = agents[0];
+            }
         }
         
         return this.BDDAgent;
-    }
-    
-    private AID findBDDAgent() {
-        // temporaire
-        return new AID("BDD", AID.ISLOCALNAME);
     }
     
     public ACLMessage sendMessage(int typeMessage, String contenu, AID destinataire) {

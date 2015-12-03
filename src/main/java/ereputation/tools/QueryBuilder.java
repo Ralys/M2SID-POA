@@ -35,6 +35,12 @@ public class QueryBuilder {
         String sql = "";
         return JSONRequest("select", sql);
     }
+    
+    public static String verifierVente(String idVente) {
+        //TO DO ecrire la requête
+        String sql = "";
+        return JSONRequest("select", sql);
+    }
             
     private static String JSONRequest(String typeRequest, String sql) {
         JSONObject request = new JSONObject();

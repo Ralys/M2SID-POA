@@ -324,6 +324,8 @@ public class Client extends SuperAgent {
     
     public void afficherAchat(JSONObject jsonObj, ACLMessage message) {
 
+        Jade.loggerReception(message.getContent());
+        
         String date = jsonObj.get("date").toString().replace("\\", "");
         StringBuilder sb = new StringBuilder("Achat effectué chez : ");
         sb.append(nomAgent(message));

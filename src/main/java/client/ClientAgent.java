@@ -235,19 +235,19 @@ public class ClientAgent extends SuperAgent {
         Log.envoi(nomAgent(adresseAgentErep), demandeAvis.toString());
     }
 
-    public void demandeReputation(String adresseAgentErep, String idProduit) {
+    public void demandeDesirabilite(String adresseAgentErep, String idProduit) {
         AID aid = new AID(adresseAgentErep);
 
         // construction de l'objet JSON à envoyé
-        JSONObject demandeReputation = new JSONObject();
+        JSONObject demandeDesirabilite = new JSONObject();
         JSONObject contenu = new JSONObject();
         contenu.put("type", "Produit");
         contenu.put("id", idProduit);
-        demandeReputation.put("demandeReputation", contenu);
+        demandeDesirabilite.put("demandeDesirabilite", contenu);
 
         // envoi du message + afficahge dans les logs
-        envoyerMessage(this, ACLMessage.REQUEST, aid, demandeReputation.toString());
-        Log.envoi(nomAgent(adresseAgentErep), demandeReputation.toString());
+        envoyerMessage(this, ACLMessage.REQUEST, aid, demandeDesirabilite.toString());
+        Log.envoi(nomAgent(adresseAgentErep), demandeDesirabilite.toString());
     }
 
     // **************************************************************** //

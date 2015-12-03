@@ -50,13 +50,13 @@ public class WaitAchat extends CyclicBehaviour {
                 int delai = Livraison.countDelai(date);
                 ((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, delai, sender);
 
+                replyContenu.put("idProduit", idProduit);
+                replyContenu.put("nomProduit", nomProduit);
+                replyContenu.put("prix", prix);
+                replyContenu.put("quantite", quantite);
+                replyContenu.put("date", date);
                 if (stockOk) {
                     //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
-                    replyContenu.put("idProduit", idProduit);
-                    replyContenu.put("nomProduit", nomProduit);
-                    replyContenu.put("prix", prix);
-                    replyContenu.put("quantite", quantite);
-                    replyContenu.put("date", date);
                     replyJson.put("commandeOK", replyContenu);
                     replyMessage.setPerformative(ACLMessage.CONFIRM);
 

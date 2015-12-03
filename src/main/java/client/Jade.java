@@ -54,13 +54,6 @@ public class Jade {
     
     
     
-    public static void deRegisterService(Agent client){
-        try {
-            DFService.deregister(client);
-        } catch (Exception e) {
-        }
-    }
-    
     public static void envoyerMessage(Agent client,int typeMessage, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(typeMessage);
         msg.setContent(message);

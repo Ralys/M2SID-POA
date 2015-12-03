@@ -15,6 +15,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import common.*;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import java.util.Date;
 
 /**
  *
@@ -28,7 +31,10 @@ public class Client extends SuperAgent {
     private int nbRechercheEnvoye = 0;
     private String typeAgentClient;
     private String typeAgentCible;
+    // facteur de prix pour un agent econome : *1.2 l'offre de départ
     private final double facteurPrixMax = 1.2;
+     // facteur de date pour un agent pressé : +1J l'offre de départ
+    private final int facteurDateMax = 1;
     // **************************************************************** //
     //
     //  Méthodes d'exécution de l'agent
@@ -75,11 +81,14 @@ public class Client extends SuperAgent {
     }
 
     protected void takeDown() {
-        // on se retire du registre de service afin q'un autre
-        // agent du même nom puisse se lancer
-        Jade.deRegisterService(this);
-
-        Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
+        try {
+            // on se retire du registre de service afin q'un autre
+            // agent du même nom puisse se lancer
+            DFService.deregister(this);
+            Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
+        } catch (FIPAException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     // **************************************************************** //
@@ -283,7 +292,16 @@ public class Client extends SuperAgent {
                             break;
 
                         case TypeAgentClient.Presse:
-                            jeChoisis(plusTot());
+                            Date max = produitAnnule.getDateLivraison();
+                            max.setDate(max.getDate()+facteurDateMax);
+                                    
+                            if(offreInteressante(max)){
+                               jeChoisis(plusTot());
+                            }else{
+                               Jade.loggerArretRecherche();
+                               takeDown();
+                            }
+                         
                             break;
 
                         default:
@@ -417,6 +435,18 @@ public class Client extends SuperAgent {
 
         for (Produit produit : lproposition) {
             if (produit.getPrix() < prixMaximum) {
+                res = true;
+            }
+        }
+        return res;
+    }
+    
+    
+    public boolean offreInteressante(Date dateMaximum) {
+        boolean res = false;
+
+        for (Produit produit : lproposition) {
+            if (produit.getDateLivraison().before(dateMaximum)) {
                 res = true;
             }
         }

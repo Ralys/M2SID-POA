@@ -29,19 +29,14 @@ public class ReputationCalculator {
     }
     
     private static long daysFromNow(String dateText) {
-        long days = -1;
+        long days, timestamp, difference;
         
-        try {
-            SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-mm-dd");
-            
-            Date date = myFormat.parse(dateText);
-            Date now = new Date();
-            
-            long difference = now.getTime() - date.getTime();
-            days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS);
-        } catch (ParseException ex) {
-            Logger.getLogger(ReputationCalculator.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        timestamp = Long.parseLong(dateText);
+        Date date = new Date(timestamp);
+        Date now = new Date();
+        
+        difference = now.getTime() - date.getTime();
+        days = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS);
         
         return days;
     }

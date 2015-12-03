@@ -107,7 +107,8 @@ public class RequestBehaviour extends CyclicBehaviour {
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
         JSONObject retourReputation = demandeReputation;
-        retourReputation.put("reputation", ReputationCalculator.execute(resultat.get("DATE_SORTIE").toString()));
+        double reputation = ReputationCalculator.execute(resultat.get("DATE_SORTIE").toString());
+        retourReputation.put("reputation", reputation);
         
         JSONObject reponse = new JSONObject();
         reponse.put("retourReputation", retourReputation);

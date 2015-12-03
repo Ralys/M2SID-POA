@@ -44,7 +44,7 @@ create table PRODUIT
    REF_PRODUIT          longtext not null,
    ID_CATEGORIE         int not null,
    NOM_PRODUIT          longtext not null,
-   DATE_CREATION        timestamp,
+   DATE_SORTIE          timestamp,
    primary key (REF_PRODUIT)
 );
 

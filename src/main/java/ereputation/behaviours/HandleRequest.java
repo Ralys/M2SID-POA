@@ -63,6 +63,9 @@ public class HandleRequest extends CyclicBehaviour {
             if(object.containsKey("demandeAllSolde"))
                 this.demandeAllSolde((JSONObject)object.get("demandeAllSolde"), message.getSender());
             
+            if(object.containsKey("venteEffectuee"))
+                this.venteEffectuee((JSONObject)object.get("venteEffectuee"), message.getSender());
+            
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
             TypeLog.logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());
@@ -185,6 +188,24 @@ public class HandleRequest extends CyclicBehaviour {
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
         //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
+        
+    }
+
+    private void venteEffectuee(JSONObject demandeSolde, AID agent) throws ParseException{
+        
+         String idVente = demandeSolde.get("id").toString();
+         
+         EReputationAgent erep = (EReputationAgent)myAgent;
+         
+          // recherche en base de données
+            // recherche en base de données
+        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.verifierVente(idVente), erep.getBDDAgent(), true);
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
+        
+        //TO DO deux cas, verfification OK / KO
+        
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": verification de la vente :"+resultat);
         
     }
     

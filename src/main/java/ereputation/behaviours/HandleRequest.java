@@ -59,6 +59,10 @@ public class HandleRequest extends CyclicBehaviour {
             
             if(object.containsKey("demandeSolde"))
                 this.demandeSolde((JSONObject)object.get("demandeSolde"), message.getSender());
+            
+            if(object.containsKey("demandeAllSolde"))
+                this.demandeAllSolde((JSONObject)object.get("demandeAllSolde"), message.getSender());
+            
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
             TypeLog.logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());
@@ -132,6 +136,7 @@ public class HandleRequest extends CyclicBehaviour {
     }
 
     private void demandeSolde(JSONObject demandeSolde, AID agent) throws ParseException{
+        
          String dateDebut = demandeSolde.get("date_debut").toString(),
                  dateFin = demandeSolde.get("date_fin").toString();
          int nbJourDemande = Timestamp.valueOf(dateFin).compareTo(Timestamp.valueOf(dateDebut));
@@ -141,18 +146,12 @@ public class HandleRequest extends CyclicBehaviour {
           // recherche en base de données
         ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.selectRetourSolde(agent.getName(), dateDebut, dateFin), erep.getBDDAgent(), true);
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
         JSONObject retourDemandeSolde = new JSONObject();  
+        retourDemandeSolde.put("retourDemandeSolde", resultat);
         
-        JSONObject result = new JSONObject();
-        //si > 10 retourne false
-        result.put("resultat", nbJourDemande+Integer.valueOf(resultatsBDD.get(0).toString())>10);
-        //retourne le nombre de jour restant
-        result.put("nbJourRestant", Math.abs(Integer.valueOf(resultatsBDD.get(0).toString())-10));
-        
-        retourDemandeSolde.put("retourDemandeSolde", result);
-        
-         String reponseJSON = retourDemandeSolde.toJSONString();
+        String reponseJSON = retourDemandeSolde.toJSONString();
         
         // envoi de la réponse
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
@@ -162,4 +161,31 @@ public class HandleRequest extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
         
     }
+    
+    private void demandeAllSolde(JSONObject demandeSolde, AID agent) throws ParseException{
+        
+         String non = demandeSolde.get("vendeur").toString();
+         
+         EReputationAgent erep = (EReputationAgent)myAgent;
+         
+          // recherche en base de données
+            // recherche en base de données
+        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.selectRetourAllSolde(non), erep.getBDDAgent(), true);
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
+        
+        JSONObject retourDemandeSolde = new JSONObject();  
+        retourDemandeSolde.put("retourDemandeSolde", resultat);
+        
+        String reponseJSON = retourDemandeSolde.toJSONString();
+        
+        // envoi de la réponse
+        erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
+        
+        String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
+        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
+        
+    }
+    
 }

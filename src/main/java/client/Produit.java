@@ -61,6 +61,22 @@ public class Produit {
         return obj;
     }
     
+    public boolean equals(Produit p){
+        boolean res = false;
+        
+        if(this.id.equalsIgnoreCase(p.getId())
+           && this.provenance.equalsIgnoreCase(p.getProvenance())
+           && this.nom.equalsIgnoreCase(p.getNom())
+           && this.prix == p.getPrix()
+           && this.dateLivraison.toString().equalsIgnoreCase(p.getDateLivraison().toString())
+           && this.quantite == p.getQuantite()){
+           res = true;
+        }
+        
+        
+        return res;
+    }
+    
     public String getProvenance() {
         return provenance;
     }

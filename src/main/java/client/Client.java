@@ -15,6 +15,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import common.*;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import java.util.Date;
 
 /**
  *
@@ -28,13 +31,15 @@ public class Client extends SuperAgent {
     private int nbRechercheEnvoye = 0;
     private String typeAgentClient;
     private String typeAgentCible;
-    
+    // facteur de prix pour un agent econome : *1.2 l'offre de départ
+    private final double facteurPrixMax = 1.2;
+     // facteur de date pour un agent pressé : +1J l'offre de départ
+    private final int facteurDateMax = 1;
     // **************************************************************** //
     //
     //  Méthodes d'exécution de l'agent
     //
     // **************************************************************** //
-
     protected void setup() {
 
         // initailisation des attributs
@@ -74,29 +79,23 @@ public class Client extends SuperAgent {
         }
 
     }
-    
+
     protected void takeDown() {
-        // on se retire du registre de service afin q'un autre
-        // agent du même nom puisse se lancer
-        Jade.deRegisterService(this);
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                // deverrouillage du bouton de validation
-                // FXMLController.btnValider.setDisable(false);
-            }
-        });
-
+        try {
+            // on se retire du registre de service afin q'un autre
+            // agent du même nom puisse se lancer
+            DFService.deregister(this);
+            Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
+        } catch (FIPAException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
+
     // **************************************************************** //
     //
     //  Méthodes liées à l'envoi de message
     //
     // **************************************************************** //
-    
-
     public void jeCherche(String typeAgent, String typeProduit, String recherche, int quantite) {
 
         // construction de l'objet JSON à envoyé
@@ -112,9 +111,9 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeCherche.toString();
-            Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
+            Jade.envoyerMessage(this, ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
-            Jade.loggerEnvoi(nomAgent(f.getName()),message);
+            Jade.loggerEnvoi(nomAgent(f.getName()), message);
         }
     }
 
@@ -132,9 +131,9 @@ public class Client extends SuperAgent {
         AID[] agent = Jade.searchDF(this, typeAgentCible);
         for (AID f : agent) {
             String message = jeChercheReference.toString();
-            Jade.envoyerMessage(this,ACLMessage.REQUEST, f, message);
+            Jade.envoyerMessage(this, ACLMessage.REQUEST, f, message);
             nbRechercheEnvoye++;
-            Jade.loggerEnvoi(nomAgent(f.getName()),message);
+            Jade.loggerEnvoi(nomAgent(f.getName()), message);
         }
     }
 
@@ -147,21 +146,23 @@ public class Client extends SuperAgent {
         jeChoisi.put("jeChoisis", p.getJSONObject());
 
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.ACCEPT_PROPOSAL, aid, jeChoisi.toString());
-        Jade.loggerEnvoi(nomAgent(p.getProvenance()),jeChoisi.toString());
+        Jade.envoyerMessage(this, ACLMessage.ACCEPT_PROPOSAL, aid, jeChoisi.toString());
+        Jade.loggerEnvoi(nomAgent(p.getProvenance()), jeChoisi.toString());
     }
 
     /**
      * Méthode d'envoi d'avis sur un agent fournisseur ou vendeur
-     * @param adresseAgentErep adresse de l'agent ereputation : Erep@10.10.135.8/JADE
+     *
+     * @param adresseAgentErep adresse de l'agent ereputation :
+     * Erep@10.10.135.8/JADE
      * @param nomAgent nom de l'agent sur lequel on donne notre l'avis
      * @param typeAgent type de l'agent sur lequel on donne notre l'avis
      */
-    public void donneAvis(String adresseAgentErep,String typeAgent,String nomAgent) {
+    public void donneAvis(String adresseAgentErep, String typeAgent, String nomAgent) {
         AID aid = new AID(adresseAgentErep);
-        
+
         int avis = 0;
-        
+
         // construction de l'objet JSON à envoyé
         JSONObject donneAvis = new JSONObject();
         JSONObject contenu = new JSONObject();
@@ -169,88 +170,88 @@ public class Client extends SuperAgent {
         contenu.put("nom", nomAgent);
         contenu.put("avis", avis);
         donneAvis.put("donneAvis", contenu);
-        
+
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
-        Jade.loggerEnvoi(nomAgent(adresseAgentErep),donneAvis.toString());
+        Jade.envoyerMessage(this, ACLMessage.INFORM, aid, donneAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep), donneAvis.toString());
     }
-    
-    public void donneAvisProduit(String adresseAgentErep,String idProduit) {
+
+    public void donneAvisProduit(String adresseAgentErep, String idProduit) {
         AID aid = new AID(adresseAgentErep);
-        
+
         int avis = 0;
-        
+
         // construction de l'objet JSON à envoyé
         JSONObject donneAvis = new JSONObject();
         JSONObject contenu = new JSONObject();
-        contenu.put("type","Produit");
+        contenu.put("type", "Produit");
         contenu.put("id", idProduit);
         contenu.put("avis", avis);
         donneAvis.put("donneAvis", contenu);
-        
+
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.INFORM, aid, donneAvis.toString());
-        Jade.loggerEnvoi(nomAgent(adresseAgentErep),donneAvis.toString());
+        Jade.envoyerMessage(this, ACLMessage.INFORM, aid, donneAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep), donneAvis.toString());
     }
-    
+
     /**
      * Méthode de demande d'avis sur un vendeur ou un fournisseur
-     * @param adresseAgentErep adresse de l'agent ereputation : Erep@10.10.135.8/JADE
+     *
+     * @param adresseAgentErep adresse de l'agent ereputation :
+     * Erep@10.10.135.8/JADE
      * @param typeAgent type de l'agent auquel on veux l'avis
      * @param nomAgent nom de l'agent auquel on veux l'avis
      */
-    public void demandeAvis(String adresseAgentErep,String typeAgent,String nomAgent){
+    public void demandeAvis(String adresseAgentErep, String typeAgent, String nomAgent) {
         AID aid = new AID(adresseAgentErep);
-        
-         // construction de l'objet JSON à envoyé
+
+        // construction de l'objet JSON à envoyé
         JSONObject demandeAvis = new JSONObject();
         JSONObject contenu = new JSONObject();
-        contenu.put("type",typeAgent);
-        contenu.put("nom",nomAgent);
+        contenu.put("type", typeAgent);
+        contenu.put("nom", nomAgent);
         demandeAvis.put("demandeAvis", contenu);
-        
+
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeAvis.toString());
-        Jade.loggerEnvoi(nomAgent(adresseAgentErep),demandeAvis.toString());
+        Jade.envoyerMessage(this, ACLMessage.REQUEST, aid, demandeAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep), demandeAvis.toString());
     }
-    
-    public void demandeAvisProduit(String adresseAgentErep, String idProduit){
+
+    public void demandeAvisProduit(String adresseAgentErep, String idProduit) {
         AID aid = new AID(adresseAgentErep);
-        
-         // construction de l'objet JSON à envoyé
+
+        // construction de l'objet JSON à envoyé
         JSONObject demandeAvis = new JSONObject();
         JSONObject contenu = new JSONObject();
-        contenu.put("type","Produit");
-        contenu.put("id",idProduit);
+        contenu.put("type", "Produit");
+        contenu.put("id", idProduit);
         demandeAvis.put("demandeAvis", contenu);
-        
+
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeAvis.toString());
-        Jade.loggerEnvoi(nomAgent(adresseAgentErep),demandeAvis.toString());
+        Jade.envoyerMessage(this, ACLMessage.REQUEST, aid, demandeAvis.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep), demandeAvis.toString());
     }
-    
-    public void demandeReputation(String adresseAgentErep, String idProduit){
+
+    public void demandeReputation(String adresseAgentErep, String idProduit) {
         AID aid = new AID(adresseAgentErep);
-        
-         // construction de l'objet JSON à envoyé
+
+        // construction de l'objet JSON à envoyé
         JSONObject demandeReputation = new JSONObject();
         JSONObject contenu = new JSONObject();
-        contenu.put("type","Produit");
-        contenu.put("id",idProduit);
+        contenu.put("type", "Produit");
+        contenu.put("id", idProduit);
         demandeReputation.put("demandeReputation", contenu);
-        
+
         // envoi du message + afficahge dans les logs
-        Jade.envoyerMessage(this,ACLMessage.REQUEST, aid, demandeReputation.toString());
-        Jade.loggerEnvoi(nomAgent(adresseAgentErep),demandeReputation.toString());
+        Jade.envoyerMessage(this, ACLMessage.REQUEST, aid, demandeReputation.toString());
+        Jade.loggerEnvoi(nomAgent(adresseAgentErep), demandeReputation.toString());
     }
-    
-    
+
     // **************************************************************** //
     //
     //  Méthodes de traitement
     //
     // **************************************************************** //
-    
     public void traiterMessage(ACLMessage message) {
 
         try {
@@ -272,15 +273,47 @@ public class Client extends SuperAgent {
             if (object.containsKey("commandePasOK")) {
                 JSONObject obj = (JSONObject) object.get("commandePasOK");
                 afficherRaison(obj, message);
-                
+
+                Produit produitAnnule = new Produit(obj, message.getSender().getName());
+
                 // retirer la proposition
+                retirerProposition(produitAnnule);
+
                 // choisir la meilleur proposition suivante si il y en a
+                if (lproposition.size() > 0) {
+                    switch (typeAgentClient) {
+                        case TypeAgentClient.Econome:
+                            if (offreInteressante(produitAnnule.getPrix() * facteurPrixMax)) {
+                                jeChoisis(moinsCher());
+                            }else{
+                                Jade.loggerArretRecherche();
+                                takeDown();
+                            }
+                            break;
+
+                        case TypeAgentClient.Presse:
+                            Date max = produitAnnule.getDateLivraison();
+                            max.setDate(max.getDate()+facteurDateMax);
+                                    
+                            if(offreInteressante(max)){
+                               jeChoisis(plusTot());
+                            }else{
+                               Jade.loggerArretRecherche();
+                               takeDown();
+                            }
+                         
+                            break;
+
+                        default:
+                            System.err.println("Type d'agent client inconnu !");
+                    }
+                }
             }
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void ajouterProposition(JSONArray array, ACLMessage message) {
 
         for (Object obj : array.toArray()) {
@@ -291,7 +324,7 @@ public class Client extends SuperAgent {
         }
 
         lAgentsRepond.add(nomAgent(message));
-        Jade.loggerReception(nomAgent(message),message.getContent());
+        Jade.loggerReception(nomAgent(message), message.getContent());
 
     }
 
@@ -314,18 +347,16 @@ public class Client extends SuperAgent {
         }
 
     }
-    
-    
+
     // **************************************************************** //
     //
     //  Méthodes d'affichage
     //
     // **************************************************************** //
-    
     public void afficherAchat(JSONObject jsonObj, ACLMessage message) {
 
-        Jade.loggerReception(nomAgent(message),message.getContent());
-        
+        Jade.loggerReception(nomAgent(message), message.getContent());
+
         String date = jsonObj.get("date").toString().replace("\\", "");
         StringBuilder sb = new StringBuilder("Achat effectué chez : ");
         sb.append(nomAgent(message));
@@ -351,29 +382,36 @@ public class Client extends SuperAgent {
         // arrêt de l'agent 
         doDelete();
     }
-    
+
     public void afficherRaison(JSONObject obj, ACLMessage message) {
         StringBuilder sb = new StringBuilder("Commande impossible chez : ");
-        sb.append("message.getSender().getName()\n");
+        sb.append(nomAgent(message));
+        sb.append("\n");
         sb.append("Raison : ");
         sb.append(obj.get("raison").toString());
         Jade.loggerCommandeAnnulee(sb.toString());
     }
-    
+
     // **************************************************************** //
     //
     //  Méthodes outils
     //
     // **************************************************************** //
-    
-    public String nomAgent(ACLMessage message){
+    public String nomAgent(ACLMessage message) {
         return message.getSender().getLocalName();
     }
-    
-    
-     public String nomAgent(String adresseAgent){
-         String split[]=adresseAgent.split("@");
+
+    public String nomAgent(String adresseAgent) {
+        String split[] = adresseAgent.split("@");
         return split[0];
+    }
+
+    public void retirerProposition(Produit produitARetirer) {
+        for (Produit prod : lproposition) {
+            if (prod.equals(produitARetirer)) {
+                lproposition.remove(prod);
+            }
+        }
     }
 
     /**
@@ -390,6 +428,29 @@ public class Client extends SuperAgent {
             }
         }
         return produitChoisi;
+    }
+
+    public boolean offreInteressante(Double prixMaximum) {
+        boolean res = false;
+
+        for (Produit produit : lproposition) {
+            if (produit.getPrix() < prixMaximum) {
+                res = true;
+            }
+        }
+        return res;
+    }
+    
+    
+    public boolean offreInteressante(Date dateMaximum) {
+        boolean res = false;
+
+        for (Produit produit : lproposition) {
+            if (produit.getDateLivraison().before(dateMaximum)) {
+                res = true;
+            }
+        }
+        return res;
     }
 
     /**

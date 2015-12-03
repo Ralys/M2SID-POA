@@ -3,7 +3,7 @@ package ereputation.behaviours;
 import common.TypeAgent;
 import common.TypeLog;
 import ereputation.EReputationAgent;
-import ereputation.tools.ReputationCalculator;
+import ereputation.tools.DesirabiliteCalculator;
 import ereputation.tools.QueryBuilder;
 import jade.core.AID;
 import jade.core.Agent;
@@ -54,8 +54,8 @@ public class HandleRequest extends CyclicBehaviour {
             if(object.containsKey("demandeAvis")) 
                 this.demandeAvis((JSONObject)object.get("demandeAvis"), message.getSender());
             
-            if(object.containsKey("demandeReputation"))
-                this.demandeReputation((JSONObject)object.get("demandeReputation"), message.getSender());
+            if(object.containsKey("demandeDesirabilite"))
+                this.demandeDesirabilite((JSONObject)object.get("demandeDesirabilite"), message.getSender());
             
             if(object.containsKey("demandeSolde"))
                 this.demandeSolde((JSONObject)object.get("demandeSolde"), message.getSender());
@@ -110,9 +110,9 @@ public class HandleRequest extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
     
-    private void demandeReputation(JSONObject demandeReputation, AID agent) throws ParseException {
-        String type = demandeReputation.get("type").toString(),
-               ref = demandeReputation.get("id").toString();
+    private void demandeDesirabilite(JSONObject demandeDesirabilite, AID agent) throws ParseException {
+        String type = demandeDesirabilite.get("type").toString(),
+               ref = demandeDesirabilite.get("id").toString();
         
         EReputationAgent erep = (EReputationAgent)myAgent;
         
@@ -121,12 +121,12 @@ public class HandleRequest extends CyclicBehaviour {
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
-        JSONObject retourReputation = demandeReputation;
-        double reputation = ReputationCalculator.execute(resultat.get("DATE_SORTIE").toString());
-        retourReputation.put("reputation", reputation);
+        JSONObject retourDesirabilite = demandeDesirabilite;
+        double desirabilite = DesirabiliteCalculator.execute(resultat.get("DATE_SORTIE").toString());
+        retourDesirabilite.put("desirabilite", desirabilite);
         
         JSONObject reponse = new JSONObject();
-        reponse.put("retourReputation", retourReputation);
+        reponse.put("retourDesirabilite", retourDesirabilite);
         
         String reponseJSON = reponse.toJSONString();
         

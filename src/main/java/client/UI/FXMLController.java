@@ -1,5 +1,6 @@
-package client;
+package client.UI;
 
+import client.outils.TypeAgentClient;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -128,7 +129,7 @@ public class FXMLController implements Initializable {
                 Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(),reference.getText(), choixQte.getValue(), typeRecherche};
 
                 // création de l'agent
-                AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.Client", arguments);
+                AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.ClientAgent", arguments);
                 // lancement de l'agent
                 agent.start();
 

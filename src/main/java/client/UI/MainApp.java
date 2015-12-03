@@ -1,4 +1,4 @@
-package client;
+package client.UI;
 
 
 import javafx.application.Application;

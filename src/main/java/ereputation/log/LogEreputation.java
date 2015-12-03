@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 public class LogEreputation {
     private static LogEreputation uniqueInstance = new LogEreputation();
-    private static FileHandler fileHandler = null;
+    private static FileHandler fileHandler;
     
     //pemret de crer une instance de la class LogEreputation
     public static synchronized LogEreputation instance() {

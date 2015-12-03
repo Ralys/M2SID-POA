@@ -42,11 +42,11 @@ public class LogEreputation {
     }
     
     //on enregistre une info
-    public static void Info(String messgae){
+    public void Info(String messgae){
         Logger.getLogger("logErep").info(messgae);
     }
     //on enregistre une erreur
-    public static void Erreur(String messgae){
+    public void Erreur(String messgae){
         Logger.getLogger("logErep").warning(messgae);
     }
     

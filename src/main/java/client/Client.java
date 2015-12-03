@@ -4,6 +4,8 @@ package client;
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
+import client.behaviours.Econome;
+import client.behaviours.Presse;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.core.behaviours.*;
@@ -31,10 +33,7 @@ public class Client extends SuperAgent {
     private int nbRechercheEnvoye = 0;
     private String typeAgentClient;
     private String typeAgentCible;
-    // facteur de prix pour un agent econome : *1.2 l'offre de départ
-    private final double facteurPrixMax = 1.2;
-     // facteur de date pour un agent pressé : +1J l'offre de départ
-    private final int facteurDateMax = 1;
+    
     // **************************************************************** //
     //
     //  Méthodes d'exécution de l'agent
@@ -59,17 +58,17 @@ public class Client extends SuperAgent {
 
         // enregistrement du service
         registerService(monService);
-
-        // écoute des messages
-        addBehaviour(new CyclicBehaviour(this) {
-            public void action() {
-                ACLMessage msg = receive();
-                if (msg != null) {
-                    traiterMessage(msg);
-                    block();
-                }
-            }
-        });
+        
+        // écoute
+        if(typeAgentClient.equals(TypeAgentClient.Econome)){
+            addBehaviour(new Econome(this));
+        }
+        
+        // écoute
+        if(typeAgentClient.equals(TypeAgentClient.Presse)){
+            addBehaviour(new Presse(this));
+        }
+        
 
         if (typeRecherche.equalsIgnoreCase("true")) {
             // on lance la recherche
@@ -80,7 +79,7 @@ public class Client extends SuperAgent {
 
     }
 
-    protected void takeDown() {
+    public void takeDown() {
         try {
             // on se retire du registre de service afin q'un autre
             // agent du même nom puisse se lancer
@@ -252,67 +251,6 @@ public class Client extends SuperAgent {
     //  Méthodes de traitement
     //
     // **************************************************************** //
-    public void traiterMessage(ACLMessage message) {
-
-        try {
-            JSONParser parser = new JSONParser();
-            JSONObject object = (JSONObject) parser.parse(message.getContent());
-
-            if (object.containsKey("jePropose")) {
-                JSONArray array = (JSONArray) object.get("jePropose");
-                ajouterProposition(array, message);
-                effectuerChoix();
-            }
-
-            if (object.containsKey("commandeOk")) {
-                JSONObject obj = (JSONObject) object.get("commandeOk");
-                afficherAchat(obj, message);
-                // laisser avis erep
-            }
-
-            if (object.containsKey("commandePasOK")) {
-                JSONObject obj = (JSONObject) object.get("commandePasOK");
-                afficherRaison(obj, message);
-
-                Produit produitAnnule = new Produit(obj, message.getSender().getName());
-
-                // retirer la proposition
-                retirerProposition(produitAnnule);
-
-                // choisir la meilleur proposition suivante si il y en a
-                if (lproposition.size() > 0) {
-                    switch (typeAgentClient) {
-                        case TypeAgentClient.Econome:
-                            if (offreInteressante(produitAnnule.getPrix() * facteurPrixMax)) {
-                                jeChoisis(moinsCher());
-                            }else{
-                                Jade.loggerArretRecherche();
-                                takeDown();
-                            }
-                            break;
-
-                        case TypeAgentClient.Presse:
-                            Date max = produitAnnule.getDateLivraison();
-                            max.setDate(max.getDate()+facteurDateMax);
-                                    
-                            if(offreInteressante(max)){
-                               jeChoisis(plusTot());
-                            }else{
-                               Jade.loggerArretRecherche();
-                               takeDown();
-                            }
-                         
-                            break;
-
-                        default:
-                            System.err.println("Type d'agent client inconnu !");
-                    }
-                }
-            }
-        } catch (org.json.simple.parser.ParseException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     public void ajouterProposition(JSONArray array, ACLMessage message) {
 
@@ -325,26 +263,6 @@ public class Client extends SuperAgent {
 
         lAgentsRepond.add(nomAgent(message));
         Jade.loggerReception(nomAgent(message), message.getContent());
-
-    }
-
-    public void effectuerChoix() {
-        // verification que toutes les propositions sont reçu
-        if (nbRechercheEnvoye == lAgentsRepond.size()) {
-
-            switch (typeAgentClient) {
-                case TypeAgentClient.Econome:
-                    jeChoisis(moinsCher());
-                    break;
-
-                case TypeAgentClient.Presse:
-                    jeChoisis(plusTot());
-                    break;
-
-                default:
-                    System.err.println("Type d'agent client inconnu !");
-            }
-        }
 
     }
 
@@ -468,4 +386,58 @@ public class Client extends SuperAgent {
         }
         return produitChoisi;
     }
+
+    
+    
+    
+    // **************************************************************** //
+    //
+    //  Getter & Setter
+    //
+    // **************************************************************** //
+    
+    
+    
+    public ArrayList<Produit> getLproposition() {
+        return lproposition;
+    }
+
+    public void setLproposition(ArrayList<Produit> lproposition) {
+        this.lproposition = lproposition;
+    }
+
+    public ArrayList<String> getlAgentsRepond() {
+        return lAgentsRepond;
+    }
+
+    public void setlAgentsRepond(ArrayList<String> lAgentsRepond) {
+        this.lAgentsRepond = lAgentsRepond;
+    }
+
+    public int getNbRechercheEnvoye() {
+        return nbRechercheEnvoye;
+    }
+
+    public void setNbRechercheEnvoye(int nbRechercheEnvoye) {
+        this.nbRechercheEnvoye = nbRechercheEnvoye;
+    }
+
+    public String getTypeAgentClient() {
+        return typeAgentClient;
+    }
+
+    public void setTypeAgentClient(String typeAgentClient) {
+        this.typeAgentClient = typeAgentClient;
+    }
+
+    public String getTypeAgentCible() {
+        return typeAgentCible;
+    }
+
+    public void setTypeAgentCible(String typeAgentCible) {
+        this.typeAgentCible = typeAgentCible;
+    }
+    
+    
+    
 }

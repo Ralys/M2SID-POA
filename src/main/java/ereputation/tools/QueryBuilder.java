@@ -1,5 +1,6 @@
 package ereputation.tools;
 
+import java.sql.Timestamp;
 import org.json.simple.JSONObject;
 
 /**
@@ -20,6 +21,12 @@ public class QueryBuilder {
     
     public static String selectDateSortie(String ref) {
         String sql = "SELECT DATE_SORTIE FROM PRODUIT WHERE REF_PRODUIT = \"" + ref + "\"";
+        return JSONRequest("select", sql);
+    }
+    
+    public static String selectRetourSolde(String agentName, String dateDebut, String dateFin) {
+        //TO DO ecrire la requête
+        String sql = "";
         return JSONRequest("select", sql);
     }
     

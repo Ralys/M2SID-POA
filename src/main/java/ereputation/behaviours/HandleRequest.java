@@ -10,6 +10,7 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -127,4 +128,35 @@ public class HandleRequest extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
 
+    private void demandeSolde(JSONObject demandeReputation, AID agent) throws ParseException{
+         String dateDebut = demandeReputation.get("date_debut").toString(),
+                 dateFin = demandeReputation.get("date_fin").toString();
+         int nbJourDemande = Timestamp.valueOf(dateFin).compareTo(Timestamp.valueOf(dateDebut));
+         
+         EReputationAgent erep = (EReputationAgent)myAgent;
+         
+          // recherche en base de données
+        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.selectRetourSolde(agent.getName(), dateDebut, dateFin), erep.getBDDAgent(), true);
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        
+        JSONObject retourDemandeSolde = new JSONObject();  
+        
+        JSONObject result = new JSONObject();
+        //si > 10 retourne false
+        result.put("resultat", nbJourDemande+Integer.valueOf(resultatsBDD.get(0).toString())>10);
+        //retourne le nombre de jour restant
+        result.put("nbJourRestant", Math.abs(Integer.valueOf(resultatsBDD.get(0).toString())-10));
+        
+        retourDemandeSolde.put("retourDemandeSolde", result);
+        
+         String reponseJSON = retourDemandeSolde.toJSONString();
+        
+        // envoi de la réponse
+        erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
+        
+        String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
+        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
+        
+    }
 }

@@ -1,8 +1,8 @@
 package ereputation.behaviours;
 
 import common.TypeAgent;
+import common.TypeLog;
 import ereputation.EReputationAgent;
-import static ereputation.EReputationAgent.logEreputation;
 import ereputation.tools.ReputationCalculator;
 import ereputation.tools.QueryBuilder;
 import jade.core.AID;
@@ -38,7 +38,7 @@ public class HandleRequest extends CyclicBehaviour {
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
         //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
-        logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterRequete(message);
         block();
@@ -57,7 +57,7 @@ public class HandleRequest extends CyclicBehaviour {
                 this.demandeReputation((JSONObject)object.get("demandeReputation"), message.getSender());
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
-            logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());
+            TypeLog.logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());
         }
     }
     
@@ -72,7 +72,7 @@ public class HandleRequest extends CyclicBehaviour {
                 break;
             
             case EReputationAgent.Produit:
-                nom = demandeAvis.get("ref").toString();
+                nom = demandeAvis.get("id").toString();
                 break;
         }
         
@@ -96,12 +96,12 @@ public class HandleRequest extends CyclicBehaviour {
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
         //Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
-        logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
     
     private void demandeReputation(JSONObject demandeReputation, AID agent) throws ParseException {
         String type = demandeReputation.get("type").toString(),
-               ref = demandeReputation.get("ref").toString();
+               ref = demandeReputation.get("id").toString();
         
         EReputationAgent erep = (EReputationAgent)myAgent;
         
@@ -124,7 +124,7 @@ public class HandleRequest extends CyclicBehaviour {
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
         //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
-        logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
 
 }

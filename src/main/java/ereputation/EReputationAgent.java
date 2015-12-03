@@ -2,6 +2,7 @@ package ereputation;
 
 import common.SuperAgent;
 import common.TypeAgent;
+import common.TypeLog;
 import ereputation.behaviours.HandleInform;
 import ereputation.behaviours.HandleRequest;
 import ereputation.log.LogEreputation;
@@ -19,7 +20,6 @@ import java.util.logging.Logger;
  */
 public class EReputationAgent extends SuperAgent {
     
-    public static LogEreputation logEreputation = LogEreputation.instance();
     public static final String Produit = "Produit";
     
     private AID BDDAgent;
@@ -39,7 +39,7 @@ public class EReputationAgent extends SuperAgent {
         try {
             DFService.deregister(this);
         } catch (FIPAException ex) {
-            logEreputation.Erreur(EReputationAgent.class.getName()+":"+ex.getMessage());
+            TypeLog.logEreputation.Erreur(EReputationAgent.class.getName()+":"+ex.getMessage());
             Logger.getLogger(EReputationAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

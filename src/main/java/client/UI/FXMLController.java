@@ -93,7 +93,6 @@ public class FXMLController implements Initializable {
 
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
 
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         choixProd.setItems(listTypeProduit);
@@ -126,7 +125,7 @@ public class FXMLController implements Initializable {
                 boolean typeRecherche = rbRecherche.isSelected();
 
                 AgentContainer ac = rt.createAgentContainer(p);
-                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(),reference.getText(), choixQte.getValue(), typeRecherche};
+                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), reference.getText(), choixQte.getValue(), typeRecherche};
 
                 // création de l'agent
                 AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.ClientAgent", arguments);
@@ -175,16 +174,45 @@ public class FXMLController implements Initializable {
 
             // verrouillage du bouton de validation
             btnValider.setDisable(true);
-            
+
         } else {
+            testerContenu(choixClient, choixVendeur, choixQte);
+            testerContenu(ip, port, nomAgent);
+
+            if (rbRecherche.isSelected()) {
+                testerContenu(nomProd);
+                testerContenu(choixProd);
+            }
+            if (rbReference.isSelected()) {
+                testerContenu(reference);
+            }
+
             messageErreur.setText("Merci de remplir tous les champs !");
             messageErreur.setVisible(true);
         }
 
         return valide;
     }
-    
-    
 
+    public void testerContenu(ComboBox... cbx) {
+        for (ComboBox cb : cbx) {
+            if (cb.getSelectionModel().getSelectedIndex() != -1) {
+                cb.setStyle("-fx-border-color:green");
+            } else {
+                cb.setStyle("-fx-border-color:red");
+            }
+        }
+    }
+
+    public void testerContenu(TextField... tfs) {
+        for (TextField tf : tfs) {
+            if (tf.getText().isEmpty()) {
+                tf.setStyle("-fx-border-color:red");
+            } else {
+                tf.setStyle("-fx-border-color:green");
+
+            }
+        }
+    }
 
 }

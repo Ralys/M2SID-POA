@@ -15,12 +15,13 @@ public class PurchaseProduct extends Behaviour {
 
     @Override
     public void action() {
-        throw new UnsupportedOperationException("Not supported yet.");
+//        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean done() {
-        throw new UnsupportedOperationException("Not supported yet.");
+//        throw new UnsupportedOperationException("Not supported yet.");
+        return true;
     }
     
 }

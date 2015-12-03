@@ -1,5 +1,6 @@
 package vendeur;
 import common.SuperAgent;
+import common.TypeAgent;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -36,6 +37,8 @@ public class AgentBDD extends SuperAgent {
 
     @Override
     protected void setup() {
+        this.registerService(TypeAgent.BDD);
+        
         //lift database (DROP mode)
 
         try {
@@ -144,7 +147,7 @@ public class AgentBDD extends SuperAgent {
                 
                 
             } catch (ParseException ex) {
-                Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
+                Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide", ex);
             }
          }
      }

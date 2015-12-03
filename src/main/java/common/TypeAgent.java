@@ -9,4 +9,7 @@ public final class TypeAgent {
     public static final String EReputation = "EReputation";
     public static final String Fournisseur = "Fournisseur";
     public static final String Vendeur = "Vendeur";
+    
+    // Agents Spéciaux
+    public static final String BDD = "BDD";
 }

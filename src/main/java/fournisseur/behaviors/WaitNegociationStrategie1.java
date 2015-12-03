@@ -5,15 +5,20 @@
  */
 package fournisseur.behaviors;
 
+import fournisseur.StocksEtTransaction;
+import fournisseur.Transaction;
+
 /**
  *
  * @author tom
  */
-public class WaitNegociationStrategie1 extends WaitNegociation{
+public class WaitNegociationStrategie1 extends WaitNegociation {
 
     @Override
     public double définirNouveauPrix(int idProduit, int delai, String sender) {
+        Transaction t = ((StocksEtTransaction) getDataStore()).getTransaction(idProduit, delai, sender);
+        t.incNbNego();
         return 0;
     }
-    
+
 }

@@ -20,11 +20,11 @@ import org.json.simple.parser.ParseException;
  *
  * @author Team EReputation
  */
-public class RequestBehaviour extends CyclicBehaviour {
+public class HandleRequest extends CyclicBehaviour {
     
     private JSONParser parser;
     
-    public RequestBehaviour(Agent agent) {
+    public HandleRequest(Agent agent) {
         super(agent);
         this.parser = new JSONParser();
     }
@@ -107,7 +107,8 @@ public class RequestBehaviour extends CyclicBehaviour {
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
         JSONObject retourReputation = demandeReputation;
-        retourReputation.put("reputation", ReputationCalculator.execute(resultat.get("DATE_SORTIE").toString()));
+        double reputation = ReputationCalculator.execute(resultat.get("DATE_SORTIE").toString());
+        retourReputation.put("reputation", reputation);
         
         JSONObject reponse = new JSONObject();
         reponse.put("retourReputation", retourReputation);

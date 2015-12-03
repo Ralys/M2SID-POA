@@ -69,7 +69,7 @@ public class HandleInform extends CyclicBehaviour {
                 break;
             
             case EReputationAgent.Produit:
-                nom = donneAvis.get("ref").toString();
+                nom = donneAvis.get("id").toString();
                 break;
         }
         

@@ -72,7 +72,7 @@ public class HandleRequest extends CyclicBehaviour {
                 break;
             
             case EReputationAgent.Produit:
-                nom = demandeAvis.get("ref").toString();
+                nom = demandeAvis.get("id").toString();
                 break;
         }
         
@@ -101,7 +101,7 @@ public class HandleRequest extends CyclicBehaviour {
     
     private void demandeReputation(JSONObject demandeReputation, AID agent) throws ParseException {
         String type = demandeReputation.get("type").toString(),
-               ref = demandeReputation.get("ref").toString();
+               ref = demandeReputation.get("id").toString();
         
         EReputationAgent erep = (EReputationAgent)myAgent;
         

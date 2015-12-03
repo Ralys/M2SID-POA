@@ -30,6 +30,12 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
     
+    public static String selectRetourAllSolde(String vendeur) {
+        //TO DO ecrire la requête
+        String sql = "";
+        return JSONRequest("select", sql);
+    }
+            
     private static String JSONRequest(String typeRequest, String sql) {
         JSONObject request = new JSONObject();
         request.put("type", typeRequest);

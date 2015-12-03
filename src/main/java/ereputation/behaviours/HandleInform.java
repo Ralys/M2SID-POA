@@ -18,10 +18,10 @@ import org.json.simple.parser.ParseException;
  *
  * @author Team EReputation
  */
-public class InformBehaviour extends CyclicBehaviour {
+public class HandleInform extends CyclicBehaviour {
     private JSONParser parser;
     
-    public InformBehaviour(Agent agent) {
+    public HandleInform(Agent agent) {
         super(agent);
         this.parser = new JSONParser();
     }

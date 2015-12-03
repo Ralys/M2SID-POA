@@ -20,11 +20,11 @@ import org.json.simple.parser.ParseException;
  *
  * @author Team EReputation
  */
-public class RequestBehaviour extends CyclicBehaviour {
+public class HandleRequest extends CyclicBehaviour {
     
     private JSONParser parser;
     
-    public RequestBehaviour(Agent agent) {
+    public HandleRequest(Agent agent) {
         super(agent);
         this.parser = new JSONParser();
     }

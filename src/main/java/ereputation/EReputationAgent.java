@@ -2,8 +2,8 @@ package ereputation;
 
 import common.SuperAgent;
 import common.TypeAgent;
-import ereputation.behaviours.InformBehaviour;
-import ereputation.behaviours.RequestBehaviour;
+import ereputation.behaviours.HandleInform;
+import ereputation.behaviours.HandleRequest;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -29,8 +29,8 @@ public class EReputationAgent extends SuperAgent {
     protected void setup() {
         this.registerService(TypeAgent.EReputation);
        
-        this.addBehaviour(new RequestBehaviour(this));
-        this.addBehaviour(new InformBehaviour(this));
+        this.addBehaviour(new HandleRequest(this));
+        this.addBehaviour(new HandleInform(this));
     }
     
     @Override

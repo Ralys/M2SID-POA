@@ -2,6 +2,7 @@ package ereputation.behaviours;
 
 import common.TypeAgent;
 import ereputation.EReputationAgent;
+import static ereputation.EReputationAgent.logEreputation;
 import ereputation.tools.ReputationCalculator;
 import ereputation.tools.QueryBuilder;
 import jade.core.AID;
@@ -36,7 +37,8 @@ public class HandleRequest extends CyclicBehaviour {
         if(message == null) return;
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
-        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterRequete(message);
         block();
@@ -55,6 +57,7 @@ public class HandleRequest extends CyclicBehaviour {
                 this.demandeReputation((JSONObject)object.get("demandeReputation"), message.getSender());
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
+            logEreputation.Erreur(HandleRequest.class+":"+ex.getMessage());
         }
     }
     
@@ -92,7 +95,8 @@ public class HandleRequest extends CyclicBehaviour {
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
-        Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
+        //Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
+        logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
     
     private void demandeReputation(JSONObject demandeReputation, AID agent) throws ParseException {
@@ -119,7 +123,8 @@ public class HandleRequest extends CyclicBehaviour {
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
-        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
 
 }

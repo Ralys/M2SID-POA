@@ -74,7 +74,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     //Pour les trois date possible
                     for (Integer delai : listDelai) {
 
-                        Transaction t = new Transaction(p.getIdProduit(), delai, sender);
+                        Transaction t = new Transaction(p.getIdProduit(), delai, sender,quantite);
                         ((StocksEtTransaction) getDataStore()).put(t, p);
 
                         JSONObject produitJson = new JSONObject();

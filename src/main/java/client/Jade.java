@@ -109,6 +109,17 @@ public class Jade {
         });
 
     }
+    
+    
+    public static void loggerArretRecherche() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                FXMLController.listLog.add("Arrêt des recherches");
+            }
+        });
+
+    }
 
     
     

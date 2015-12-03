@@ -147,7 +147,7 @@ public class AgentBDD extends SuperAgent {
                 
                 
             } catch (ParseException ex) {
-                Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
+                Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide", ex);
             }
          }
      }

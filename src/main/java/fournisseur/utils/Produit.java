@@ -1,22 +1,23 @@
-package fournisseur;
-
-
+package fournisseur.utils;
 
 /**
  *
  * @author Tom
  */
 public class Produit {
+
     private int idProduit;
     private double prixDeBase;
     private String nomProduit;
     private String typeProduit;
+    private long dateSortie;
 
-    public Produit( int id, String nom,  double prix, String type) {
+    public Produit(int id, String nom, double prix, String type, long date) {
         this.idProduit = id;
         this.nomProduit = nom;
         this.typeProduit = type;
         this.prixDeBase = prix;
+        this.dateSortie = date;
     }
 
     public int getIdProduit() {
@@ -51,5 +52,9 @@ public class Produit {
         this.typeProduit = typeProduit;
     }
 
-    
+    @Override
+    public String toString() {
+        return "Produit{" + "idProduit=" + idProduit + ", prixDeBase=" + prixDeBase + ", nomProduit=" + nomProduit + ", typeProduit=" + typeProduit + ", dateSortie=" + dateSortie + '}';
+    }
+
 }

@@ -87,7 +87,7 @@ public class FXMLController implements Initializable {
     private final ObservableList<String> listQte = FXCollections.observableArrayList(
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
-    private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.tabTypeProduit);
+    private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.allProducts);
 
     private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome);
 

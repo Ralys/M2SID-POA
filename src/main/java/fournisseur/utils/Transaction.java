@@ -1,4 +1,4 @@
-package fournisseur;
+package fournisseur.utils;
 
 /**
  *
@@ -7,25 +7,27 @@ package fournisseur;
 public class Transaction {
 
     private int idProduit;
-    private int delai;
+    private Long dateLivraison;
     private String client;
     private int nbNego;
     private int qte;
+    private int delai;
 
-    public Transaction(int idProduit, int delai, String client,int qte) {
+    public Transaction(int idProduit, Long dateLivraison, String client, int qte, int delai) {
         this.idProduit = idProduit;
-        this.delai = delai;
+        this.dateLivraison = dateLivraison;
         this.client = client;
         this.nbNego = 0;
-        this.qte =qte;
+        this.qte = qte;
+        this.delai = delai;
     }
 
     public int getIdProduit() {
         return idProduit;
     }
 
-    public int getDelai() {
-        return delai;
+    public Long getDateLivraison() {
+        return dateLivraison;
     }
 
     public String getClient() {
@@ -39,7 +41,11 @@ public class Transaction {
     public int getQte() {
         return qte;
     }
-    
+
+    public int getDelai() {
+        return delai;
+    }
+
     public void incNbNego() {
         this.nbNego++;
     }

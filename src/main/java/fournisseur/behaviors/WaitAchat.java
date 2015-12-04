@@ -1,8 +1,8 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
-import fournisseur.Livraison;
-import fournisseur.StocksEtTransaction;
+import fournisseur.utils.Livraison;
+import fournisseur.utils.StocksEtTransaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -15,8 +15,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class WaitAchat extends CyclicBehaviour {
-
-    private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
 
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL);
@@ -36,7 +34,7 @@ public class WaitAchat extends CyclicBehaviour {
                 JSONObject achat = (JSONObject) object.get("jeChoisis");
                 int idProduit = Integer.valueOf(achat.get("idProduit").toString());
                 String nomProduit = achat.get("nomProduit").toString();
-                Date date = formater.parse(achat.get("date").toString());
+                long date = Long.valueOf(achat.get("date").toString());
                 int quantite = Integer.valueOf(achat.get("quantite").toString());
                 double prix = Double.valueOf(achat.get("prix").toString());
 
@@ -47,8 +45,7 @@ public class WaitAchat extends CyclicBehaviour {
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
 
-                int delai = Livraison.countDelai(date);
-                ((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, delai, sender);
+                ((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, date, sender);
 
                 replyContenu.put("idProduit", idProduit);
                 replyContenu.put("nomProduit", nomProduit);
@@ -77,8 +74,6 @@ public class WaitAchat extends CyclicBehaviour {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide");
-            } catch (java.text.ParseException ex) {
-                Logger.getLogger(WaitAchat.class.getName()).log(Level.SEVERE, null, "Format de date invalide");
             }
         } else {
             block();

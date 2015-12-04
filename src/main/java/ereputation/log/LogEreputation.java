@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  */
 public class LogEreputation {
     private static LogEreputation uniqueInstance = new LogEreputation();
-    private static FileHandler fileHandler = null;
+    private static FileHandler fileHandler;
     
     //pemret de crer une instance de la class LogEreputation
     public static synchronized LogEreputation instance() {
@@ -36,6 +36,8 @@ public class LogEreputation {
             fileHandler = new FileHandler("logErep.txt");
             //On assigne une mise en forme simple
             fileHandler.setFormatter(new MonFormateur());
+            //On assigne une mise en forme simple
+            Logger.getLogger("logErep").addHandler(fileHandler);
         } catch (IOException | SecurityException ex) {
             Logger.getLogger(LogEreputation.class.getName()).log(Level.SEVERE, null, ex);
         }

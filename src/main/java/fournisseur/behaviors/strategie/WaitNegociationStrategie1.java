@@ -1,8 +1,9 @@
-package fournisseur.behaviors;
+package fournisseur.behaviors.strategie;
 
-import fournisseur.Livraison;
-import fournisseur.StocksEtTransaction;
-import fournisseur.Transaction;
+import fournisseur.behaviors.WaitNegociation;
+import fournisseur.utils.Livraison;
+import fournisseur.utils.StocksEtTransaction;
+import fournisseur.utils.Transaction;
 
 /**
  *
@@ -15,9 +16,10 @@ public class WaitNegociationStrategie1 extends WaitNegociation {
     private double reductionNego = 0.01;
 
     @Override
-    public double définirNouveauPrix(int idProduit, int delai, String sender, double prixDemande) {
-        Transaction t = ((StocksEtTransaction) getDataStore()).getTransaction(idProduit, delai, sender);
+    public double définirNouveauPrix(int idProduit, Long date, String sender, double prixDemande) {
+        Transaction t = ((StocksEtTransaction) getDataStore()).getTransaction(idProduit, date, sender);
         t.incNbNego();
+        int delai = t.getDelai();
         double prixBase = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit).getPrixdeBase();
         int nbNego = Math.min(5, t.getNbNego());
         double reducNego = reductionNego * nbNego;

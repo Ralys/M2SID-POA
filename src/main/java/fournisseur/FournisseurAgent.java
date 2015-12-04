@@ -5,6 +5,7 @@ import fournisseur.behaviors.WaitAchat;
 import fournisseur.behaviors.WaitRequestStrategie1;
 import common.SuperAgent;
 import common.TypeAgent;
+import fournisseur.behaviors.GestionStockBehavior;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -25,17 +26,7 @@ public class FournisseurAgent extends SuperAgent {
     @Override
     protected void setup() {
         this.registerService(TypeAgent.Fournisseur);
-        
-        //Comportement Attente d'un achat
-        WaitAchat waitAchatBehavior = new WaitAchat();
-        waitAchatBehavior.setDataStore(catalogue);
-        this.addBehaviour(waitAchatBehavior);
-        
-        //Comportement attente d'une requete
-        WaitRequestStrategie1 waitRequestBehaviorStrategie = new WaitRequestStrategie1();
-        waitRequestBehaviorStrategie.setDataStore(catalogue);
-        this.addBehaviour(waitRequestBehaviorStrategie);
-        
+
         //Comportement création d'un catalogue
         AID agentBDD = this.findAgentsFromService(TypeAgent.BDD)[0];
         Object[] tabParam = this.getArguments();
@@ -43,11 +34,24 @@ public class FournisseurAgent extends SuperAgent {
         CreationCatalogueBehavior creationCatalogueBehavior = new CreationCatalogueBehavior(this, numFournisseur, agentBDD);
         creationCatalogueBehavior.setDataStore(catalogue);
         this.addBehaviour(creationCatalogueBehavior);
-        
-        
+
+        //Gestion du stock
+        GestionStockBehavior gestionStockBehavior = new GestionStockBehavior(this);
+        gestionStockBehavior.setDataStore(catalogue);
+        this.addBehaviour(gestionStockBehavior);
+
+        //Comportement Attente d'un achat
+        WaitAchat waitAchatBehavior = new WaitAchat();
+        waitAchatBehavior.setDataStore(catalogue);
+        this.addBehaviour(waitAchatBehavior);
+
+        //Comportement attente d'une requete
+        WaitRequestStrategie1 waitRequestBehaviorStrategie = new WaitRequestStrategie1();
+        waitRequestBehaviorStrategie.setDataStore(catalogue);
+        this.addBehaviour(waitRequestBehaviorStrategie);
 
     }
-    
+
     protected void takeDown() {
         try {
             DFService.deregister(this);

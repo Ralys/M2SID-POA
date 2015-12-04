@@ -1,14 +1,9 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
-import fournisseur.utils.Livraison;
-import fournisseur.utils.StocksEtTransaction;
-import fournisseur.utils.Transaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONObject;
@@ -38,26 +33,37 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 //{“jeNegocie”:{”idProduit”:”67D”,”prix”:20.0,”date”:”20/02/2105”}}
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(msg.getContent());
-                JSONObject achat = (JSONObject) object.get("jeNegocie");
+                JSONObject nego = (JSONObject) object.get("jeNegocie");
 
-                long date = Long.valueOf(achat.get("date").toString());
-                int idProduit = Integer.valueOf(achat.get("idProduit").toString());
-                double prix = Double.valueOf(achat.get("prix").toString());
+                long date = Long.valueOf(nego.get("date").toString());
+                int idProduit = Integer.valueOf(nego.get("idProduit").toString());
+                double prix = Double.valueOf(nego.get("prix").toString());
+                String nomProduit = nego.get("nomPrix").toString();
+                int qte = Integer.valueOf(nego.get("quantite").toString());
 
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
-
-                //{"jeNégocie": {"idProduit": "67D","prix": 20,"date": "20/02/2105"}}
+                double newPrix = this.définirNouveauPrix(idProduit, date, sender, prix);
                 replyContenu.put("idProduit", idProduit);
-                replyContenu.put("prix", this.définirNouveauPrix(idProduit, date, sender, prix));
                 replyContenu.put("date", date);
-
-                replyJson.put("jeNegocie", replyContenu);
-
-                String contenuMessage = replyJson.toJSONString().replace("\\", "");
+                replyContenu.put("nomProduit", nomProduit);
+                replyContenu.put("quantite", qte);
+                if (newPrix == prix) {
+                    //Send commande OK
+                    //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
+                    replyContenu.put("prix", newPrix);
+                    replyJson.put("commandeOk", replyContenu);
+                    replyMessage.setPerformative(ACLMessage.CONFIRM);
+                } else {
+                    //send je négocie
+                    //{"jeNégocie": {"idProduit": "67D","prix": 20,"date": "20/02/2105",”nomProduit”:”Spectre”,”quantite”:1}}
+                    replyContenu.put("prix", newPrix);
+                    replyJson.put("jeNegocie", replyContenu);
+                    replyMessage.setPerformative(ACLMessage.PROPOSE);
+                }
+                String contenuMessage = replyJson.toJSONString();
                 replyMessage.setContent(contenuMessage);
-                replyMessage.setPerformative(ACLMessage.PROPOSE);
                 myAgent.send(replyMessage);
                 //Log
                 String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + msg.getSender().toString();

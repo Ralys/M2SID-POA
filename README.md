@@ -8,5 +8,5 @@ machines.
 ##### Exemple de commande pour lancer plusieurs agents en même temps :
 ``
 Main Class: jade Boot
-Arguments: -gui -agents "BDD:vendeur.AgentBDD;ERep:ereputation.EReputationAgent"
+Arguments: -gui -agents BDD:vendeur.BDDAgent;Darty:fournisseur.FournisseurAgent(1);ERep:ereputation.EReputationAgent"
 ``

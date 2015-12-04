@@ -34,12 +34,17 @@ public class FournisseurAgent extends SuperAgent {
     @Override
     protected void setup() {
         this.registerService(TypeAgent.Fournisseur);
-        
+
         //Parametre : numero du fournisseur
         AID agentBDD = this.findAgentsFromService(TypeAgent.BDD)[0];
         Object[] tabParam = this.getArguments();
-        int numFournisseur = Integer.valueOf((String) tabParam[0]);
-
+        int numFournisseur = 0;
+        try {
+            numFournisseur = Integer.valueOf((String) tabParam[0]);
+        } catch (IndexOutOfBoundsException io) {
+            Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Veuillez insérer un paramètre : nomAgent:fournisseur.FournisseurAgent(1)");
+            this.takeDown();
+        }
         //Choix de la stratégie
         WaitRequest waitRequestBehaviorStrategie = null;
         WaitNegociation waitNegociationBehaviorStrategie = null;
@@ -60,7 +65,7 @@ public class FournisseurAgent extends SuperAgent {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Paramètre incorrect");
                 this.takeDown();
         }
-        
+
         //Comportement création d'un catalogue
         CreationCatalogueBehavior creationCatalogueBehavior = new CreationCatalogueBehavior(this, numFournisseur, agentBDD);
         creationCatalogueBehavior.setDataStore(catalogue);

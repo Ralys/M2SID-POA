@@ -1,10 +1,11 @@
 package fournisseur;
 
+import fournisseur.behaviors.CreationCatalogueBehavior;
 import fournisseur.behaviors.WaitAchat;
 import fournisseur.behaviors.WaitRequestStrategie1;
 import common.SuperAgent;
 import common.TypeAgent;
-import static common.TypeAgent.Client;
+import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import java.util.logging.Level;
@@ -24,25 +25,29 @@ public class FournisseurAgent extends SuperAgent {
     @Override
     protected void setup() {
         this.registerService(TypeAgent.Fournisseur);
-
+        
+        //Comportement Attente d'un achat
         WaitAchat waitAchatBehavior = new WaitAchat();
         waitAchatBehavior.setDataStore(catalogue);
         this.addBehaviour(waitAchatBehavior);
-
-        WaitRequestStrategie1 WaitRequestBehaviorStrategie = new WaitRequestStrategie1();
-        WaitRequestBehaviorStrategie.setDataStore(catalogue);
-        this.addBehaviour(WaitRequestBehaviorStrategie);
-
-        this.creationCatalogue();
+        
+        //Comportement attente d'une requete
+        WaitRequestStrategie1 waitRequestBehaviorStrategie = new WaitRequestStrategie1();
+        waitRequestBehaviorStrategie.setDataStore(catalogue);
+        this.addBehaviour(waitRequestBehaviorStrategie);
+        
+        //Comportement création d'un catalogue
+        AID agentBDD = this.findAgentsFromService(TypeAgent.BDD)[0];
+        Object[] tabParam = this.getArguments();
+        int numFournisseur = Integer.valueOf((String) tabParam[0]);
+        CreationCatalogueBehavior creationCatalogueBehavior = new CreationCatalogueBehavior(this, numFournisseur, agentBDD);
+        creationCatalogueBehavior.setDataStore(catalogue);
+        this.addBehaviour(creationCatalogueBehavior);
+        
+        
 
     }
-
-    private void creationCatalogue() {
-        //Ajout dans le catalogue par la BDD
-        Produit p = new Produit(0, "Chibre", 5.0, "CD");
-        catalogue.put(p, 5);
-    }
-
+    
     protected void takeDown() {
         try {
             DFService.deregister(this);

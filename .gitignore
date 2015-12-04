@@ -21,3 +21,7 @@ MTPs-Main-Container.txt
 
 # Fichier de test !
 /src/main/java/fournisseur/test/
+
+
+#Fichier base de données
+test.db

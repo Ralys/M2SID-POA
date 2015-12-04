@@ -60,12 +60,15 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
-                JSONArray tabProduit = new JSONArray();
+                JSONArray tabProduitStock = new JSONArray();
+                JSONArray tabProduitNonStock = new JSONArray();
                 HashMap<Integer, Long> listDate = Livraison.getListeDateLivraison();
                 Set<Integer> listDelai = listDate.keySet();
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
+                    boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+
                     //Pour les trois date possible
                     for (Integer delai : listDelai) {
                         Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
@@ -77,38 +80,48 @@ public abstract class WaitRequest extends CyclicBehaviour {
                         produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
                         produitJson.put("quantite", quantite);
                         produitJson.put("date", listDate.get(delai));
-                        tabProduit.add(produitJson);
+                        if (verifStock) {
+                            tabProduitStock.add(produitJson);
+                        } else {
+                            tabProduitNonStock.add(produitJson);
+                        }
                     }
                 }
-                ACLMessage replyMessage = msg.createReply();
-                String contenuMessage = "";
 
                 // Si on a une réponse, on envoie un tableau Json de tout les produits a proposer
                 if (!listProduit.isEmpty()) {
-                    replyJson.put("jePropose", tabProduit);
-                    //Log
-                    contenuMessage = replyJson.toJSONString();
-                    String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
-                    Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, envoiMessage);
+                    //Tableau qte suffisante
+                    replyJson.put("jePropose", tabProduitStock);
+                    this.sendMessage(replyJson.toJSONString(), msg);
+
+                    //Tableau qte insuffisante
+                    replyJson = new JSONObject();
+                    replyJson.put("quantiteInsuffisante", tabProduitNonStock);
+                    this.sendMessage(replyJson.toJSONString(), msg);
                 } else {
                     //réponse
                     JSONObject reqInvalide = new JSONObject();
                     reqInvalide.put("recherche", recherche);
                     reqInvalide.put("idProduit", reference);
-                    replyJson.put("requeteInvalide", tabProduit);
-                    //Log
-                    Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, "Aucun produit correspondant à la recherche");
+                    replyJson.put("requeteInvalide", reqInvalide);
+                    //Envoie de la réponse
+                    this.sendMessage(replyJson.toJSONString(), msg);
                 }
-                //Envoie de la réponse
-                contenuMessage = replyJson.toJSONString();
-                replyMessage.setContent(contenuMessage);
-                myAgent.send(replyMessage);
+
             } catch (ParseException ex) {
                 Logger.getLogger(WaitRequest.class.getName()).log(Level.SEVERE, "Format de message invalide");
             }
         } else {
             block();
         }
+    }
+
+    public void sendMessage(String contenu, ACLMessage respond) {
+        ACLMessage replyMessage = respond.createReply();
+        replyMessage.setPerformative(ACLMessage.PROPOSE);
+        myAgent.send(replyMessage);
+        String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenu + " : envoyé à " + respond.getSender().getName();
+        Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, envoiMessage);
     }
 
     //Méthode défini par une stratégie

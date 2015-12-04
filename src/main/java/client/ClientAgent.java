@@ -35,6 +35,7 @@ public class ClientAgent extends SuperAgent {
     private ArrayList<Produit> lproposition;
     private ArrayList<String> lAgentsRepond;
     private int nbRechercheEnvoye = 0;
+    private int nbReponseReçu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
     
@@ -446,6 +447,14 @@ public class ClientAgent extends SuperAgent {
 
     public void setTypeAgentCible(String typeAgentCible) {
         this.typeAgentCible = typeAgentCible;
+    }
+
+    public int getNbReponseReçu() {
+        return nbReponseReçu;
+    }
+
+    public void setNbReponseReçu(int nbReponseReçu) {
+        this.nbReponseReçu = nbReponseReçu;
     }
     
     

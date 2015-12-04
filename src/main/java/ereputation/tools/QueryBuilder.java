@@ -26,13 +26,13 @@ public class QueryBuilder {
     
     public static String selectRetourSolde(String agentName, String dateDebut, String dateFin) {
         //TO DO ecrire la requête
-        String sql = "SELECT COUNT(id_solde) AS nbSolde FROM SOLDE WHERE NOM_VENDEUR= \""+agentName+"\"";
+        String sql = "SELECT COUNT(ID) AS nbSolde FROM SOLDE WHERE VENDEUR= \""+agentName+"\"";
         return JSONRequest("select", sql);
     }
     
     public static String selectRetourAllSolde(String vendeur) {
         //TO DO ecrire la requête
-        String sql = "";
+        String sql = "SELECT COUNT(ID) AS nbSolde FROM SOLDE WHERE VENDEUR != \""+vendeur+"\"";
         return JSONRequest("select", sql);
     }
     

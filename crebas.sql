@@ -18,16 +18,30 @@ drop table if exists AVIS;
 
 drop table if exists FOURNISSEUR_PRODUIT;
 
+drop table if exists SOLDES;
 
+
+
+/*==============================================================*/
+/* Table : SOLDE                                                */
+/*==============================================================*/
+create table SOLDE
+(
+  ID                   int not null,
+  VENDEUR              varchar(255) not null,
+  DATE_START          bigint,
+  DATE_END          bigint,
+  primary key (ID)
+);
 
 /*==============================================================*/
 /* Table : CATEGORIE                                            */
 /*==============================================================*/
 create table CATEGORIE
 (
-   ID_CATEGORIE         int not null,
-   NOM_CATEGORIE        varchar(255) not null,
-   primary key (ID_CATEGORIE)
+  ID_CATEGORIE         int not null,
+  NOM_CATEGORIE        varchar(255) not null,
+  primary key (ID_CATEGORIE)
 );
 
 /*==============================================================*/

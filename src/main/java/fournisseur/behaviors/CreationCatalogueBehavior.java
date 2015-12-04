@@ -86,7 +86,7 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             HashMap<Integer, Produit> listProduit = this.getProduit();
             ArrayList<Integer> listProduitFournisseur = this.getProduitFournisseur();
             for (Integer numProduit : listProduitFournisseur) {
-                getDataStore().put(listProduit.get(numProduit), 0);
+                getDataStore().put(listProduit.get(numProduit), 2);//TODO A mettre à 0 une fois les tests fini
             }
         } catch (ParseException ex) {
             Logger.getLogger(CreationCatalogueBehavior.class.getName()).log(Level.SEVERE, "Format de message BDD incorrect");

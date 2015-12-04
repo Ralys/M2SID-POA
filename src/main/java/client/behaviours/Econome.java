@@ -49,6 +49,9 @@ public class Econome extends CyclicBehaviour {
             if (object.containsKey("jePropose")) {
                 JSONArray array = (JSONArray) object.get("jePropose");
                 econome.ajouterProposition(array, message);
+                while(econome.getLproposition().size() != econome.getNbRechercheEnvoye()){
+                    // attente
+                }
                 econome.jeChoisis(econome.moinsCher());
             }
 
@@ -77,6 +80,14 @@ public class Econome extends CyclicBehaviour {
                     }
                 }
             }
+            
+            
+            // retour désirabilité
+            if(object.containsKey("retourDesirabilite")){
+                JSONObject obj = (JSONObject) object.get("retourDesirabilite");
+            }
+            
+            
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }

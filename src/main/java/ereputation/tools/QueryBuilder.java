@@ -32,7 +32,7 @@ public class QueryBuilder {
     
     public static String selectRetourAllSolde(String vendeur) {
         //TO DO ecrire la requête
-        String sql = "";
+        String sql = "SELECT COUNT(id_solde) AS nbSolde FROM SOLDE WHERE NOM_VENDEUR != \""+vendeur+"\"";
         return JSONRequest("select", sql);
     }
     

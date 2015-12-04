@@ -4,6 +4,8 @@ import common.TypeAgent;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
@@ -78,6 +80,15 @@ public class BDDAgent extends SuperAgent {
 
         //Make this agent terminate
         //doDelete();
+    }
+    
+    @Override
+    protected void takeDown() {
+        try {
+            DFService.deregister(this);
+        } catch (FIPAException ex) {
+            Logger.getLogger(this.getLocalName()).log(Level.SEVERE, null, ex);
+        }
     }
 
      protected void insert(String sql) {

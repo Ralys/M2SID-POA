@@ -18,9 +18,51 @@ drop table if exists AVIS;
 
 drop table if exists FOURNISSEUR_PRODUIT;
 
-drop table if exists SOLDES;
+drop table if exists SOLDE;
+
+drop table if exists VENDEUR;
+
+drop table if exists PRIX_FOURNISSEUR;
+
+drop table if exists STOCK;
 
 
+
+
+/*==============================================================*/
+/* Table : PRIX_FOURNISSEUR                                     */
+/*==============================================================*/
+create table PRIX_FOURNISSEUR
+(
+  REF_PRODUIT          varchar(255) not null,
+  ID_FOURNISSEUR     int not null,
+  PRIX_UNITAIRE        float(9,2) not null,
+  primary key (REF_PRODUIT, ID_FOURNISSEUR)
+);
+
+
+
+/*==============================================================*/
+/* Table : STOCK                                                */
+/*==============================================================*/
+create table STOCK
+(
+  REF_PRODUIT          varchar(255) not null,
+  VENDEUR_NAME         varchar(255) not null,
+  PRIX_UNITAIRE        float(9,2) not null,
+  QTE                  int not null,
+  primary key (REF_PRODUIT, VENDEUR_NAME)
+);
+
+
+/*==============================================================*/
+/* Table : VENDEUR                                              */
+/*==============================================================*/
+create table VENDEUR
+(
+  VENDEUR_NAME         varchar(255) not null,
+  primary key (VENDEUR_NAME)
+);
 
 /*==============================================================*/
 /* Table : SOLDE                                                */
@@ -104,6 +146,7 @@ create table FOURNISSEUR_PRODUIT
    ID_FOURNISSEUR       int not null,
    primary key (REF_PRODUIT,ID_FOURNISSEUR)
 );
+
 
 INSERT INTO `produit` (`REF_PRODUIT`, `ID_CATEGORIE`, `NOM_PRODUIT`,`DATE_SORTIE`,`PRIX_CREATION`) VALUES
 	(1, 1, 'Le roi lion',UNIX_TIMESTAMP()+0,5.5),

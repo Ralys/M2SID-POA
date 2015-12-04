@@ -26,8 +26,6 @@ import org.json.simple.parser.ParseException;
  */
 public abstract class WaitRequest extends CyclicBehaviour {
 
-    private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
-
     @Override
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
@@ -66,7 +64,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONArray tabProduit = new JSONArray();
-                HashMap<Integer, Date> listDate = Livraison.getListeDateLivraison();
+                HashMap<Integer, Long> listDate = Livraison.getListeDateLivraison();
                 Set<Integer> listDelai = listDate.keySet();
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
@@ -74,7 +72,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     //Pour les trois date possible
                     for (Integer delai : listDelai) {
 
-                        Transaction t = new Transaction(p.getIdProduit(), delai, sender,quantite);
+                        Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite,delai);
                         ((StocksEtTransaction) getDataStore()).put(t, p);
 
                         JSONObject produitJson = new JSONObject();
@@ -82,7 +80,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                         produitJson.put("nomProduit", p.getNomProduit());
                         produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
                         produitJson.put("quantite", quantite);
-                        produitJson.put("date", formater.format(listDate.get(delai)));
+                        produitJson.put("date", listDate.get(delai));
                         tabProduit.add(produitJson);
                     }
                 }

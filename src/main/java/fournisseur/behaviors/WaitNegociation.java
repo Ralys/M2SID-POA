@@ -21,8 +21,6 @@ import org.json.simple.parser.ParseException;
  */
 public abstract class WaitNegociation extends CyclicBehaviour {
 
-    private final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
-
     @Override
     public void action() {
         MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.PROPOSE);
@@ -42,22 +40,21 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 JSONObject object = (JSONObject) parser.parse(msg.getContent());
                 JSONObject achat = (JSONObject) object.get("jeNegocie");
 
-                Date date = formater.parse(achat.get("date").toString());
+                long date = Long.valueOf(achat.get("date").toString());
                 int idProduit = Integer.valueOf(achat.get("idProduit").toString());
                 double prix = Double.valueOf(achat.get("prix").toString());
-                int delai = Livraison.countDelai(date);
-                
+
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
                 JSONObject replyContenu = new JSONObject();
 
                 //{"jeNégocie": {"idProduit": "67D","prix": 20,"date": "20/02/2105"}}
                 replyContenu.put("idProduit", idProduit);
-                replyContenu.put("prix", this.définirNouveauPrix(idProduit, delai,sender,prix));
-                replyContenu.put("date", formater.format(achat.get("date").toString()));
-                
+                replyContenu.put("prix", this.définirNouveauPrix(idProduit, date, sender, prix));
+                replyContenu.put("date", date);
+
                 replyJson.put("jeNegocie", replyContenu);
-                
+
                 String contenuMessage = replyJson.toJSONString().replace("\\", "");
                 replyMessage.setContent(contenuMessage);
                 replyMessage.setPerformative(ACLMessage.PROPOSE);
@@ -67,14 +64,12 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
             } catch (ParseException ex) {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide" + " de " + msg.getSender().toString());
-            } catch (java.text.ParseException ex) {
-                Logger.getLogger(WaitNegociation.class.getName()).log(Level.SEVERE, "Format de date incorrect" + ex.getLocalizedMessage() + " de " + msg.getSender().toString());
             }
         } else {
             block();
         }
     }
 
-    public abstract double définirNouveauPrix(int idProduit, int delai, String sender, double prixDemande);
+    public abstract double définirNouveauPrix(int idProduit, Long date, String sender, double prixDemande);
 
 }

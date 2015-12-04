@@ -34,7 +34,7 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public Transaction getTransaction(int idProduit, int delai, String client) {
+    public Transaction getTransaction(int idProduit, Long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {
@@ -43,7 +43,7 @@ public class StocksEtTransaction extends DataStore {
                 Transaction t = (Transaction) o;
                 if (t.getClient().compareTo(client) == 0
                         && t.getIdProduit() == idProduit
-                        && t.getDelai() == delai) {
+                        && t.getDateLivraison() == dateLivraison) {
                     return t;
                 }
             }
@@ -51,8 +51,8 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public void removeTransaction(int idProduit, int delai, String client) {
-        this.remove(this.getTransaction(idProduit, delai, client));
+    public void removeTransaction(int idProduit, Long dateLivraison, String client) {
+        this.remove(this.getTransaction(idProduit, dateLivraison, client));
     }
 
     public void decrementerStock(int id, int qte) {

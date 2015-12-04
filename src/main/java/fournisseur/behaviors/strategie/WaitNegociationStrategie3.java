@@ -9,7 +9,7 @@ import fournisseur.behaviors.WaitNegociation;
 public class WaitNegociationStrategie3 extends WaitNegociation {
 
     @Override
-    public double définirNouveauPrix(int idProduit, int delai, String sender, double prixDemande) {
+    public double définirNouveauPrix(int idProduit, Long date, String sender, double prixDemande) {
         return -1;
     }
 

@@ -23,7 +23,8 @@ public class WaitNegociationStrategie1 extends WaitNegociation {
         double prixBase = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit).getPrixdeBase();
         int nbNego = Math.min(5, t.getNbNego());
         double reducNego = reductionNego * nbNego;
-        return ((prixBase * (margeBase - reducNego)) * (1 - (reductionQte * t.getQte()))) + Livraison.prixLivraisonByDelai(delai);
+        double prix = ((prixBase * (margeBase - reducNego)) * (1 - (reductionQte * t.getQte()))) + Livraison.prixLivraisonByDelai(delai);
+        return Math.round(prix * 100) / 100;
     }
 
 }

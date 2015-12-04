@@ -119,11 +119,9 @@ public class FXMLController implements Initializable {
                 Profile p = new ProfileImpl();
                 p.setParameter(Profile.MAIN_HOST, ip.getText());
                 p.setParameter(Profile.MAIN_PORT, port.getText());
-
                 // on recuprère l'information sur le type de recherche
                 // true: recherche false:recherche par reference
                 boolean typeRecherche = rbRecherche.isSelected();
-
                 AgentContainer ac = rt.createAgentContainer(p);
                 Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), reference.getText(), choixQte.getValue(), typeRecherche};
 
@@ -131,8 +129,6 @@ public class FXMLController implements Initializable {
                 AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.ClientAgent", arguments);
                 // lancement de l'agent
                 agent.start();
-                
-                System.out.println("AGENT LANCé");
 
             }
         } catch (StaleProxyException ex) {

@@ -3,10 +3,17 @@ package fournisseur;
 import fournisseur.utils.StocksEtTransaction;
 import fournisseur.behaviors.CreationCatalogueBehavior;
 import fournisseur.behaviors.WaitAchat;
-import fournisseur.behaviors.WaitRequestStrategie1;
+import fournisseur.behaviors.strategie.WaitRequestStrategie1;
 import common.SuperAgent;
 import common.TypeAgent;
 import fournisseur.behaviors.GestionStockBehavior;
+import fournisseur.behaviors.WaitNegociation;
+import fournisseur.behaviors.WaitRequest;
+import fournisseur.behaviors.strategie.WaitNegociationStrategie1;
+import fournisseur.behaviors.strategie.WaitNegociationStrategie2;
+import fournisseur.behaviors.strategie.WaitNegociationStrategie3;
+import fournisseur.behaviors.strategie.WaitRequestStrategie2;
+import fournisseur.behaviors.strategie.WaitRequestStrategie3;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -27,11 +34,34 @@ public class FournisseurAgent extends SuperAgent {
     @Override
     protected void setup() {
         this.registerService(TypeAgent.Fournisseur);
-
-        //Comportement création d'un catalogue
+        
+        //Parametre : numero du fournisseur
         AID agentBDD = this.findAgentsFromService(TypeAgent.BDD)[0];
         Object[] tabParam = this.getArguments();
         int numFournisseur = Integer.valueOf((String) tabParam[0]);
+
+        //Choix de la stratégie
+        WaitRequest waitRequestBehaviorStrategie = null;
+        WaitNegociation waitNegociationBehaviorStrategie = null;
+        switch (numFournisseur) {
+            case 1:
+                waitRequestBehaviorStrategie = new WaitRequestStrategie1();
+                waitNegociationBehaviorStrategie = new WaitNegociationStrategie1();
+                break;
+            case 2:
+                waitRequestBehaviorStrategie = new WaitRequestStrategie2();
+                waitNegociationBehaviorStrategie = new WaitNegociationStrategie2();
+                break;
+            case 3:
+                waitRequestBehaviorStrategie = new WaitRequestStrategie3();
+                waitNegociationBehaviorStrategie = new WaitNegociationStrategie3();
+                break;
+            default:
+                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Paramètre incorrect");
+                this.takeDown();
+        }
+        
+        //Comportement création d'un catalogue
         CreationCatalogueBehavior creationCatalogueBehavior = new CreationCatalogueBehavior(this, numFournisseur, agentBDD);
         creationCatalogueBehavior.setDataStore(catalogue);
         this.addBehaviour(creationCatalogueBehavior);
@@ -47,9 +77,12 @@ public class FournisseurAgent extends SuperAgent {
         this.addBehaviour(waitAchatBehavior);
 
         //Comportement attente d'une requete
-        WaitRequestStrategie1 waitRequestBehaviorStrategie = new WaitRequestStrategie1();
         waitRequestBehaviorStrategie.setDataStore(catalogue);
         this.addBehaviour(waitRequestBehaviorStrategie);
+
+        //Comportement de la négociation
+        waitNegociationBehaviorStrategie.setDataStore(catalogue);
+        this.addBehaviour(waitNegociationBehaviorStrategie);
 
     }
 

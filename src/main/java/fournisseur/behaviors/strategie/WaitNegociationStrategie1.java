@@ -1,5 +1,6 @@
-package fournisseur.behaviors;
+package fournisseur.behaviors.strategie;
 
+import fournisseur.behaviors.WaitNegociation;
 import fournisseur.utils.Livraison;
 import fournisseur.utils.StocksEtTransaction;
 import fournisseur.utils.Transaction;

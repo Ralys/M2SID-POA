@@ -2,8 +2,10 @@ package ereputation;
 
 import common.SuperAgent;
 import common.TypeAgent;
+import common.TypeLog;
 import ereputation.behaviours.HandleInform;
 import ereputation.behaviours.HandleRequest;
+import ereputation.log.LogEreputation;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -28,7 +30,6 @@ public class EReputationAgent extends SuperAgent {
     @Override
     protected void setup() {
         this.registerService(TypeAgent.EReputation);
-       
         this.addBehaviour(new HandleRequest(this));
         this.addBehaviour(new HandleInform(this));
     }
@@ -38,6 +39,7 @@ public class EReputationAgent extends SuperAgent {
         try {
             DFService.deregister(this);
         } catch (FIPAException ex) {
+            TypeLog.logEreputation.Erreur(EReputationAgent.class.getName()+":"+ex.getMessage());
             Logger.getLogger(EReputationAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

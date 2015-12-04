@@ -1,6 +1,7 @@
 package ereputation.behaviours;
 
 import common.TypeAgent;
+import common.TypeLog;
 import ereputation.EReputationAgent;
 import ereputation.tools.QueryBuilder;
 import jade.core.AID;
@@ -33,7 +34,8 @@ public class HandleInform extends CyclicBehaviour {
         if(message == null) return;
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
-        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterInformation(message);
         block();
@@ -50,6 +52,7 @@ public class HandleInform extends CyclicBehaviour {
             
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide " + ex);
+            TypeLog.logEreputation.Erreur(HandleInform.class+":"+ex.getMessage());
         }
     }
     
@@ -66,7 +69,7 @@ public class HandleInform extends CyclicBehaviour {
                 break;
             
             case EReputationAgent.Produit:
-                nom = donneAvis.get("ref").toString();
+                nom = donneAvis.get("id").toString();
                 break;
         }
         

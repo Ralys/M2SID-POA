@@ -2,29 +2,25 @@ package ereputation.tools;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Team EReputation
  */
-public class ReputationCalculator {
+public class DesirabiliteCalculator {
     
-    private static final long MAX_VALEUR_REPUTATION = 10;
-    private static final long MAX_JOURS_REPUTATION  = 63;
+    private static final long MAX_VALEUR_DESIRABILITE = 10;
+    private static final long MAX_JOURS_DESIRABILITE  = 63;
     
     public static double execute(String dateSortie) {
         long jours = daysFromNow(dateSortie);
         
-        if(jours > MAX_JOURS_REPUTATION) {
-            return MAX_VALEUR_REPUTATION;
+        if(jours > MAX_JOURS_DESIRABILITE) {
+            return MAX_VALEUR_DESIRABILITE;
         } else {
-            return round(Math.abs(Math.sin((double)jours/20) * MAX_VALEUR_REPUTATION), 2);   
+            return round(Math.abs(Math.sin((double)jours/20) * MAX_VALEUR_DESIRABILITE), 2);   
         }
     }
     

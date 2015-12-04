@@ -26,7 +26,7 @@ import org.json.simple.parser.ParseException;
 /**
 
  */
-public class AgentBDD extends SuperAgent {
+public class BDDAgent extends SuperAgent {
     
     private static final String DB_DRIVER = "org.sqlite.JDBC";
     private static final String DB_FILE = "test.db";

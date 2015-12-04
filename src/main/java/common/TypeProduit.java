@@ -9,5 +9,11 @@ package common;
  * @author Aymeric
  */
 public class TypeProduit {
-    public static String tabTypeProduit[] = {"CD", "DVD", "Téléphone", "Jeux-vidéo","Appareil photo"};
+    public static final String CD = "CD";
+    public static final String DVD = "DVD";
+    public static final String Telephone = "Téléphone";
+    public static final String JeuxVideo = "Jeux-vidéo";
+    public static final String AppareilPhoto = "Appareil photo";
+    
+    public static final String[] allProducts = new String[] { CD, DVD, Telephone, JeuxVideo, AppareilPhoto };
 }

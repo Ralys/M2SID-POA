@@ -1,5 +1,6 @@
-package client;
+package client.UI;
 
+import client.outils.TypeAgentClient;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
@@ -86,12 +87,11 @@ public class FXMLController implements Initializable {
     private final ObservableList<String> listQte = FXCollections.observableArrayList(
             "1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
 
-    private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.tabTypeProduit);
+    private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.allProducts);
 
     private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome);
 
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
-
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -125,10 +125,10 @@ public class FXMLController implements Initializable {
                 boolean typeRecherche = rbRecherche.isSelected();
 
                 AgentContainer ac = rt.createAgentContainer(p);
-                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(),reference.getText(), choixQte.getValue(), typeRecherche};
+                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), reference.getText(), choixQte.getValue(), typeRecherche};
 
                 // création de l'agent
-                AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.Client", arguments);
+                AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.ClientAgent", arguments);
                 // lancement de l'agent
                 agent.start();
 
@@ -174,16 +174,45 @@ public class FXMLController implements Initializable {
 
             // verrouillage du bouton de validation
             btnValider.setDisable(true);
-            
+
         } else {
+            testerContenu(choixClient, choixVendeur, choixQte);
+            testerContenu(ip, port, nomAgent);
+
+            if (rbRecherche.isSelected()) {
+                testerContenu(nomProd);
+                testerContenu(choixProd);
+            }
+            if (rbReference.isSelected()) {
+                testerContenu(reference);
+            }
+
             messageErreur.setText("Merci de remplir tous les champs !");
             messageErreur.setVisible(true);
         }
 
         return valide;
     }
-    
-    
 
+    public void testerContenu(ComboBox... cbx) {
+        for (ComboBox cb : cbx) {
+            if (cb.getSelectionModel().getSelectedIndex() != -1) {
+                cb.setStyle("-fx-border-color:green");
+            } else {
+                cb.setStyle("-fx-border-color:red");
+            }
+        }
+    }
+
+    public void testerContenu(TextField... tfs) {
+        for (TextField tf : tfs) {
+            if (tf.getText().isEmpty()) {
+                tf.setStyle("-fx-border-color:red");
+            } else {
+                tf.setStyle("-fx-border-color:green");
+
+            }
+        }
+    }
 
 }

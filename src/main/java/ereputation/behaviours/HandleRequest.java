@@ -151,13 +151,17 @@ public class HandleRequest extends CyclicBehaviour {
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
-        JSONObject retourDemandeSolde = new JSONObject();
+        
         
         int nbJourConsomme = Integer.parseInt(resultat.get("nbSolde").toString());
         int nbJourdemande =  Timestamp.valueOf(dateFin).compareTo(Timestamp.valueOf(dateDebut));
         
-        retourDemandeSolde.put("status", (nbJourConsomme+nbJourdemande)<=10);
-        retourDemandeSolde.put("retourDemandeSolde", Math.abs(nbJourConsomme-10));
+        JSONObject retour = new JSONObject();
+        retour.put("status", (nbJourConsomme+nbJourdemande)<=10);
+        retour.put("joursRestants", Math.abs(nbJourConsomme-10));
+        
+        JSONObject retourDemandeSolde = new JSONObject();
+        retourDemandeSolde.put("resultatSolde", retour);
         
         String reponseJSON = retourDemandeSolde.toJSONString();
         

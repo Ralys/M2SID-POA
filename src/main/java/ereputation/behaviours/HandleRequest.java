@@ -153,7 +153,7 @@ public class HandleRequest extends CyclicBehaviour {
         
         
         
-        int nbJourConsomme = Integer.parseInt(resultat.get("nbSolde").toString());
+        int nbJourConsomme = Integer.parseInt(resultat.get("nbJourSolde").toString());
         int nbJourdemande =  Timestamp.valueOf(dateFin).compareTo(Timestamp.valueOf(dateDebut));
         
         JSONObject retour = new JSONObject();

@@ -325,10 +325,14 @@ public class ClientAgent extends SuperAgent {
     }
 
     public void retirerProposition(Produit produitARetirer) {
+        Produit produitASupprimer = null;
         for (Produit prod : lproposition) {
             if (prod.equals(produitARetirer)) {
-                lproposition.remove(prod);
+                produitASupprimer=prod;
             }
+        }
+        if(produitASupprimer!=null){
+             lproposition.remove(produitASupprimer);
         }
     }
 

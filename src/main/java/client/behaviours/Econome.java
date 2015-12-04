@@ -60,7 +60,7 @@ public class Econome extends CyclicBehaviour {
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
             }
-            
+
             // à faire
             if (object.containsKey("requeteInvalide")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
@@ -70,6 +70,8 @@ public class Econome extends CyclicBehaviour {
                 JSONObject obj = (JSONObject) object.get("commandeOk");
                 econome.afficherAchat(obj, message);
                 // laisser avis erep sur vendeur/fournisseur + produit
+                econome.donneAvis(econome.getTypeAgentCible(), econome.nomAgent(message));
+                econome.donneAvisProduit(obj.get("idProduit").toString());
             }
 
             if (object.containsKey("commandePasOK")) {

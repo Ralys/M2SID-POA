@@ -1,6 +1,10 @@
 package ereputation.tools;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import org.json.simple.JSONObject;
 
 /**
@@ -24,15 +28,15 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
     
-    public static String selectRetourSolde(String agentName, String dateDebut, String dateFin) {
-        //TO DO ecrire la requête
-        String sql = "SELECT COUNT(ID) AS nbSolde FROM SOLDE WHERE VENDEUR= \""+agentName+"\"";
+    public static String selectRetourSolde(String vendeur, String dateDebut, String dateFin) {
+        DateFormat df = new SimpleDateFormat("yyyy");
+        String year = df.format(new java.sql.Date(Long.valueOf(dateDebut)*1000));
+        String sql = "SELECT COUNT(DAY(FROM_UNIXTIME((DATE_END-DATE_START)))) AS nbJourSolde FROM `SOLDE` WHERE VENDEUR = '"+vendeur+"' AND YEAR(FROM_UNIXTIME(DATE_START))="+year+" AND YEAR(FROM_UNIXTIME(DATE_END))="+year+"";
         return JSONRequest("select", sql);
     }
     
     public static String selectRetourAllSolde(String vendeur) {
-        //TO DO ecrire la requête
-        String sql = "SELECT COUNT(ID) AS nbSolde FROM SOLDE WHERE VENDEUR != \""+vendeur+"\"";
+        String sql = "SELECT VENDEUR, DATE_START, DATE_END FROM SOLDE WHERE VENDEUR!='"+vendeur+"'";
         return JSONRequest("select", sql);
     }
     

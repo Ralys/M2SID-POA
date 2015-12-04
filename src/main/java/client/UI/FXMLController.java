@@ -131,6 +131,8 @@ public class FXMLController implements Initializable {
                 AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.ClientAgent", arguments);
                 // lancement de l'agent
                 agent.start();
+                
+                System.out.println("AGENT LANCé");
 
             }
         } catch (StaleProxyException ex) {

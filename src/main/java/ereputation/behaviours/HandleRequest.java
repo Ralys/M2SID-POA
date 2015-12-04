@@ -106,7 +106,7 @@ public class HandleRequest extends CyclicBehaviour {
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
-        //Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
+        Logger.getLogger(EReputationAgent.class.getName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
     
@@ -134,7 +134,7 @@ public class HandleRequest extends CyclicBehaviour {
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
 
@@ -151,8 +151,13 @@ public class HandleRequest extends CyclicBehaviour {
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
-        JSONObject retourDemandeSolde = new JSONObject();  
-        retourDemandeSolde.put("retourDemandeSolde", resultat);
+        JSONObject retourDemandeSolde = new JSONObject();
+        
+        int nbJourConsomme = Integer.parseInt(resultat.get("nbSolde").toString());
+        int nbJourdemande =  Timestamp.valueOf(dateFin).compareTo(Timestamp.valueOf(dateDebut));
+        
+        retourDemandeSolde.put("status", (nbJourConsomme+nbJourdemande)<=10);
+        retourDemandeSolde.put("retourDemandeSolde", Math.abs(nbJourConsomme-10));
         
         String reponseJSON = retourDemandeSolde.toJSONString();
         
@@ -160,7 +165,7 @@ public class HandleRequest extends CyclicBehaviour {
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
         
     }
@@ -186,7 +191,7 @@ public class HandleRequest extends CyclicBehaviour {
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);
         
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
         
     }
@@ -205,6 +210,7 @@ public class HandleRequest extends CyclicBehaviour {
         
         //TO DO deux cas, verfification OK / KO
         
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": verification de la vente :"+resultat);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+": verification de la vente :"+resultat);
         
     }

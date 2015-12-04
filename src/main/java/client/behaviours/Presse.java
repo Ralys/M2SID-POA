@@ -51,6 +51,9 @@ public class Presse extends CyclicBehaviour {
             if (object.containsKey("jePropose")) {
                 JSONArray array = (JSONArray) object.get("jePropose");
                 presse.ajouterProposition(array, message);
+                while(presse.getLproposition().size() != presse.getNbRechercheEnvoye()){
+                    // attente
+                }
                 presse.jeChoisis(presse.plusTot());
             }
 

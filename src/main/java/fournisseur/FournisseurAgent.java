@@ -1,5 +1,6 @@
 package fournisseur;
 
+import fournisseur.utils.StocksEtTransaction;
 import fournisseur.behaviors.CreationCatalogueBehavior;
 import fournisseur.behaviors.WaitAchat;
 import fournisseur.behaviors.WaitRequestStrategie1;

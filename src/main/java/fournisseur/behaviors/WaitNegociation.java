@@ -1,9 +1,9 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
-import fournisseur.Livraison;
-import fournisseur.StocksEtTransaction;
-import fournisseur.Transaction;
+import fournisseur.utils.Livraison;
+import fournisseur.utils.StocksEtTransaction;
+import fournisseur.utils.Transaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;

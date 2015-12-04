@@ -1,6 +1,6 @@
 package fournisseur.behaviors;
 
-import fournisseur.Produit;
+import fournisseur.utils.Produit;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;

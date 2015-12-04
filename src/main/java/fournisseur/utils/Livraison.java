@@ -1,15 +1,15 @@
-package fournisseur;
+package fournisseur.utils;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 /**
- *
+ * A changer avec les dates en Timestamp
  * @author tom
  */
 public class Livraison {
-
+    
     private static HashMap<Integer, Double> prixLivraison;
 
     static {

@@ -1,4 +1,4 @@
-package fournisseur;
+package fournisseur.utils;
 
 /**
  *

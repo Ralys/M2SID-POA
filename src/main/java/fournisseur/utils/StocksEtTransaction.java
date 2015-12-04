@@ -1,4 +1,4 @@
-package fournisseur;
+package fournisseur.utils;
 
 import jade.core.behaviours.DataStore;
 import jade.util.leap.Set;

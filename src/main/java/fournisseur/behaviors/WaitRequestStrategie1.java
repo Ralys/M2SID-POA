@@ -1,7 +1,7 @@
 package fournisseur.behaviors;
 
-import fournisseur.Livraison;
-import fournisseur.StocksEtTransaction;
+import fournisseur.utils.Livraison;
+import fournisseur.utils.StocksEtTransaction;
 
 /**
  *

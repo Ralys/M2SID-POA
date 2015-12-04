@@ -49,16 +49,27 @@ public class Econome extends CyclicBehaviour {
             if (object.containsKey("jePropose")) {
                 JSONArray array = (JSONArray) object.get("jePropose");
                 econome.ajouterProposition(array, message);
-                while(econome.getLproposition().size() != econome.getNbRechercheEnvoye()){
+                econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
+                while (econome.getNbReponseReçu() != econome.getNbRechercheEnvoye()) {
                     // attente
                 }
                 econome.jeChoisis(econome.moinsCher());
             }
 
+            // à faire
+            if (object.containsKey("quantiteInsuffisante")) {
+                econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
+            }
+            
+            // à faire
+            if (object.containsKey("requeteInvalide")) {
+                econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
+            }
+
             if (object.containsKey("commandeOk")) {
                 JSONObject obj = (JSONObject) object.get("commandeOk");
                 econome.afficherAchat(obj, message);
-                // laisser avis erep
+                // laisser avis erep sur vendeur/fournisseur + produit
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -80,14 +91,12 @@ public class Econome extends CyclicBehaviour {
                     }
                 }
             }
-            
-            
+
             // retour désirabilité
-            if(object.containsKey("retourDesirabilite")){
+            if (object.containsKey("retourDesirabilite")) {
                 JSONObject obj = (JSONObject) object.get("retourDesirabilite");
             }
-            
-            
+
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }

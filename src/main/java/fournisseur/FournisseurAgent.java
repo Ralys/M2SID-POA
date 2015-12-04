@@ -34,9 +34,14 @@ public class FournisseurAgent extends SuperAgent {
     @Override
     protected void setup() {
         this.registerService(TypeAgent.Fournisseur);
-
+        AID agentBDD = null;
         //Parametre : numero du fournisseur
-        AID agentBDD = this.findAgentsFromService(TypeAgent.BDD)[0];
+        try {
+            agentBDD = this.findAgentsFromService(TypeAgent.BDD)[0];
+        } catch (IndexOutOfBoundsException io) {
+            Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "L'agent BDD doit être lancé !");
+            this.takeDown();
+        }
         Object[] tabParam = this.getArguments();
         int numFournisseur = 0;
         try {

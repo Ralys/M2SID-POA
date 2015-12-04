@@ -186,10 +186,17 @@ public class HandleRequest extends CyclicBehaviour {
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
-        JSONObject retourDemandeSolde = new JSONObject();  
-        retourDemandeSolde.put("retourDemandeSolde", resultat);
+        for(Object key : resultat.keySet()){
+            for(Object key2 : ((JSONObject)resultat.get(key)).keySet()){
+                resultat.put(key2, resultat.get(key2));
+            }
+            resultat.put(key, resultat.get(key));
+        }
         
-        String reponseJSON = retourDemandeSolde.toJSONString();
+        JSONObject retourDemandeAllSolde = new JSONObject();  
+        retourDemandeAllSolde.put("retourPeriodesSoldes", resultat);
+        
+        String reponseJSON = retourDemandeAllSolde.toJSONString();
         
         // envoi de la réponse
         erep.sendMessage(ACLMessage.INFORM, reponseJSON, agent);

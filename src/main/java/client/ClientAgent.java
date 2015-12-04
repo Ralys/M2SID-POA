@@ -157,13 +157,11 @@ public class ClientAgent extends SuperAgent {
     /**
      * Méthode d'envoi d'avis sur un agent fournisseur ou vendeur
      *
-     * @param adresseAgentErep adresse de l'agent ereputation :
-     * Erep@10.10.135.8/JADE
      * @param nomAgent nom de l'agent sur lequel on donne notre l'avis
      * @param typeAgent type de l'agent sur lequel on donne notre l'avis
      */
-    public void donneAvis(String adresseAgentErep, String typeAgent, String nomAgent) {
-        AID aid = new AID(adresseAgentErep);
+    public void donneAvis( String typeAgent, String nomAgent) {
+        AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         int avis = 0;
 
@@ -176,12 +174,12 @@ public class ClientAgent extends SuperAgent {
         donneAvis.put("donneAvis", contenu);
 
         // envoi du message + afficahge dans les logs
-        envoyerMessage(this, ACLMessage.INFORM, aid, donneAvis.toString());
-        Log.envoi(nomAgent(adresseAgentErep), donneAvis.toString());
+        envoyerMessage(this, ACLMessage.INFORM, agent[0], donneAvis.toString());
+        Log.envoi(TypeAgent.EReputation, donneAvis.toString());
     }
 
-    public void donneAvisProduit(String adresseAgentErep, String idProduit) {
-        AID aid = new AID(adresseAgentErep);
+    public void donneAvisProduit(String idProduit) {
+        AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         int avis = 0;
 
@@ -194,20 +192,18 @@ public class ClientAgent extends SuperAgent {
         donneAvis.put("donneAvis", contenu);
 
         // envoi du message + afficahge dans les logs
-        envoyerMessage(this, ACLMessage.INFORM, aid, donneAvis.toString());
-        Log.envoi(nomAgent(adresseAgentErep), donneAvis.toString());
+        envoyerMessage(this, ACLMessage.INFORM, agent[0], donneAvis.toString());
+        Log.envoi(TypeAgent.EReputation, donneAvis.toString());
     }
 
     /**
      * Méthode de demande d'avis sur un vendeur ou un fournisseur
      *
-     * @param adresseAgentErep adresse de l'agent ereputation :
-     * Erep@10.10.135.8/JADE
      * @param typeAgent type de l'agent auquel on veux l'avis
      * @param nomAgent nom de l'agent auquel on veux l'avis
      */
-    public void demandeAvis(String adresseAgentErep, String typeAgent, String nomAgent) {
-        AID aid = new AID(adresseAgentErep);
+    public void demandeAvis( String typeAgent, String nomAgent) {
+        AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         // construction de l'objet JSON à envoyé
         JSONObject demandeAvis = new JSONObject();
@@ -217,12 +213,12 @@ public class ClientAgent extends SuperAgent {
         demandeAvis.put("demandeAvis", contenu);
 
         // envoi du message + afficahge dans les logs
-        envoyerMessage(this, ACLMessage.REQUEST, aid, demandeAvis.toString());
-        Log.envoi(nomAgent(adresseAgentErep), demandeAvis.toString());
+        envoyerMessage(this, ACLMessage.REQUEST, agent[0], demandeAvis.toString());
+        Log.envoi(TypeAgent.EReputation, demandeAvis.toString());
     }
 
-    public void demandeAvisProduit(String adresseAgentErep, String idProduit) {
-        AID aid = new AID(adresseAgentErep);
+    public void demandeAvisProduit(String idProduit) {
+        AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         // construction de l'objet JSON à envoyé
         JSONObject demandeAvis = new JSONObject();
@@ -232,8 +228,8 @@ public class ClientAgent extends SuperAgent {
         demandeAvis.put("demandeAvis", contenu);
 
         // envoi du message + afficahge dans les logs
-        envoyerMessage(this, ACLMessage.REQUEST, aid, demandeAvis.toString());
-        Log.envoi(nomAgent(adresseAgentErep), demandeAvis.toString());
+        envoyerMessage(this, ACLMessage.REQUEST, agent[0], demandeAvis.toString());
+        Log.envoi(TypeAgent.EReputation, demandeAvis.toString());
     }
 
     public void demandeDesirabilite(String adresseAgentErep, String idProduit) {

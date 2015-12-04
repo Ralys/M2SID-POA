@@ -8,6 +8,8 @@ import client.ClientAgent;
 import client.outils.Log;
 import client.outils.Produit;
 import client.outils.TypeAgentClient;
+import common.TypeAgent;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -69,7 +71,9 @@ public class Presse extends CyclicBehaviour {
             if (object.containsKey("commandeOk")) {
                 JSONObject obj = (JSONObject) object.get("commandeOk");
                 presse.afficherAchat(obj, message);
-                // laisser avis erep
+                // laisser avis erep sur vendeur/fournisseur + produit
+                presse.donneAvis(presse.getTypeAgentCible(),presse.nomAgent(message));
+                presse.donneAvisProduit(obj.get("idProduit").toString());
             }
 
             if (object.containsKey("commandePasOK")) {

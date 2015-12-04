@@ -1,11 +1,10 @@
 package fournisseur.utils;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 /**
- * A changer avec les dates en Timestamp
+ *
  *
  * @author tom
  */
@@ -37,7 +36,7 @@ public class Livraison {
     }
 
     public static Long addDays(Long date, int days) {
-        return date + 10 * days;//1 jour = 10 sec
+        return date + 86400 * days;//1 jour = 86400 secondes
     }
     
     public static double prixLivraisonByDelai(int delai) {

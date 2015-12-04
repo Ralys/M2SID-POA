@@ -8,9 +8,7 @@ import fournisseur.utils.Transaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
@@ -36,43 +34,44 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
             String receptionMessage = "(" + myAgent.getLocalName() + ") reçoit requête : " + messageContent + " de " + sender;
             Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, receptionMessage);
-
+            String recherche = "";
+            int reference = -1;
             try {
                 //{“jeCherche”:{“typeProduit”:”DVD”,”recherche”:”Spectre”,”quantite”:1}}
                 //{“jeChercheRef”:{”reference”:”67D”,”quantite”:1}}
                 JSONParser parser = new JSONParser();
                 JSONObject object = (JSONObject) parser.parse(messageContent);
                 ArrayList<Produit> listProduit = new ArrayList<>();
-                int quantite;
+                int quantite = 0;
                 if (object.containsKey("jeCherche")) {
                     JSONObject requete = (JSONObject) object.get("jeCherche");
                     String typeProduit = requete.get("typeProduit").toString();
-                    String recherche = requete.get("recherche").toString();
+                    recherche = requete.get("recherche").toString();
                     quantite = Integer.valueOf(requete.get("quantite").toString());
 
                     //Récupération de tout ce que peut etre proposé pour la recherche
                     listProduit = ((StocksEtTransaction) getDataStore()).rechercheProduit(recherche, typeProduit, quantite);
                 } else if (object.containsKey("jeChercheRef")) {
                     JSONObject requete = (JSONObject) object.get("jeChercheRef");
-                    int reference = Integer.valueOf(requete.get("reference").toString());
+                    reference = Integer.valueOf(requete.get("reference").toString());
                     quantite = Integer.valueOf(requete.get("quantite").toString());
                     listProduit.add(((StocksEtTransaction) getDataStore()).getProduitById(reference));
-                } else {
-                    throw new ParseException(0);//TODO Exception moins sale ?
                 }
 
                 //Json réponse
                 JSONObject replyJson = new JSONObject();
-                JSONArray tabProduit = new JSONArray();
+                JSONArray tabProduitStock = new JSONArray();
+                JSONArray tabProduitNonStock = new JSONArray();
                 HashMap<Integer, Long> listDate = Livraison.getListeDateLivraison();
                 Set<Integer> listDelai = listDate.keySet();
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
+                    boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+
                     //Pour les trois date possible
                     for (Integer delai : listDelai) {
-
-                        Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite,delai);
+                        Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
                         ((StocksEtTransaction) getDataStore()).put(t, p);
 
                         JSONObject produitJson = new JSONObject();
@@ -81,31 +80,48 @@ public abstract class WaitRequest extends CyclicBehaviour {
                         produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
                         produitJson.put("quantite", quantite);
                         produitJson.put("date", listDate.get(delai));
-                        tabProduit.add(produitJson);
+                        if (verifStock) {
+                            tabProduitStock.add(produitJson);
+                        } else {
+                            tabProduitNonStock.add(produitJson);
+                        }
                     }
                 }
+
                 // Si on a une réponse, on envoie un tableau Json de tout les produits a proposer
                 if (!listProduit.isEmpty()) {
-                    replyJson.put("jePropose", tabProduit);
-                    String contenuMessage = replyJson.toJSONString().replace("\\", "");
+                    //Tableau qte suffisante
+                    replyJson.put("jePropose", tabProduitStock);
+                    this.sendMessage(replyJson.toJSONString(), msg);
 
-                    //Envoie de la réponse
-                    ACLMessage replyMessage = msg.createReply();
-                    replyMessage.setPerformative(ACLMessage.PROPOSE);
-                    replyMessage.setContent(contenuMessage);
-                    myAgent.send(replyMessage);
-                    //Log
-                    String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
-                    Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, envoiMessage);
+                    //Tableau qte insuffisante
+                    replyJson = new JSONObject();
+                    replyJson.put("quantiteInsuffisante", tabProduitNonStock);
+                    this.sendMessage(replyJson.toJSONString(), msg);
                 } else {
-                    Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, "Aucun produit correspondant à la recherche");
+                    //réponse
+                    JSONObject reqInvalide = new JSONObject();
+                    reqInvalide.put("recherche", recherche);
+                    reqInvalide.put("idProduit", reference);
+                    replyJson.put("requeteInvalide", reqInvalide);
+                    //Envoie de la réponse
+                    this.sendMessage(replyJson.toJSONString(), msg);
                 }
+
             } catch (ParseException ex) {
                 Logger.getLogger(WaitRequest.class.getName()).log(Level.SEVERE, "Format de message invalide");
             }
         } else {
             block();
         }
+    }
+
+    public void sendMessage(String contenu, ACLMessage respond) {
+        ACLMessage replyMessage = respond.createReply();
+        replyMessage.setPerformative(ACLMessage.PROPOSE);
+        myAgent.send(replyMessage);
+        String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenu + " : envoyé à " + respond.getSender().getName();
+        Logger.getLogger(WaitRequest.class.getName()).log(Level.INFO, envoiMessage);
     }
 
     //Méthode défini par une stratégie

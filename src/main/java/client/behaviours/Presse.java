@@ -51,10 +51,19 @@ public class Presse extends CyclicBehaviour {
             if (object.containsKey("jePropose")) {
                 JSONArray array = (JSONArray) object.get("jePropose");
                 presse.ajouterProposition(array, message);
-                while(presse.getLproposition().size() != presse.getNbRechercheEnvoye()){
+                presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
+                while (presse.getNbReponseReçu() != presse.getNbRechercheEnvoye()) {
                     // attente
                 }
                 presse.jeChoisis(presse.plusTot());
+            }
+
+            if (object.containsKey("quantiteInsuffisante")) {
+                presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
+            }
+
+            if (object.containsKey("requeteInvalide")) {
+                presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
             }
 
             if (object.containsKey("commandeOk")) {
@@ -75,7 +84,7 @@ public class Presse extends CyclicBehaviour {
                 // choisir la meilleur proposition suivante si il y en a
                 if (presse.getLproposition().size() > 0) {
 
-                    if (presse.offreInteressante(produitAnnule.getDateLivraison()+facteurDateMax)) {
+                    if (presse.offreInteressante(produitAnnule.getDateLivraison() + facteurDateMax)) {
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Log.arretRecherche();

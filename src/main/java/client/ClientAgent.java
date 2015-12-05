@@ -25,6 +25,8 @@ import common.*;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -322,7 +324,7 @@ public class ClientAgent extends SuperAgent {
         sb.append(jsonObj.get("prix").toString());
         sb.append("\n");
         sb.append("Date Livraison : ");
-        sb.append(jsonObj.get("date").toString());
+        sb.append(Long.parseLong(jsonObj.get("date").toString()));
 
         Log.achat(sb.toString());
     }

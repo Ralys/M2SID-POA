@@ -184,17 +184,22 @@ public class HandleRequest extends CyclicBehaviour {
             // recherche en base de données
         ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.selectRetourAllSolde(non), erep.getBDDAgent(), true);
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
-        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         
-        for(Object key : resultat.keySet()){
-            for(Object key2 : ((JSONObject)resultat.get(key)).keySet()){
-                resultat.put(key2, resultat.get(key2));
-            }
-            resultat.put(key, resultat.get(key));
+        JSONArray retour = new JSONArray();
+        for(Object key : resultatsBDD.toArray()){
+            //recupere les resultat un a un
+            JSONObject resultat = (JSONObject) key;
+            JSONObject solde = (JSONObject) new JSONObject();
+            
+            solde.put("nom", resultat.get("VENDEUR"));
+            solde.put("dateDebut", resultat.get("DATE_START"));
+            solde.put("dateFin", resultat.get("DATE_END"));
+            
+            retour.add(solde);
         }
         
         JSONObject retourDemandeAllSolde = new JSONObject();  
-        retourDemandeAllSolde.put("retourPeriodesSoldes", resultat);
+        retourDemandeAllSolde.put("retourPeriodesSoldes", retour);
         
         String reponseJSON = retourDemandeAllSolde.toJSONString();
         

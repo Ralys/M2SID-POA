@@ -43,7 +43,7 @@ public class Produit {
             this.nom = jsonObject.get("nomProduit").toString();
             this.quantite = Integer.parseInt(jsonObject.get("quantite").toString());
             this.prix = Double.parseDouble(jsonObject.get("prix").toString());
-            this.dateLivraison = Long.getLong(jsonObject.get("date").toString());
+            this.dateLivraison = Long.parseLong(jsonObject.get("date").toString());
     }
 
     public JSONObject getJSONObject(){

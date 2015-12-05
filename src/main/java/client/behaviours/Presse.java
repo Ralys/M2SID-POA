@@ -54,27 +54,31 @@ public class Presse extends CyclicBehaviour {
                 JSONArray array = (JSONArray) object.get("jePropose");
                 presse.ajouterProposition(array, message);
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
-                
+
                 if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
+                    // on nettoye les propositions en fonction du critère de prix max
+                    presse.nettoyerProposition(facteurPrixMax);
                     presse.jeChoisis(presse.plusTot());
                 }
-                
+
             }
 
             if (object.containsKey("quantiteInsuffisante")) {
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
-                presse.ajouterProposition(array, message);
+                Log.reception(presse.nomAgent(message), message.getContent());
                 if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
-                     presse.jeChoisis(presse.plusTot());
+                    presse.jeChoisis(presse.plusTot());
                 }
             }
 
             if (object.containsKey("requeteInvalide")) {
                 // aucune proposition correspond à la recherche pour cet agent
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
+                Log.reception(presse.nomAgent(message), message.getContent());
+                presse.afficherRaisonInvalide(object, message);
 
-                // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
+                // il n'y a pus d'attendre de réponse et aucune propostion existe dans la liste 
                 if ((presse.getNbReponseReçu() != presse.getNbRechercheEnvoye())
                         && presse.getLproposition().isEmpty()) {
                     Log.arretRecherche();
@@ -86,7 +90,7 @@ public class Presse extends CyclicBehaviour {
                 JSONObject obj = (JSONObject) object.get("commandeOk");
                 presse.afficherAchat(obj, message);
                 // laisser avis erep sur vendeur/fournisseur + produit
-                presse.donneAvis(presse.getTypeAgentCible(),presse.nomAgent(message));
+                presse.donneAvis(presse.getTypeAgentCible(), presse.nomAgent(message));
                 presse.donneAvisProduit(obj.get("idProduit").toString());
             }
 
@@ -101,15 +105,18 @@ public class Presse extends CyclicBehaviour {
 
                 // choisir la meilleur proposition suivante si il y en a
                 if (presse.getLproposition().size() > 0) {
-
-                    if (presse.offreInteressante(produitAnnule.getDateLivraison() + facteurDateMax)) {
-                        presse.jeChoisis(presse.plusTot());
-                    } else {
-                        Log.arretRecherche();
-                        presse.takeDown();
-                    }
+                    presse.jeChoisis(presse.plusTot());
+                } else {
+                    Log.arretRecherche();
+                    presse.takeDown();
                 }
             }
+
+            // A FAIRE
+            if (object.containsKey("retourDesirabilite")) {
+                JSONObject obj = (JSONObject) object.get("retourDesirabilite");
+            }
+
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }

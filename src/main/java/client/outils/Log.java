@@ -54,6 +54,16 @@ public class Log {
 
     }
     
+     public static void affiche(final String message) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                FXMLController.listLog.add(message);
+            }
+        });
+
+    }
+    
     
     public static void arretRecherche() {
         Platform.runLater(new Runnable() {

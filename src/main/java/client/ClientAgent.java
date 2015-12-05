@@ -38,6 +38,7 @@ public class ClientAgent extends SuperAgent {
     private int nbReponseReçu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
+    private int quantite = 0;
 
     // **************************************************************** //
     //
@@ -56,7 +57,7 @@ public class ClientAgent extends SuperAgent {
         }
         String recherche = arguments[3].toString();
         String reference = arguments[4].toString();
-        int quantite = Integer.parseInt(arguments[5].toString());
+        quantite = Integer.parseInt(arguments[5].toString());
         String typeRecherche = arguments[6].toString();
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
@@ -180,7 +181,8 @@ public class ClientAgent extends SuperAgent {
     public void donneAvisProduit(String idProduit) {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
-        int avis = 0;
+        // avis aléatoire entre 0 et 5
+        double avis = (Math.random() * (5));
 
         // construction de l'objet JSON à envoyé
         JSONObject donneAvis = new JSONObject();
@@ -265,6 +267,7 @@ public class ClientAgent extends SuperAgent {
 
     }
 
+
     // **************************************************************** //
     //
     //  Méthodes d'affichage
@@ -307,6 +310,16 @@ public class ClientAgent extends SuperAgent {
         sb.append(obj.get("raison").toString());
         Log.commandeAnnulee(sb.toString());
     }
+    
+    public void afficherRaisonInvalide(JSONObject obj, ACLMessage message) {
+        StringBuilder sb = new StringBuilder("Commande impossible chez : ");
+        sb.append(nomAgent(message));
+        sb.append("\n");
+        sb.append("Raison : ");
+        sb.append(obj.get("raison").toString());
+        Log.affiche(sb.toString());
+    }
+    
 
     // **************************************************************** //
     //
@@ -350,28 +363,6 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
-    public boolean offreInteressante(Double prixMaximum) {
-        boolean res = false;
-
-        for (Produit produit : lproposition) {
-            if (produit.getPrix() < prixMaximum) {
-                res = true;
-            }
-        }
-        return res;
-    }
-
-    public boolean offreInteressante(int dateMaximum) {
-        boolean res = false;
-
-        for (Produit produit : lproposition) {
-            if (produit.getDateLivraison() <= dateMaximum) {
-                res = true;
-            }
-        }
-        return res;
-    }
-
     /**
      * Méthode retournant le produit livré au plut tot parmi la liste des
      * propositions
@@ -379,14 +370,64 @@ public class ClientAgent extends SuperAgent {
      * @return le produit livrable en premier
      */
     public Produit plusTot() {
-        Produit produitChoisi = lproposition.get(0);
-        for (Produit produit : lproposition) {
-            if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
-                produitChoisi = produit;
+           Produit produitChoisi = lproposition.get(0);
+            for (Produit produit : lproposition) {
+                if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
+                    produitChoisi = produit;
+                }
             }
-        }
         return produitChoisi;
     }
+    
+    public void nettoyerProposition(Double prixMaximum){
+        ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
+        for (Produit produit : lproposition) {
+            if (produit.getPrix() > prixMaximum) {
+                lisProduitASupprimer.add(produit);
+            }
+        }
+        // suppression des proposition ne correspondant pas aux critères
+        for(Produit produit : lisProduitASupprimer){
+            lproposition.remove(produit);
+        }
+    }
+    
+    public void nettoyerProposition(int dateMaximum){
+        ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
+        for (Produit produit : lproposition) {
+            if (produit.getDateLivraison() > dateMaximum) {
+                lisProduitASupprimer.add(produit);
+            }
+        }
+        // suppression des proposition ne correspondant pas aux critères
+        for(Produit produit : lisProduitASupprimer){
+            lproposition.remove(produit);
+        }
+    }
+    
+    
+
+//    public boolean offreInteressante(Double prixMaximum) {
+//        boolean res = false;
+//
+//        for (Produit produit : lproposition) {
+//            if (produit.getPrix() < prixMaximum) {
+//                res = true;
+//            }
+//        }
+//        return res;
+//    }
+//
+//    public boolean offreInteressante(int dateMaximum) {
+//        boolean res = false;
+//
+//        for (Produit produit : lproposition) {
+//            if (produit.getDateLivraison() <= dateMaximum) {
+//                res = true;
+//            }
+//        }
+//        return res;
+//    }
 
     public void envoyerMessage(Agent client, int typeMessage, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(typeMessage);
@@ -446,6 +487,15 @@ public class ClientAgent extends SuperAgent {
 
     public void setNbReponseReçu(int nbReponseReçu) {
         this.nbReponseReçu = nbReponseReçu;
+    }
+
+
+    public int getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(int quantite) {
+        this.quantite = quantite;
     }
 
 }

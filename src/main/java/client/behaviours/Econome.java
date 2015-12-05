@@ -52,15 +52,17 @@ public class Econome extends CyclicBehaviour {
                 econome.ajouterProposition(array, message);
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
-                     econome.jeChoisis(econome.moinsCher());
+                    // on nettoye les propositions en fonction du critère de prix max
+                    econome.nettoyerProposition(facteurPrixMax);
+                    econome.jeChoisis(econome.moinsCher());
                 }
             }
 
-            // à faire
+            
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
-                econome.ajouterProposition(array, message);
+                Log.reception(econome.nomAgent(message),message.getContent());
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
                      econome.jeChoisis(econome.moinsCher());
                 }
@@ -69,7 +71,8 @@ public class Econome extends CyclicBehaviour {
             if (object.containsKey("requeteInvalide")) {
                 // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
-
+                Log.reception(econome.nomAgent(message),message.getContent());
+                econome.afficherRaisonInvalide(object, message);
                 // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
                 if ((econome.getNbReponseReçu() != econome.getNbRechercheEnvoye())
                         && econome.getLproposition().isEmpty()) {
@@ -97,16 +100,14 @@ public class Econome extends CyclicBehaviour {
 
                 // choisir la meilleur proposition suivante si il y en a
                 if (econome.getLproposition().size() > 0) {
-                    if (econome.offreInteressante(produitAnnule.getPrix() * facteurPrixMax)) {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
                         econome.takeDown();
                     }
                 }
-            }
 
-            // retour désirabilité
+            // A FAIRE
             if (object.containsKey("retourDesirabilite")) {
                 JSONObject obj = (JSONObject) object.get("retourDesirabilite");
             }

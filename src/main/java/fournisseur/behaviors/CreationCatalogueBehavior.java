@@ -88,6 +88,8 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             for (Integer numProduit : listProduitFournisseur) {
                 getDataStore().put(listProduit.get(numProduit), 2);//TODO A mettre à 0 une fois les tests fini
             }
+
+            getDataStore().put("Tresorerie", new Double(10000));// set du montant initial de pesos
         } catch (ParseException ex) {
             Logger.getLogger(CreationCatalogueBehavior.class.getName()).log(Level.SEVERE, "Format de message BDD incorrect");
         }

@@ -31,7 +31,7 @@ public class Presse extends CyclicBehaviour {
 
     private final ClientAgent presse;
     // 1J
-    private final int facteurDateMax = 86400000;
+    private final long timeStamp = 86400000;
 
     public Presse(Agent agent) {
         this.presse = (ClientAgent) agent;
@@ -62,11 +62,11 @@ public class Presse extends CyclicBehaviour {
 
                     // on nettoye les propositions en fonction du critère du temps max
                     Long dateJour = new Date().getTime() / 1000;
-                    long result = (long)presse.getLimite()*86400+dateJour;
-                    presse.nettoyerProposition(result);
+                    long result = (long)presse.getLimite()*timeStamp+dateJour;
+                    presse.nettoyerPropositionDate(result);
                     if (presse.getLproposition().size() > 0) {
                         // on nettoye les propositions en fonction du critère du temps max
-                        presse.nettoyerProposition(result);
+                        presse.nettoyerPropositionDate(result);
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Log.arretRecherche();

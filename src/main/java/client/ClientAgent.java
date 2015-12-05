@@ -430,7 +430,7 @@ public class ClientAgent extends SuperAgent {
         }
     }
     
-    public void nettoyerProposition(long dateMaximum){
+    public void nettoyerPropositionDate(long dateMaximum){
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
             if (produit.getDateLivraison() > dateMaximum) {

@@ -3,6 +3,7 @@ package fournisseur.utils;
 import jade.core.behaviours.DataStore;
 import jade.util.leap.Set;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -58,6 +59,32 @@ public class StocksEtTransaction extends DataStore {
     public void decrementerStock(int id, int qte) {
         Produit p = getProduitById(id);
         this.put(p, ((Integer) this.get(p)) - qte);
+    }
+
+    public void incrementerStock(Produit p, int qte) {
+        this.put(p, ((Integer) this.get(p)) + qte);
+    }
+
+    public HashMap<Produit, Integer> listStock() {
+        HashMap<Produit, Integer> res = new HashMap<>();
+        Set cles = this.keySet();
+        Iterator it = cles.iterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (o instanceof Produit) {
+                Produit p = (Produit) o;
+                res.put(p, (Integer) this.get(p));
+            }
+        }
+        return res;
+    }
+
+    public double getPesos() {
+        return (double) this.get("Tresorerie");
+    }
+
+    public void changePesos(double valeur) {
+        this.put("Tresorerie", getPesos() + valeur);
     }
 
     public ArrayList<Produit> rechercheProduit(String motRecherche, String typeProduit, int qte) {

@@ -16,12 +16,11 @@ import java.util.logging.Logger;
  */
 public class GestionStockBehavior extends TickerBehaviour {
 
-    private int stockMax = 500;//A définir avec les vendeurs
-    private double reducQte = 0.01; //1% du prix en moins par produit
+    private int stockMax = 1000;//A définir avec les vendeurs
+    private double reducQte = 0.01; //1%*qte de produit fabriqué de reduction sur le prix unitaire lors de la fabrication d'un produit
 
     public GestionStockBehavior(Agent a) {
         super(a, 60000);
-        //this.onTick();
     }
 
     @Override
@@ -46,7 +45,6 @@ public class GestionStockBehavior extends TickerBehaviour {
         // Si le stock est inférieur a 2
         // Produire 12 - stockRestant
         // décremneter tresorerie production * prixDeBase*Reduction
-
     }
 
 }

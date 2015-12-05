@@ -270,7 +270,7 @@ public class ClientAgent extends SuperAgent {
         JSONObject contenu = new JSONObject();
         contenu.put("success",reussi );
         contenu.put("comportement",typeAgentClient);
-        contenu.put("nbNegociations",4);
+        contenu.put("nbNegociations",NbNegociation);
         achatEffectue.put("achatEffectue", contenu);
         
         // envoi du message + afficahge dans les logs

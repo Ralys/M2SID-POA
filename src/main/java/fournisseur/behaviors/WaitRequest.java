@@ -67,29 +67,30 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
-                    boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+                    if (p != null) {
+                        boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+                        //Pour les trois date possible
+                        for (Integer delai : listDelai) {
+                            Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
+                            ((StocksEtTransaction) getDataStore()).put(t, p);
+                            JSONObject produitJson = new JSONObject();
+                            produitJson.put("idProduit", p.getIdProduit());
+                            produitJson.put("nomProduit", p.getNomProduit());
+                            produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
 
-                    //Pour les trois date possible
-                    for (Integer delai : listDelai) {
-                        Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
-                        ((StocksEtTransaction) getDataStore()).put(t, p);
-                        JSONObject produitJson = new JSONObject();
-                        produitJson.put("idProduit", p.getIdProduit());
-                        produitJson.put("nomProduit", p.getNomProduit());
-                        produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
+                            produitJson.put("date", listDate.get(delai));
+                            if (verifStock) {
+                                produitJson.put("quantite", quantite);
+                                tabProduitStock.add(produitJson);
+                            } else {
 
-                        produitJson.put("date", listDate.get(delai));
-                        if (verifStock) {
-                            produitJson.put("quantite", quantite);
-                            tabProduitStock.add(produitJson);
-                        } else {
+                                int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
+                                produitJson.put("quantite", stockDispo);
+                                if (stockDispo > 0) {
+                                    tabProduitNonStock.add(produitJson);
+                                }
 
-                            int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
-                            produitJson.put("quantite", stockDispo);
-                            if (stockDispo > 0) {
-                                tabProduitNonStock.add(produitJson);
                             }
-
                         }
                     }
                 }

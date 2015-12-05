@@ -86,7 +86,7 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             HashMap<Integer, Produit> listProduit = this.getProduit();
             ArrayList<Integer> listProduitFournisseur = this.getProduitFournisseur();
             for (Integer numProduit : listProduitFournisseur) {
-                getDataStore().put(listProduit.get(numProduit), 2);//TODO A mettre à 0 une fois les tests fini
+                getDataStore().put(listProduit.get(numProduit), 12);
             }
 
             getDataStore().put("Tresorerie", new Double(10000));// set du montant initial de pesos

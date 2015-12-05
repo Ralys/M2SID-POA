@@ -35,7 +35,7 @@ public class HandleInform extends CyclicBehaviour {
         if(message == null) return;
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterInformation(message);
@@ -84,6 +84,9 @@ public class HandleInform extends CyclicBehaviour {
         
         // ajout en base de données
         erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertAvis(agent.getLocalName(), type+"_"+nom, avis), erep.getBDDAgent());
+        
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": Enregistrement en base de données :"+donneAvis.toString());
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": Enregistrement en base de données :"+donneAvis.toJSONString());
     }
     
     private void achatEffectue(JSONObject achatEffectue, AID agent) throws ParseException {
@@ -96,6 +99,9 @@ public class HandleInform extends CyclicBehaviour {
         
         // ajout en base de données
         erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertNegociation(comportement, success, nb_negociations), erep.getBDDAgent());
+        
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": Enregistrement en base de données :"+achatEffectue.toString());
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": Enregistrement en base de données :"+achatEffectue.toJSONString());
     }
     
     private void venteEffectuee(JSONObject demandeSolde, AID agent) throws ParseException{

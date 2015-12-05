@@ -38,7 +38,7 @@ public class HandleRequest extends CyclicBehaviour {
         if(message == null) return;
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterRequete(message);

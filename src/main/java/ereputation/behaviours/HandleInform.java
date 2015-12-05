@@ -50,6 +50,9 @@ public class HandleInform extends CyclicBehaviour {
             if(object.containsKey("donneAvis")) 
                 this.donneAvis((JSONObject)object.get("donneAvis"), message.getSender());
             
+            if(object.containsKey("achatEffectue"))
+                this.achatEffectue((JSONObject)object.get("achatEffectue"), message.getSender());
+            
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide " + ex);
             TypeLog.logEreputation.Erreur(HandleInform.class+":"+ex.getMessage());
@@ -77,5 +80,17 @@ public class HandleInform extends CyclicBehaviour {
         
         // ajout en base de données
         erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertAvis(agent.getLocalName(), type+"_"+nom, avis), erep.getBDDAgent());
+    }
+    
+    private void achatEffectue(JSONObject achatEffectue, AID agent) throws ParseException {
+        boolean success = (boolean) achatEffectue.get("success");
+        
+        String comportement = achatEffectue.get("comportement").toString();
+        long nb_negociations = (Long) achatEffectue.get("nbNegociations");
+        
+        EReputationAgent erep = (EReputationAgent)myAgent;
+        
+        // ajout en base de données
+        erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertNegociation(comportement, success, nb_negociations), erep.getBDDAgent());
     }
 }

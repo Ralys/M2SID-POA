@@ -45,6 +45,11 @@ public class QueryBuilder {
         String sql = "";
         return JSONRequest("select", sql);
     }
+    
+    public static String insertNegociation(String comportement, boolean success, long nb_negociations) {
+        String sql = "INSERT INTO NEGOCIATION(COMPORTEMENT_CLIENT, SUCCESS, NB_NEGOCIATIONS) VALUES(\"" + comportement + "\"," + (success ? 1 : 0) + "," +  nb_negociations + ")";
+        return JSONRequest("insert", sql);
+    }
             
     private static String JSONRequest(String typeRequest, String sql) {
         JSONObject request = new JSONObject();

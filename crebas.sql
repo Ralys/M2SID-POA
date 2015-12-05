@@ -26,6 +26,8 @@ drop table if exists PRIX_FOURNISSEUR;
 
 drop table if exists STOCK;
 
+drop table if exists NEGOCIATION;
+
 
 
 
@@ -147,6 +149,13 @@ create table FOURNISSEUR_PRODUIT
   primary key (REF_PRODUIT,ID_FOURNISSEUR)
 );
 
+create table NEGOCIATION
+(
+  ID_NEGOCIATION       INTEGER PRIMARY KEY,
+  COMPORTEMENT_CLIENT  varchar(255) not null,
+  SUCCESS              int not null,
+  NB_NEGOCIATIONS      int not null
+);
 
 INSERT INTO `produit` (`REF_PRODUIT`, `ID_CATEGORIE`, `NOM_PRODUIT`,`DATE_SORTIE`,`PRIX_CREATION`) VALUES
   (1, 1, 'Le roi lion',strftime('%s', 'now')+0,5.5),

@@ -62,11 +62,16 @@ public class Mefiant extends CyclicBehaviour {
                             hmAvisProduit.put(produit.getId(), 0.0);
                             mefiant.demandeAvisProduit(produit.getId());
                         }
+                        if(!hmAvisRevendeur.containsKey(mefiant.nomAgent(message))){
+                            hmAvisRevendeur.put(mefiant.nomAgent(message), 0.0);
+                            mefiant.demandeAvis(mefiant.getTypeAgentCible(),mefiant.nomAgent(message));
+                        }
                     }
                 }
 
                 if (mefiant.getNbReponseReçu() == mefiant.getNbRechercheEnvoye()
-                        && mefiant.getNbDemandeAvisProduitEnvoye() == mefiant.getNbDemandeAvisProduitRecu()) {
+                        && mefiant.getNbDemandeAvisProduitEnvoye() == mefiant.getNbDemandeAvisProduitRecu()
+                        && mefiant.getNbDemandeAvisRevendeurEnvoye() == mefiant.getNbDemandeAvisRevendeurRecu()) {
 
                     // on retire les produits des reveudeur peu fiable
                     nettoyerPropositionRevendeur();
@@ -95,11 +100,17 @@ public class Mefiant extends CyclicBehaviour {
                             hmAvisProduit.put(produit.getId(), 0.0);
                             mefiant.demandeAvisProduit(produit.getId());
                         }
+                        
+                        if(!hmAvisRevendeur.containsKey(mefiant.nomAgent(message))){
+                            hmAvisRevendeur.put(mefiant.nomAgent(message), 0.0);
+                            mefiant.demandeAvis(mefiant.getTypeAgentCible(),mefiant.nomAgent(message));
+                        }
                     }
                 }
 
                 if (mefiant.getNbReponseReçu() == mefiant.getNbRechercheEnvoye()
-                        && mefiant.getNbDemandeAvisProduitEnvoye() == mefiant.getNbDemandeAvisProduitRecu()) {
+                        && mefiant.getNbDemandeAvisProduitEnvoye() == mefiant.getNbDemandeAvisProduitRecu()
+                        && mefiant.getNbDemandeAvisRevendeurEnvoye() == mefiant.getNbDemandeAvisRevendeurRecu()) {
 
                     // on retire les produits des reveudeur peu fiable
                     nettoyerPropositionRevendeur();

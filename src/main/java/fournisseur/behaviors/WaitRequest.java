@@ -80,13 +80,16 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
                         produitJson.put("date", listDate.get(delai));
                         if (verifStock) {
+                            produitJson.put("quantite", quantite);
                             tabProduitStock.add(produitJson);
                         } else {
+
                             int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
+                            produitJson.put("quantite", stockDispo);
                             if (stockDispo > 0) {
                                 tabProduitNonStock.add(produitJson);
                             }
-                            produitJson.put("quantite", stockDispo);
+
                         }
                     }
                 }
@@ -125,6 +128,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
     public void sendMessage(String contenu, ACLMessage respond) {
         ACLMessage replyMessage = respond.createReply();
+        replyMessage.setContent(contenu);
         replyMessage.setPerformative(ACLMessage.PROPOSE);
         myAgent.send(replyMessage);
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenu + " : envoyé à " + respond.getSender().getName();

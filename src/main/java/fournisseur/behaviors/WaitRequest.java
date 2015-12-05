@@ -73,17 +73,20 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     for (Integer delai : listDelai) {
                         Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
                         ((StocksEtTransaction) getDataStore()).put(t, p);
-
                         JSONObject produitJson = new JSONObject();
                         produitJson.put("idProduit", p.getIdProduit());
                         produitJson.put("nomProduit", p.getNomProduit());
                         produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
-                        produitJson.put("quantite", quantite);
+
                         produitJson.put("date", listDate.get(delai));
                         if (verifStock) {
                             tabProduitStock.add(produitJson);
                         } else {
-                            tabProduitNonStock.add(produitJson);
+                            int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
+                            if (stockDispo > 0) {
+                                tabProduitNonStock.add(produitJson);
+                            }
+                            produitJson.put("quantite", stockDispo);
                         }
                     }
                 }
@@ -91,13 +94,17 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 // Si on a une réponse, on envoie un tableau Json de tout les produits a proposer
                 if (!listProduit.isEmpty()) {
                     //Tableau qte suffisante
-                    replyJson.put("jePropose", tabProduitStock);
-                    this.sendMessage(replyJson.toJSONString(), msg);
+                    if (tabProduitStock.size() != 0) {
+                        replyJson.put("jePropose", tabProduitStock);
+                        this.sendMessage(replyJson.toJSONString(), msg);
+                    }
 
                     //Tableau qte insuffisante
-                    replyJson = new JSONObject();
-                    replyJson.put("quantiteInsuffisante", tabProduitNonStock);
-                    this.sendMessage(replyJson.toJSONString(), msg);
+                    if (tabProduitNonStock.size() != 0) {
+                        replyJson = new JSONObject();
+                        replyJson.put("quantiteInsuffisante", tabProduitNonStock);
+                        this.sendMessage(replyJson.toJSONString(), msg);
+                    }
                 } else {
                     //réponse
                     JSONObject reqInvalide = new JSONObject();

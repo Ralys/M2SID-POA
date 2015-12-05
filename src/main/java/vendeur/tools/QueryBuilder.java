@@ -37,4 +37,12 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
 
+    public static String rechercheRef(String type, String localName, String reference) {
+        String sql = "SELECT REF_PRODUIT "
+                + "FROM PRODUIT, CATALOGUE, POSSEDE, TAGS "
+                + "WHERE PRODUIT.ID_CATEGORIE = CATEGORIE.ID_CATEGORIE "
+                + "AND PRODUIT.REF_PRODUIT = \"" +reference+" \"";
+        return JSONRequest("select", sql);
+    }
+
 }

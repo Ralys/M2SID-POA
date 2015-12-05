@@ -54,7 +54,7 @@ public class WaitAchat extends CyclicBehaviour {
                 replyContenu.put("date", date);
                 if (stockOk) {
                     //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
-                    replyJson.put("commandeOK", replyContenu);
+                    replyJson.put("commandeOk", replyContenu);
                     replyMessage.setPerformative(ACLMessage.CONFIRM);
 
                     ((StocksEtTransaction) getDataStore()).decrementerStock(idProduit, quantite);

@@ -100,12 +100,17 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     if (tabProduitStock.size() != 0) {
                         replyJson.put("jePropose", tabProduitStock);
                         this.sendMessage(replyJson.toJSONString(), msg);
-                    }
-
-                    //Tableau qte insuffisante
-                    if (tabProduitNonStock.size() != 0) {
+                    } else if (tabProduitNonStock.size() != 0) {
                         replyJson = new JSONObject();
                         replyJson.put("quantiteInsuffisante", tabProduitNonStock);
+                        this.sendMessage(replyJson.toJSONString(), msg);
+                    } else {
+                        //réponse
+                        JSONObject reqInvalide = new JSONObject();
+                        reqInvalide.put("recherche", recherche);
+                        reqInvalide.put("idProduit", reference);
+                        replyJson.put("requeteInvalide", reqInvalide);
+                        //Envoie de la réponse
                         this.sendMessage(replyJson.toJSONString(), msg);
                     }
                 } else {

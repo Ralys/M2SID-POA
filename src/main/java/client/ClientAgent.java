@@ -370,7 +370,8 @@ public class ClientAgent extends SuperAgent {
      * @return le produit livrable en premier
      */
     public Produit plusTot() {
-           Produit produitChoisi = lproposition.get(0);
+            
+            Produit produitChoisi = lproposition.get(0);
             for (Produit produit : lproposition) {
                 if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
                     produitChoisi = produit;

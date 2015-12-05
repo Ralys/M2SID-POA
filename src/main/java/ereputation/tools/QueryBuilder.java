@@ -1,15 +1,12 @@
 package ereputation.tools;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import org.json.simple.JSONObject;
 
 /**
  *
- * @author Team EReputation
+ * @author Team E-réputation
  */
 public class QueryBuilder {
 

@@ -8,8 +8,8 @@ package common;
 import ereputation.log.LogEreputation;
 
 /**
- *
- * @author greg
+ * Les loggers disponibles
+ * @author Team E-réputation
  */
 public class TypeLog {
     public static LogEreputation logEreputation = LogEreputation.instance();

@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author Team EReputation
+ * @author Team E-réputation
  */
 public class DesirabiliteCalculator {
     

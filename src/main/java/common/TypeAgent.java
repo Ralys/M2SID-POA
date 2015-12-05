@@ -1,8 +1,8 @@
 package common;
 
 /**
- * Les 4 différents types d'Agent qu'on peut retrouver
- * @author Mazzei Stéphane
+ * Les 5 différents types d'Agent qu'on peut retrouver
+ * @author Team E-réputation
  */
 public final class TypeAgent {
     public static final String Client = "Client";

@@ -17,7 +17,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  *
- * @author Team EReputation
+ * @author Team E-réputation
  */
 public class HandleInform extends CyclicBehaviour {
     private JSONParser parser;

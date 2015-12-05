@@ -40,57 +40,36 @@ public class OfferRequests extends CyclicBehaviour {
                 JSONObject object = (JSONObject) this.parser.parse(content);
 
                 if (object.containsKey("jeCherche")) {
-                    this.recherche((JSONObject) object.get("jeCherche"), msg.getSender());
-                }else if (object.containsKey("jeChercheRef")) {
-                    this.rechercheRef((JSONObject) object.get("jeChercheRef"), msg.getSender());
+                    this.recherche((JSONObject) object.get("jeCherche"), msg.getSender(), "Cherche");
+                } else if (object.containsKey("jeChercheRef")) {
+                    this.recherche((JSONObject) object.get("jeChercheRef"), msg.getSender(), "ChercheRef");
                 }
-                
+
             } catch (ParseException ex) {
                 Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
             }
         }
     }
-    
-    private void rechercheRef(JSONObject jsonObject, AID sender) throws ParseException{
-        String quantite = "";
-        String reference = "";
-        String type = jsonObject.get("type").toString();
 
-        switch (type) {
-            case TypeAgent.Client:
-                quantite = jsonObject.get("quantite").toString();
-                reference = jsonObject.get("reference").toString();
-                break;
-            default:
-                break;
-        }
+    private void recherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
+      
+
+        String ref = (typeRech.compareTo("ChercheRef") == 0) ? jsonObject.get("reference").toString() : "";
+        String quantite = jsonObject.get("quantite").toString();
+        String recherche = (typeRech.compareTo("Cherche") == 0) ? jsonObject.get("recherche").toString() : "";
+        String typeProduit = (typeRech.compareTo("Cherche") == 0) ? jsonObject.get("typeProduit").toString() : "";
 
         VendeurAgent vendeur = (VendeurAgent) myAgent;
+        ACLMessage messageBDD;
+        if (typeRech.compareTo("Cherche") == 0) {
+            messageBDD = vendeur.sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit), vendeur.getBDDAgent(), true);
 
-        ACLMessage messageBDD = vendeur.sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(type, vendeur.getLocalName(), reference), vendeur.getBDDAgent(), true);
-        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
-        
-    }
-
-    private void recherche(JSONObject jsonObject, AID sender) throws ParseException {
-        String quantite = "";
-        String recherche = "";
-        String typeProduit = "";
-        String type = jsonObject.get("type").toString();
-
-        switch (type) {
-            case TypeAgent.Client:
-                quantite = jsonObject.get("quantite").toString();
-                recherche = jsonObject.get("recherche").toString();
-                typeProduit = jsonObject.get("typeProduit").toString();
-                break;
-            default:
-                break;
+        } else {
+            messageBDD = vendeur.sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref), vendeur.getBDDAgent(), true);
         }
 
-        VendeurAgent vendeur = (VendeurAgent) myAgent;
+        System.out.println(messageBDD.toString());
 
-        ACLMessage messageBDD = vendeur.sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(type, vendeur.getLocalName(), recherche, typeProduit), vendeur.getBDDAgent(), true);
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
 
         JSONObject reponse = new JSONObject();
@@ -100,12 +79,14 @@ public class OfferRequests extends CyclicBehaviour {
             JSONObject retourRecherche = jsonObject;
             retourRecherche.put("ref_produit", resultat.get("REF_PRODUIT"));
             retourRecherche.put("nom_produit", resultat.get("NOM_PRODUIT"));
-            retourRecherche.put("prix", resultat.get("PRIX_UNITAIRE"));
+            retourRecherche.put("prix", resultat.get("PRIX_CREATION"));
+            
+            //verifier la quantite
             retourRecherche.put("qte", resultat.get("QTE"));
             list.add(retourRecherche);
         }
         reponse.put("jePropose", list);
-        
+
         String reponseJSON = reponse.toJSONString();
 
         // envoi de la réponse
@@ -113,8 +94,7 @@ public class OfferRequests extends CyclicBehaviour {
 
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
         Logger.getLogger(VendeurAgent.class.getName()).log(Level.INFO, envoiMessage);
-        
-        
+
     }
 
 }

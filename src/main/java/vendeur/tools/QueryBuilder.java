@@ -21,14 +21,14 @@ public class QueryBuilder {
         String sql = "SELECT REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, QTE "
                 + "FROM STOCK, PRODUIT "
                 + "WHERE STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT "
-                + "AND VENDEUR_NAME = \"" + type + "_" + vendeur + "\" "
+                + "AND VENDEUR_NAME = \"vendeur_\" "+ vendeur + "\" "
                 + "AND REF_PRODUIT LIKE \"" + ref_prod + "\"";
         return JSONRequest("select", sql);
     }
 
-    public static String recherche(String type, String localName, String recherche, String typeProduit) {
+    public static String recherche(String recherche, String typeProduit) {
         String sql = "SELECT REF_PRODUIT "
-                + "FROM PRODUIT, CATALOGUE, POSSEDE, TAGS "
+                + "FROM PRODUIT, CATEGORIE, POSSEDE, TAGS "
                 + "WHERE PRODUIT.ID_CATEGORIE = CATEGORIE.ID_CATEGORIE "
                 + "AND PRODUIT.REF_PRODUIT = POSSEDE.REF_PRODUIT "
                 + "AND POSSEDE.ID_TAG = TAGS.ID_TAG "
@@ -37,11 +37,11 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
 
-    public static String rechercheRef(String type, String localName, String reference) {
-        String sql = "SELECT REF_PRODUIT "
-                + "FROM PRODUIT, CATALOGUE, POSSEDE, TAGS "
-                + "WHERE PRODUIT.ID_CATEGORIE = CATEGORIE.ID_CATEGORIE "
-                + "AND PRODUIT.REF_PRODUIT = \"" +reference+" \"";
+    public static String rechercheRef(String reference) {
+        String sql = "SELECT REF_PRODUIT, NOM_PRODUIT, DATE_SORTIE, PRIX_CREATION "
+                + "FROM PRODUIT "
+                + "WHERE PRODUIT.REF_PRODUIT = " +reference;
+        System.out.println(sql);
         return JSONRequest("select", sql);
     }
 

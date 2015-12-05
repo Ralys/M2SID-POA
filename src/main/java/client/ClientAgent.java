@@ -399,6 +399,7 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
+    
     public void nettoyerPropositionPrix(Double prixMaximum) {
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {

@@ -38,7 +38,7 @@ public class ClientAgent extends SuperAgent {
     private int nbReponseReçu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
-    
+
     // **************************************************************** //
     //
     //  Méthodes d'exécution de l'agent
@@ -63,17 +63,16 @@ public class ClientAgent extends SuperAgent {
 
         // enregistrement du service
         registerService(monService);
-        
+
         // écoute
-        if(typeAgentClient.equals(TypeAgentClient.Econome)){
+        if (typeAgentClient.equals(TypeAgentClient.Econome)) {
             addBehaviour(new Econome(this));
         }
-        
+
         // écoute
-        if(typeAgentClient.equals(TypeAgentClient.Presse)){
+        if (typeAgentClient.equals(TypeAgentClient.Presse)) {
             addBehaviour(new Presse(this));
         }
-        
 
         if (typeRecherche.equalsIgnoreCase("true")) {
             // on lance la recherche
@@ -160,7 +159,7 @@ public class ClientAgent extends SuperAgent {
      * @param nomAgent nom de l'agent sur lequel on donne notre l'avis
      * @param typeAgent type de l'agent sur lequel on donne notre l'avis
      */
-    public void donneAvis( String typeAgent, String nomAgent) {
+    public void donneAvis(String typeAgent, String nomAgent) {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         int avis = 0;
@@ -202,7 +201,7 @@ public class ClientAgent extends SuperAgent {
      * @param typeAgent type de l'agent auquel on veux l'avis
      * @param nomAgent nom de l'agent auquel on veux l'avis
      */
-    public void demandeAvis( String typeAgent, String nomAgent) {
+    public void demandeAvis(String typeAgent, String nomAgent) {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         // construction de l'objet JSON à envoyé
@@ -252,7 +251,6 @@ public class ClientAgent extends SuperAgent {
     //  Méthodes de traitement
     //
     // **************************************************************** //
-
     public void ajouterProposition(JSONArray array, ACLMessage message) {
 
         for (Object obj : array.toArray()) {
@@ -288,7 +286,7 @@ public class ClientAgent extends SuperAgent {
         sb.append("Prix : ");
         sb.append(jsonObj.get("prix").toString());
         sb.append("\n");
-        sb.append("Date Livraison : "); 
+        sb.append("Date Livraison : ");
         sb.append(jsonObj.get("date").toString());
 
         Log.achat(sb.toString());
@@ -328,11 +326,11 @@ public class ClientAgent extends SuperAgent {
         Produit produitASupprimer = null;
         for (Produit prod : lproposition) {
             if (prod.equals(produitARetirer)) {
-                produitASupprimer=prod;
+                produitASupprimer = prod;
             }
         }
-        if(produitASupprimer!=null){
-             lproposition.remove(produitASupprimer);
+        if (produitASupprimer != null) {
+            lproposition.remove(produitASupprimer);
         }
     }
 
@@ -362,13 +360,12 @@ public class ClientAgent extends SuperAgent {
         }
         return res;
     }
-    
-    
+
     public boolean offreInteressante(int dateMaximum) {
         boolean res = false;
 
         for (Produit produit : lproposition) {
-            if (produit.getDateLivraison()<=dateMaximum) {
+            if (produit.getDateLivraison() <= dateMaximum) {
                 res = true;
             }
         }
@@ -384,31 +381,25 @@ public class ClientAgent extends SuperAgent {
     public Produit plusTot() {
         Produit produitChoisi = lproposition.get(0);
         for (Produit produit : lproposition) {
-            if (produit.getDateLivraison()<produitChoisi.getDateLivraison()) {
+            if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
                 produitChoisi = produit;
             }
         }
         return produitChoisi;
     }
 
-    
-    public void envoyerMessage(Agent client,int typeMessage, AID receiver, String message) {
+    public void envoyerMessage(Agent client, int typeMessage, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(typeMessage);
         msg.setContent(message);
         msg.addReceiver(receiver);
         client.send(msg);
     }
-    
-    
-    
+
     // **************************************************************** //
     //
     //  Getter & Setter
     //
     // **************************************************************** //
-    
-    
-    
     public ArrayList<Produit> getLproposition() {
         return lproposition;
     }
@@ -456,7 +447,5 @@ public class ClientAgent extends SuperAgent {
     public void setNbReponseReçu(int nbReponseReçu) {
         this.nbReponseReçu = nbReponseReçu;
     }
-    
-    
-    
+
 }

@@ -110,6 +110,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                         JSONObject reqInvalide = new JSONObject();
                         reqInvalide.put("recherche", recherche);
                         reqInvalide.put("idProduit", reference);
+                        reqInvalide.put("raison", "Aucune produit correspondant à la requête est en stock");
                         replyJson.put("requeteInvalide", reqInvalide);
                         //Envoie de la réponse
                         this.sendMessage(replyJson.toJSONString(), msg);
@@ -119,6 +120,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     JSONObject reqInvalide = new JSONObject();
                     reqInvalide.put("recherche", recherche);
                     reqInvalide.put("idProduit", reference);
+                    reqInvalide.put("raison", "Aucune produit ne correspond à la requête");
                     replyJson.put("requeteInvalide", reqInvalide);
                     //Envoie de la réponse
                     this.sendMessage(replyJson.toJSONString(), msg);

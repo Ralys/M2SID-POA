@@ -21,7 +21,6 @@ public class GestionStockBehavior extends TickerBehaviour {
 
     public GestionStockBehavior(Agent a) {
         super(a, 60000);
-        //this.onTick();
     }
 
     @Override

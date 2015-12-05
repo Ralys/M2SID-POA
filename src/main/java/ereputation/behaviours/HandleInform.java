@@ -11,6 +11,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -52,6 +53,9 @@ public class HandleInform extends CyclicBehaviour {
             
             if(object.containsKey("achatEffectue"))
                 this.achatEffectue((JSONObject)object.get("achatEffectue"), message.getSender());
+            
+            if(object.containsKey("venteEffectuee")) 
+                this.venteEffectuee((JSONObject)object.get("venteEffectuee"), message.getSender());
             
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide " + ex);
@@ -101,9 +105,17 @@ public class HandleInform extends CyclicBehaviour {
          EReputationAgent erep = (EReputationAgent)myAgent;
          
         // recherche en base de données
-        // recherche en base de données
+        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.verifierVente(idVente), erep.getBDDAgent(), true);
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
+        
         
         //TO DO deux cas, verfification OK / KO
+        if(resultat.get("status").toString().equals("true")){
+            //TO DO definir le cas ok
+        }else{
+            //TO DO definir le cas ko
+        }
         
         Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": verification de la vente :"+resultat);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+": verification de la vente :"+resultat);

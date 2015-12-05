@@ -10,3 +10,7 @@ machines.
 Main Class: jade Boot
 Arguments: -gui -agents BDD:vendeur.BDDAgent;Darty:fournisseur.FournisseurAgent(1);ERep:ereputation.EReputationAgent"
 ``
+
+##### Lancement des agents sur un container distant :
+
+Argument : -container -host <IP-HOTE> -port 1099 -agents F1:fournisseur.FournisseurAgent(1);F2:fournisseur.FournisseurAgent(2)

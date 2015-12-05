@@ -67,26 +67,30 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
-                    boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+                    if (p != null) {
+                        boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+                        //Pour les trois date possible
+                        for (Integer delai : listDelai) {
+                            Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
+                            ((StocksEtTransaction) getDataStore()).put(t, p);
+                            JSONObject produitJson = new JSONObject();
+                            produitJson.put("idProduit", p.getIdProduit());
+                            produitJson.put("nomProduit", p.getNomProduit());
+                            produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
 
-                    //Pour les trois date possible
-                    for (Integer delai : listDelai) {
-                        Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
-                        ((StocksEtTransaction) getDataStore()).put(t, p);
-                        JSONObject produitJson = new JSONObject();
-                        produitJson.put("idProduit", p.getIdProduit());
-                        produitJson.put("nomProduit", p.getNomProduit());
-                        produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
+                            produitJson.put("date", listDate.get(delai));
+                            if (verifStock) {
+                                produitJson.put("quantite", quantite);
+                                tabProduitStock.add(produitJson);
+                            } else {
 
-                        produitJson.put("date", listDate.get(delai));
-                        if (verifStock) {
-                            tabProduitStock.add(produitJson);
-                        } else {
-                            int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
-                            if (stockDispo > 0) {
-                                tabProduitNonStock.add(produitJson);
+                                int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
+                                produitJson.put("quantite", stockDispo);
+                                if (stockDispo > 0) {
+                                    tabProduitNonStock.add(produitJson);
+                                }
+
                             }
-                            produitJson.put("quantite", stockDispo);
                         }
                     }
                 }
@@ -97,12 +101,17 @@ public abstract class WaitRequest extends CyclicBehaviour {
                     if (tabProduitStock.size() != 0) {
                         replyJson.put("jePropose", tabProduitStock);
                         this.sendMessage(replyJson.toJSONString(), msg);
-                    }
-
-                    //Tableau qte insuffisante
-                    if (tabProduitNonStock.size() != 0) {
+                    } else if (tabProduitNonStock.size() != 0) {
                         replyJson = new JSONObject();
                         replyJson.put("quantiteInsuffisante", tabProduitNonStock);
+                        this.sendMessage(replyJson.toJSONString(), msg);
+                    } else {
+                        //réponse
+                        JSONObject reqInvalide = new JSONObject();
+                        reqInvalide.put("recherche", recherche);
+                        reqInvalide.put("idProduit", reference);
+                        replyJson.put("requeteInvalide", reqInvalide);
+                        //Envoie de la réponse
                         this.sendMessage(replyJson.toJSONString(), msg);
                     }
                 } else {
@@ -125,6 +134,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
 
     public void sendMessage(String contenu, ACLMessage respond) {
         ACLMessage replyMessage = respond.createReply();
+        replyMessage.setContent(contenu);
         replyMessage.setPerformative(ACLMessage.PROPOSE);
         myAgent.send(replyMessage);
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenu + " : envoyé à " + respond.getSender().getName();

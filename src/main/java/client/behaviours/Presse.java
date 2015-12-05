@@ -49,6 +49,7 @@ public class Presse extends CyclicBehaviour {
     public void traiterMessage(ACLMessage message) {
 
         try {
+            Logger.getLogger(Presse.class.getName()).log(Level.INFO, message.getContent());
             JSONParser parser = new JSONParser();
             JSONObject object = (JSONObject) parser.parse(message.getContent());
 
@@ -106,9 +107,13 @@ public class Presse extends CyclicBehaviour {
             if (object.containsKey("commandeOk")) {
                 JSONObject obj = (JSONObject) object.get("commandeOk");
                 presse.afficherAchat(obj, message);
+                
                 // laisser avis erep sur vendeur/fournisseur + produit
                 presse.donneAvis(presse.getTypeAgentCible(), presse.nomAgent(message));
                 presse.donneAvisProduit(obj.get("idProduit").toString());
+                
+                // arreter agent
+                presse.takeDown();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -129,10 +134,6 @@ public class Presse extends CyclicBehaviour {
                 }
             }
 
-            // A FAIRE
-            if (object.containsKey("retourDesirabilite")) {
-                JSONObject obj = (JSONObject) object.get("retourDesirabilite");
-            }
 
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);

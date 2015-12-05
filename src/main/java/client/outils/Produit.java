@@ -24,6 +24,7 @@ public class Produit {
     private double prix;
     private int quantite;
     private int dateLivraison;
+    private double avis;
 
 
     public Produit(String provenance, String id, String nom, int quantite, double prix, int dateLivraison) {
@@ -33,6 +34,7 @@ public class Produit {
         this.quantite = quantite;
         this.prix = prix;
         this.dateLivraison = dateLivraison;
+        this.avis = 0;
     }
     
     public Produit(JSONObject jsonObject, String provenance){
@@ -119,4 +121,13 @@ public class Produit {
         this.quantite = quantite;
     }
 
+    public double getAvis() {
+        return avis;
+    }
+
+    public void setAvis(double avis) {
+        this.avis = avis;
+    }
+
+    
 }

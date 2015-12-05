@@ -7,21 +7,20 @@ import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author Team EReputation
+ * @author Team E-réputation
  */
 public class DesirabiliteCalculator {
     
     private static final long MAX_VALEUR_DESIRABILITE = 10;
-    private static final long MAX_JOURS_DESIRABILITE  = 63;
+    private static final long MAX_JOURS_DESIRABILITE  = 59;
     
     public static double execute(String dateSortie) {
         long jours = daysFromNow(dateSortie);
         
-        if(jours > MAX_JOURS_DESIRABILITE) {
-            return MAX_VALEUR_DESIRABILITE;
-        } else {
-            return round(Math.abs(Math.sin((double)jours/20) * MAX_VALEUR_DESIRABILITE), 2);   
-        }
+        // limitation au nombre de jours max
+        jours = (jours > MAX_JOURS_DESIRABILITE) ? MAX_JOURS_DESIRABILITE : jours;
+        
+        return round(Math.abs(Math.sin((double)jours/20) * MAX_VALEUR_DESIRABILITE), 2);
     }
     
     private static long daysFromNow(String dateText) {

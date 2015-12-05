@@ -5,7 +5,6 @@ import common.TypeAgent;
 import common.TypeLog;
 import ereputation.behaviours.HandleInform;
 import ereputation.behaviours.HandleRequest;
-import ereputation.log.LogEreputation;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -16,7 +15,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Team EReputation
+ * @author Team E-réputation
  */
 public class EReputationAgent extends SuperAgent {
     

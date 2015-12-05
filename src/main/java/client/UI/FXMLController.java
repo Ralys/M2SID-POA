@@ -89,7 +89,7 @@ public class FXMLController implements Initializable {
 
     private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.allProducts);
 
-    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome);
+    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome,TypeAgentClient.Mefiant);
 
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
 

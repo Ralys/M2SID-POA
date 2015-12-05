@@ -93,4 +93,20 @@ public class HandleInform extends CyclicBehaviour {
         // ajout en base de données
         erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertNegociation(comportement, success, nb_negociations), erep.getBDDAgent());
     }
+    
+    private void venteEffectuee(JSONObject demandeSolde, AID agent) throws ParseException{
+        
+         String idVente = demandeSolde.get("id").toString();
+         
+         EReputationAgent erep = (EReputationAgent)myAgent;
+         
+        // recherche en base de données
+        // recherche en base de données
+        
+        //TO DO deux cas, verfification OK / KO
+        
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": verification de la vente :"+resultat);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": verification de la vente :"+resultat);
+        
+    }
 }

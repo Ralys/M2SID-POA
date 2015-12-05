@@ -68,7 +68,7 @@ public abstract class WaitRequest extends CyclicBehaviour {
                 //{“jePropose”:[{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:2,”prix”:6.7,”date”:”27/02/2105”},...]}
                 for (Produit p : listProduit) { //Pour tous les produits, on fais une proposition
                     if (p != null) {
-                        boolean verifStock = ((StocksEtTransaction) getDataStore()).verifierStock(p.getIdProduit(), quantite);
+                        int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
                         //Pour les trois date possible
                         for (Integer delai : listDelai) {
                             Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
@@ -79,12 +79,10 @@ public abstract class WaitRequest extends CyclicBehaviour {
                             produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
 
                             produitJson.put("date", listDate.get(delai));
-                            if (verifStock) {
+                            if (stockDispo >= quantite) {
                                 produitJson.put("quantite", quantite);
                                 tabProduitStock.add(produitJson);
                             } else {
-
-                                int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
                                 produitJson.put("quantite", stockDispo);
                                 if (stockDispo > 0) {
                                     tabProduitNonStock.add(produitJson);

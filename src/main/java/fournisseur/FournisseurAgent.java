@@ -9,6 +9,8 @@ import common.TypeAgent;
 import fournisseur.behaviors.GestionStockBehavior;
 import fournisseur.behaviors.WaitNegociation;
 import fournisseur.behaviors.WaitRequest;
+import fournisseur.behaviors.strategie.GestionStockBehaviorDesir;
+import fournisseur.behaviors.strategie.GestionStockBehaviorNormal;
 import fournisseur.behaviors.strategie.WaitNegociationStrategie1;
 import fournisseur.behaviors.strategie.WaitNegociationStrategie2;
 import fournisseur.behaviors.strategie.WaitNegociationStrategie3;
@@ -53,18 +55,29 @@ public class FournisseurAgent extends SuperAgent {
         //Choix de la stratégie
         WaitRequest waitRequestBehaviorStrategie = null;
         WaitNegociation waitNegociationBehaviorStrategie = null;
+        GestionStockBehavior gestionStockBehavior = null;
         switch (numFournisseur) {
             case 1:
                 waitRequestBehaviorStrategie = new WaitRequestStrategie1();
                 waitNegociationBehaviorStrategie = new WaitNegociationStrategie1();
+                gestionStockBehavior = new GestionStockBehaviorNormal(this);
                 break;
             case 2:
                 waitRequestBehaviorStrategie = new WaitRequestStrategie2();
                 waitNegociationBehaviorStrategie = new WaitNegociationStrategie2();
+                gestionStockBehavior = new GestionStockBehaviorNormal(this);
                 break;
             case 3:
+                AID agentERep = null;
+                try {
+                    agentERep = this.findAgentsFromService(TypeAgent.EReputation)[0];
+                } catch (IndexOutOfBoundsException e) {
+                    Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "L'agent E-réputation doit être lancé");
+                    this.takeDown();
+                }
+                gestionStockBehavior = new GestionStockBehaviorDesir(this, agentERep);
                 waitRequestBehaviorStrategie = new WaitRequestStrategie3();
-                waitNegociationBehaviorStrategie = new WaitNegociationStrategie3();
+                waitNegociationBehaviorStrategie = new WaitNegociationStrategie3(agentERep);
                 break;
             default:
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Paramètre incorrect");
@@ -77,7 +90,6 @@ public class FournisseurAgent extends SuperAgent {
         this.addBehaviour(creationCatalogueBehavior);
 
         //Gestion du stock
-        GestionStockBehavior gestionStockBehavior = new GestionStockBehavior(this);
         gestionStockBehavior.setDataStore(catalogue);
         this.addBehaviour(gestionStockBehavior);
 

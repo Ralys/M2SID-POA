@@ -54,15 +54,18 @@ public class Econome extends CyclicBehaviour {
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
                      econome.jeChoisis(econome.moinsCher());
                 }
-               
             }
 
             // à faire
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
+                JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
+                econome.ajouterProposition(array, message);
+                if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
+                     econome.jeChoisis(econome.moinsCher());
+                }
             }
 
-            // à faire
             if (object.containsKey("requeteInvalide")) {
                 // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);

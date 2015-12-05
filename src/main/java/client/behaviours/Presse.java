@@ -63,9 +63,13 @@ public class Presse extends CyclicBehaviour {
 
             if (object.containsKey("quantiteInsuffisante")) {
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
+                JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
+                presse.ajouterProposition(array, message);
+                if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
+                     presse.jeChoisis(presse.plusTot());
+                }
             }
 
-             // à faire
             if (object.containsKey("requeteInvalide")) {
                 // aucune proposition correspond à la recherche pour cet agent
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);

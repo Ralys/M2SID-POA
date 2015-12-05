@@ -43,6 +43,7 @@ public class Econome extends CyclicBehaviour {
     public void traiterMessage(ACLMessage message) {
 
         try {
+            Logger.getLogger(Econome.class.getName()).log(Level.INFO,message.getContent());
             JSONParser parser = new JSONParser();
             JSONObject object = (JSONObject) parser.parse(message.getContent());
 
@@ -50,20 +51,31 @@ public class Econome extends CyclicBehaviour {
                 JSONArray array = (JSONArray) object.get("jePropose");
                 econome.ajouterProposition(array, message);
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
-                while (econome.getNbReponseReçu() != econome.getNbRechercheEnvoye()) {
-                    // attente
+                if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
+                     econome.jeChoisis(econome.moinsCher());
                 }
-                econome.jeChoisis(econome.moinsCher());
             }
 
             // à faire
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
+                JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
+                econome.ajouterProposition(array, message);
+                if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
+                     econome.jeChoisis(econome.moinsCher());
+                }
             }
 
-            // à faire
             if (object.containsKey("requeteInvalide")) {
+                // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
+
+                // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
+                if ((econome.getNbReponseReçu() != econome.getNbRechercheEnvoye())
+                        && econome.getLproposition().isEmpty()) {
+                    Log.arretRecherche();
+                    econome.takeDown();
+                }
             }
 
             if (object.containsKey("commandeOk")) {
@@ -100,7 +112,7 @@ public class Econome extends CyclicBehaviour {
             }
 
         } catch (org.json.simple.parser.ParseException ex) {
-            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE,"Parse impossible, format JSON invalide");
         }
     }
 

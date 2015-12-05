@@ -62,6 +62,7 @@ public class Econome extends CyclicBehaviour {
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
+                 econome.ajouterProposition(array, message);
                 Log.reception(econome.nomAgent(message),message.getContent());
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
                      econome.jeChoisis(econome.moinsCher());

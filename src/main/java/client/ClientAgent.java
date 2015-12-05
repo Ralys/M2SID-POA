@@ -38,6 +38,7 @@ public class ClientAgent extends SuperAgent {
     private int nbReponseReçu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
+    private double limite =0;
     private int quantite = 0;
 
     // **************************************************************** //
@@ -59,6 +60,7 @@ public class ClientAgent extends SuperAgent {
         String reference = arguments[4].toString();
         quantite = Integer.parseInt(arguments[5].toString());
         String typeRecherche = arguments[6].toString();
+        limite = Double.parseDouble(arguments[7].toString());
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
 
@@ -393,7 +395,7 @@ public class ClientAgent extends SuperAgent {
         }
     }
     
-    public void nettoyerProposition(int dateMaximum){
+    public void nettoyerProposition(long dateMaximum){
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
             if (produit.getDateLivraison() > dateMaximum) {
@@ -480,6 +482,14 @@ public class ClientAgent extends SuperAgent {
 
     public void setTypeAgentCible(String typeAgentCible) {
         this.typeAgentCible = typeAgentCible;
+    }
+
+    public double getLimite() {
+        return limite;
+    }
+
+    public void setLimite(double prixMax) {
+        this.limite = limite;
     }
 
     public int getNbReponseReçu() {

@@ -43,7 +43,7 @@ public class Econome extends CyclicBehaviour {
     public void traiterMessage(ACLMessage message) {
 
         try {
-            Logger.getLogger(Econome.class.getName()).log(Level.INFO,message.getContent());
+            Logger.getLogger(Econome.class.getName()).log(Level.INFO, message.getContent());
             JSONParser parser = new JSONParser();
             JSONObject object = (JSONObject) parser.parse(message.getContent());
 
@@ -54,25 +54,36 @@ public class Econome extends CyclicBehaviour {
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
                     // on nettoye les propositions en fonction du critère de prix max
                     econome.nettoyerProposition(facteurPrixMax);
-                    econome.jeChoisis(econome.moinsCher());
+                    if (econome.getLproposition().size() > 0) {
+                        econome.jeChoisis(econome.moinsCher());
+                    } else {
+                        Log.arretRecherche();
+                        econome.takeDown();
+                    }
                 }
             }
 
-            
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
-                 econome.ajouterProposition(array, message);
-                Log.reception(econome.nomAgent(message),message.getContent());
+                econome.ajouterProposition(array, message);
+                Log.reception(econome.nomAgent(message), message.getContent());
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
-                     econome.jeChoisis(econome.moinsCher());
+                    // on nettoye les propositions en fonction du critère de prix max
+                    econome.nettoyerProposition(facteurPrixMax);
+                    if (econome.getLproposition().size() > 0) {
+                        econome.jeChoisis(econome.moinsCher());
+                    } else {
+                        Log.arretRecherche();
+                        econome.takeDown();
+                    }
                 }
             }
 
             if (object.containsKey("requeteInvalide")) {
                 // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
-                Log.reception(econome.nomAgent(message),message.getContent());
+                Log.reception(econome.nomAgent(message), message.getContent());
                 econome.afficherRaisonInvalide(object, message);
                 // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
                 if ((econome.getNbReponseReçu() != econome.getNbRechercheEnvoye())
@@ -101,12 +112,12 @@ public class Econome extends CyclicBehaviour {
 
                 // choisir la meilleur proposition suivante si il y en a
                 if (econome.getLproposition().size() > 0) {
-                        econome.jeChoisis(econome.moinsCher());
-                    } else {
-                        Log.arretRecherche();
-                        econome.takeDown();
-                    }
+                    econome.jeChoisis(econome.moinsCher());
+                } else {
+                    Log.arretRecherche();
+                    econome.takeDown();
                 }
+            }
 
             // A FAIRE
             if (object.containsKey("retourDesirabilite")) {
@@ -114,7 +125,7 @@ public class Econome extends CyclicBehaviour {
             }
 
         } catch (org.json.simple.parser.ParseException ex) {
-            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE,"Parse impossible, format JSON invalide");
+            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, "Parse impossible, format JSON invalide");
         }
     }
 

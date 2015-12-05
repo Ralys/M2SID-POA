@@ -56,9 +56,16 @@ public class Presse extends CyclicBehaviour {
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
 
                 if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
-                    // on nettoye les propositions en fonction du critère de prix max
+                    // on nettoye les propositions en fonction du critère du temps max
                     presse.nettoyerProposition(facteurPrixMax);
-                    presse.jeChoisis(presse.plusTot());
+                    if (presse.getLproposition().size() > 0) {
+                        // on nettoye les propositions en fonction du critère du temps max
+                        presse.nettoyerProposition(facteurPrixMax);
+                        presse.jeChoisis(presse.plusTot());
+                    } else {
+                        Log.arretRecherche();
+                        presse.takeDown();
+                    }
                 }
 
             }
@@ -68,7 +75,12 @@ public class Presse extends CyclicBehaviour {
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
                 Log.reception(presse.nomAgent(message), message.getContent());
                 if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
-                    presse.jeChoisis(presse.plusTot());
+                    if (presse.getLproposition().size() > 0) {
+                        presse.jeChoisis(presse.plusTot());
+                    } else {
+                        Log.arretRecherche();
+                        presse.takeDown();
+                    }
                 }
             }
 

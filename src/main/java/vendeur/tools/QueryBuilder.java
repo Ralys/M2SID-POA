@@ -21,7 +21,7 @@ public class QueryBuilder {
         String sql = "SELECT REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, QTE "
                 + "FROM STOCK, PRODUIT "
                 + "WHERE STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT "
-                + "AND VENDEUR_NAME = \"vendeur_\" "+ vendeur + "\" "
+                + "AND VENDEUR_NAME = \"vendeur_"+ vendeur + "\" "
                 + "AND REF_PRODUIT LIKE \"" + ref_prod + "\"";
         return JSONRequest("select", sql);
     }
@@ -45,4 +45,16 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
 
+    /**
+     * Get list of product's refs and stock
+     * @return
+     */
+    public static String getRefListStock(String vendeur) {
+       String sql = "SELECT PRODUIT.REF_PRODUIT, QTE "
+                + "FROM PRODUIT LEFT JOIN STOCK ON STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT"
+                + " WHERE VENDEUR_NAME = \"vendeur_"+ vendeur + "\" OR VENDEUR_NAME IS NULL";
+
+
+        return JSONRequest("select", sql);
+    }
 }

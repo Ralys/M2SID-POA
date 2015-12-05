@@ -1,27 +1,73 @@
 package vendeur.behaviours;
 
-import jade.core.behaviours.Behaviour;
+import common.TypeAgent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import vendeur.VendeurAgent;
+import vendeur.tools.QueryBuilder;
 
+import java.util.Iterator;
 /**
  *
  * @author Aurélien
  */
-public class PurchaseProduct extends Behaviour {
+public class PurchaseProduct extends CyclicBehaviour {
+    private final JSONParser parser;
 
     public PurchaseProduct(VendeurAgent aThis) {
         super(aThis);
+        this.parser = new JSONParser();
     }
 
     @Override
     public void action() {
-//        throw new UnsupportedOperationException("Not supported yet.");
+
+        VendeurAgent vendeur = (VendeurAgent) myAgent;
+
+        // Get quantity for each product
+
+        ACLMessage stockProducts = vendeur.sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefListStock(vendeur.getLocalName()), vendeur.getBDDAgent(), true);
+
+
+        JSONArray resultatsStockProducts = null;
+        try {
+            resultatsStockProducts = (JSONArray) this.parser.parse(stockProducts.getContent());
+
+            JSONObject reponse = new JSONObject();
+            JSONArray list = new JSONArray();
+
+            for (Iterator iterator = resultatsStockProducts.iterator(); iterator.hasNext();) {
+                JSONObject resultat = (JSONObject) iterator.next();
+
+                String QTE_ = resultat.get("QTE").toString();
+                String REF_PRODUIT = resultat.get("REF_PRODUIT").toString();
+
+                //test quantity
+                if(QTE_ == "null") {
+
+                }
+                else {
+                    Integer QTE = Integer.valueOf(QTE_);
+                }
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public boolean done() {
-//        throw new UnsupportedOperationException("Not supported yet.");
-        return true;
+    public void command(String ref, Integer qte) {
+        VendeurAgent vendeur = (VendeurAgent) myAgent;
+
+
+        vendeur.jeChercheReference(TypeAgent.Fournisseur, ref, qte);
+
+
     }
-    
+
+
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - agent@localhost" uuid="1b0b8d4d-9e36-4bac-bf1d-ce777e2f1c0a">
+    <database-info product="MySQL" version="5.6.17" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
+    <schema name="" catalog="agent"/>
+    <table name="avis" schema="" catalog="agent" type="TABLE">
+      <column name="NOM_EMETTEUR" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="NOM_DESTINATAIRE" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="AVIS" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="NOM_EMETTEUR,NOM_DESTINATAIRE"/>
+    </table>
+    <table name="categorie" schema="" catalog="agent" type="TABLE">
+      <column name="ID_CATEGORIE" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="NOM_CATEGORIE" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="ID_CATEGORIE"/>
+    </table>
+    <table name="fournisseur_produit" schema="" catalog="agent" type="TABLE">
+      <column name="REF_PRODUIT" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="ID_FOURNISSEUR" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <primary-key name="PRIMARY" columns="REF_PRODUIT,ID_FOURNISSEUR"/>
+    </table>
+    <table name="possede" schema="" catalog="agent" type="TABLE">
+      <column name="ID_TAG" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="REF_PRODUIT" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="ID_TAG,REF_PRODUIT"/>
+    </table>
+    <table name="produit" schema="" catalog="agent" type="TABLE">
+      <column name="REF_PRODUIT" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="ID_CATEGORIE" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="NOM_PRODUIT" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="DATE_SORTIE" sqlType="BIGINT" precision="19" scale="0" nullable="true" jdbcType="-5"/>
+      <column name="PRIX_CREATION" sqlType="FLOAT" precision="12" scale="0" nullable="false" jdbcType="7"/>
+      <primary-key name="PRIMARY" columns="REF_PRODUIT"/>
+    </table>
+    <table name="tags" schema="" catalog="agent" type="TABLE">
+      <column name="ID_TAG" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="LABEL_TAG" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="ID_TAG"/>
+    </table>
+    <table name="vente" schema="" catalog="agent" type="TABLE">
+      <column name="ID" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="REF_PRODUIT" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="PRIX" sqlType="DECIMAL" precision="9" scale="2" nullable="false" jdbcType="3"/>
+      <column name="QTE" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="PROVIDER" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <column name="ACHETEUR" sqlType="VARCHAR" precision="255" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="ID"/>
+    </table>
+  </data-source>
+</component>

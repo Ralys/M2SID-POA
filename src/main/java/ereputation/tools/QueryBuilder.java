@@ -1,15 +1,12 @@
 package ereputation.tools;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import org.json.simple.JSONObject;
 
 /**
  *
- * @author Team EReputation
+ * @author Team E-réputation
  */
 public class QueryBuilder {
 
@@ -44,6 +41,11 @@ public class QueryBuilder {
         //TO DO ecrire la requête
         String sql = "";
         return JSONRequest("select", sql);
+    }
+    
+    public static String insertNegociation(String comportement, boolean success, long nb_negociations) {
+        String sql = "INSERT INTO NEGOCIATION(COMPORTEMENT_CLIENT, SUCCESS, NB_NEGOCIATIONS) VALUES(\"" + comportement + "\"," + (success ? 1 : 0) + "," +  nb_negociations + ")";
+        return JSONRequest("insert", sql);
     }
             
     private static String JSONRequest(String typeRequest, String sql) {

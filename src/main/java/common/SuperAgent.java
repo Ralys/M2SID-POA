@@ -9,8 +9,9 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 
 /**
- *
- * @author Mazzei Stéphane
+ * Classe parente à tous les agents
+ * 
+ * @author Team E-réputation
  */
 public class SuperAgent extends Agent {
 

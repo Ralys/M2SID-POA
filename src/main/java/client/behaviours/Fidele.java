@@ -81,11 +81,12 @@ public class Fidele extends CyclicBehaviour {
             
             // En cas de requête invalide
             if (object.containsKey("requeteInvalide")) {
+                 JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // Aucune proposition correspond à la recherche pour cet agent
                 fidele.setNbReponseReçu(fidele.getNbReponseReçu() + 1);
                 Log.reception(fidele.nomAgent(message), message.getContent());
 
-                fidele.afficherRaisonInvalide(object, message);
+                fidele.afficherRaisonInvalide(jsonObject, message);
                 
                 if ((fidele.getNbReponseReçu() == fidele.getNbRechercheEnvoye())){
                     if (fidele.getLproposition().size() > 0) {

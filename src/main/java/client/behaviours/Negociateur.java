@@ -84,11 +84,12 @@ public class Negociateur extends CyclicBehaviour {
             }
 
             if (object.containsKey("requeteInvalide")) {
+                JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // aucune proposition correspond à la recherche pour cet agent
                 negociateur.setNbReponseReçu(negociateur.getNbReponseReçu() + 1);
                 Log.reception(negociateur.nomAgent(message), message.getContent());
 
-                negociateur.afficherRaisonInvalide(object, message);
+                negociateur.afficherRaisonInvalide(jsonObject, message);
 
                 if ((negociateur.getNbReponseReçu() == negociateur.getNbRechercheEnvoye())) {
 

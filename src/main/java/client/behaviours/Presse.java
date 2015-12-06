@@ -107,10 +107,11 @@ public class Presse extends CyclicBehaviour {
             }
 
             if (object.containsKey("requeteInvalide")) {
+                JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // aucune proposition correspond à la recherche pour cet agent
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
                 Log.reception(presse.nomAgent(message), message.getContent());
-                presse.afficherRaisonInvalide(object, message);
+                presse.afficherRaisonInvalide(jsonObject, message);
 
                 if ((presse.getNbReponseReçu() == presse.getNbRechercheEnvoye())){
                     

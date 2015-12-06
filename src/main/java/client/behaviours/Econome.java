@@ -92,11 +92,12 @@ public class Econome extends CyclicBehaviour {
             }
 
             if (object.containsKey("requeteInvalide")) {
+                JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 Log.reception(econome.nomAgent(message), message.getContent());
 
-                econome.afficherRaisonInvalide(object, message);
+                econome.afficherRaisonInvalide(jsonObject, message);
                 
                 if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())){
                     

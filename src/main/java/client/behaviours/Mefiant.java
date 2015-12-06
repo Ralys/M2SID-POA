@@ -141,10 +141,11 @@ public class Mefiant extends CyclicBehaviour {
             }
 
             if (object.containsKey("requeteInvalide")) {
+                JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // aucune proposition correspond à la recherche pour cet agent
                 mefiant.setNbReponseReçu(mefiant.getNbReponseReçu() + 1);
                 Log.reception(mefiant.nomAgent(message), message.getContent());
-                mefiant.afficherRaisonInvalide(object, message);
+                mefiant.afficherRaisonInvalide(jsonObject, message);
                 
                 if (mefiant.getNbReponseReçu() == mefiant.getNbRechercheEnvoye()) {
                     // récupation des différents id des produits

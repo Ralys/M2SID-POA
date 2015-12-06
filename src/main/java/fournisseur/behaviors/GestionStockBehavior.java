@@ -1,12 +1,9 @@
 package fournisseur.behaviors;
 
-import fournisseur.FournisseurAgent;
 import fournisseur.utils.Produit;
 import fournisseur.utils.StocksEtTransaction;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -15,7 +12,7 @@ import java.util.logging.Logger;
 public abstract class GestionStockBehavior extends TickerBehaviour {
 
     protected int stockMax = 1000;//A définir avec les vendeurs
-    private double reducQte = 0.01; //1%*qte de produit fabriqué de reduction sur le prix unitaire lors de la fabrication d'un produit
+    private double reducQte = 0.002; //1%*qte de produit fabriqué de reduction sur le prix unitaire lors de la fabrication d'un produit
 
     public GestionStockBehavior(Agent a) {
         super(a, 20000);

@@ -7,11 +7,9 @@ package client.behaviours;
 import client.ClientAgent;
 import client.outils.Log;
 import client.outils.Produit;
-import client.outils.TypeAgentClient;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -19,17 +17,27 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- *
+ * Classe qui permet de définir le comportement économe d'un client.
  * @author Aymeric
  */
 public class Econome extends CyclicBehaviour {
 
+    /**
+     * Le client en question
+     */
     private final ClientAgent econome;
 
+    /**
+     * Constructeur permettant d'affecter le comportement économe à un client
+     * @param agent Agent qui possèdera le comportement econome
+     */
     public Econome(Agent agent) {
         this.econome = (ClientAgent) agent;
     }
 
+    /**
+     * Action effectuée par le type comportement économe.
+     */
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -39,6 +47,10 @@ public class Econome extends CyclicBehaviour {
         }
     }
 
+    /**
+     * Comportement effectué pour traiter un message en fonction de son type
+     * @param message Le message à traiter.
+     */
     public void traiterMessage(ACLMessage message) {
 
         try {

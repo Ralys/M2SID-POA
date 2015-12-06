@@ -39,7 +39,13 @@ public class QueryBuilder {
     
     public static String verifierVente(String idVente) {
         //TO DO ecrire la requête
-        String sql = "";
+        String sql = "SELECT  ((VENTE.PRIX>=PRIX_CREATION) " +
+                    "OR " +
+                "((DATE_VENTE < ANY(SELECT DATE_START FROM SOLDE WHERE VENDEUR ='DARTY')) " +
+                    "AND " +
+                "(DATE_VENTE < ANY (SELECT DATE_END FROM SOLDE WHERE VENDEUR ='DARTY')))) AS statusVente " +
+                "FROM `VENTE` INNER JOIN `PRODUIT` ON VENTE.REF_PRODUIT = PRODUIT.REF_PRODUIT " +
+                "WHERE ID_VENTE = 1";
         return JSONRequest("select", sql);
     }
     

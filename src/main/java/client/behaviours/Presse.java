@@ -7,15 +7,9 @@ package client.behaviours;
 import client.ClientAgent;
 import client.outils.Log;
 import client.outils.Produit;
-import client.outils.TypeAgentClient;
-import common.TypeAgent;
-import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,19 +18,32 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- *
+ * Classe qui permet de définir le comportement pressé d'un client.
  * @author Aymeric
  */
 public class Presse extends CyclicBehaviour {
 
+    /**
+     * Le client en question
+     */
     private final ClientAgent presse;
-    // 1J
+    
+    /**
+     * Entier représentant 1 jour en timestand
+     */
     private final long timeStamp = 86400000;
 
+    /**
+     * Constructeur permettant d'affecter le comportement pressé à un client
+     * @param agent Agent qui possèdera le comportement pressé
+     */
     public Presse(Agent agent) {
         this.presse = (ClientAgent) agent;
     }
 
+    /**
+     * Action effectuée par le type comportement pressé.
+     */
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -46,6 +53,10 @@ public class Presse extends CyclicBehaviour {
         }
     }
 
+    /**
+     * Comportement effectué pour traiter un message en fonction de son type
+     * @param message Le message à traiter.
+     */
     public void traiterMessage(ACLMessage message) {
 
         try {

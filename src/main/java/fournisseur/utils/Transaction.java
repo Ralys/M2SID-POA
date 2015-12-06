@@ -7,7 +7,7 @@ package fournisseur.utils;
 public class Transaction {
 
     private int idProduit;
-    private Long dateLivraison;
+    private long dateLivraison;
     private String client;
     private int nbNego;
     private int qte;
@@ -38,7 +38,7 @@ public class Transaction {
         return idProduit;
     }
 
-    public Long getDateLivraison() {
+    public long getDateLivraison() {
         return dateLivraison;
     }
 

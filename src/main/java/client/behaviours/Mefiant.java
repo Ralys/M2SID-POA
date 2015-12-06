@@ -20,20 +20,30 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- *
+ * Classe qui permet de définir le comportement méfiant d'un client.
  * @author Aymeric
  */
 public class Mefiant extends CyclicBehaviour {
 
+    /**
+     * Le client en question
+     */
     private final ClientAgent mefiant;
     private final HashMap<String, Double> hmAvisProduit = new HashMap<String, Double>();
     private final HashMap<String, Double> hmAvisRevendeur = new HashMap<String, Double>();
     private static final double avisRevendeurMin = 3;
 
+    /**
+     * Constructeur permettant d'affecter le comportement méfiant à un client
+     * @param agent Agent qui possèdera le comportement méfiant
+     */
     public Mefiant(Agent agent) {
         this.mefiant = (ClientAgent) agent;
     }
 
+    /**
+     * Action effectuée par le type comportement méfiant.
+     */
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -43,6 +53,10 @@ public class Mefiant extends CyclicBehaviour {
         }
     }
 
+    /**
+     * Comportement effectué pour traiter un message en fonction de son type
+     * @param message Le message à traiter.
+     */
     public void traiterMessage(ACLMessage message) {
 
         try {

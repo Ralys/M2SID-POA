@@ -117,7 +117,7 @@ public class HandleInform extends CyclicBehaviour {
         
         
         //TO DO deux cas, verfification OK / KO
-        if(resultat.get("status").toString().equals("true")){
+        if(resultat.get("statusVente").toString().equals("true")){
             //TO DO definir le cas ok
         }else{
             //TO DO definir le cas ko

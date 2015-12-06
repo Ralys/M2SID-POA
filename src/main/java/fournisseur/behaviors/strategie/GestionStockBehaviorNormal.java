@@ -21,7 +21,9 @@ public class GestionStockBehaviorNormal extends GestionStockBehavior {
     public GestionStockBehaviorNormal(Agent a) {
         super(a);
     }
+    
 
+    @Override
     public void creationproduit() {
         HashMap<Produit, Integer> catalogue = ((StocksEtTransaction) this.getDataStore()).listStock();
         Set<Produit> cles = catalogue.keySet();

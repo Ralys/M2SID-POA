@@ -57,7 +57,20 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             long date = Long.valueOf(jsonProduit.get("DATE_SORTIE").toString());
             String nomProduit = jsonProduit.get("NOM_PRODUIT").toString();
             String typeProduit = jsonProduit.get("NOM_CATEGORIE").toString();
-            Produit p = new Produit(idProduit, nomProduit, prixProduit, typeProduit, date);
+
+            //Récupération des tags
+            ArrayList<String> listTag = new ArrayList<>();
+            SQL = "SELECT LABEL_TAG "
+                    + "FROM POSSEDE,TAGS "
+                    + "WHERE POSSEDE.ID_TAG=TAGS.ID_TAG AND REF_PRODUIT=" + idProduit;
+            JSONArray tabTag = sendRequete(SQL);
+            for (Object tagObject : tabTag) {
+                JSONObject jsonTag = (JSONObject) tagObject;
+                String tag = jsonTag.get("LABEL_TAG").toString();
+                listTag.add(tag);
+            }
+
+            Produit p = new Produit(idProduit, nomProduit, prixProduit, typeProduit, date, listTag);
             listProduit.put(idProduit, p);
         }
         return listProduit;

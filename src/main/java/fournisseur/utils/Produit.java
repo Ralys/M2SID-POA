@@ -1,5 +1,7 @@
 package fournisseur.utils;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Tom
@@ -12,12 +14,14 @@ public class Produit implements Comparable {
     private String typeProduit;
     private long dateSortie;
     private double desirabilite;
+    private ArrayList<String> listTag;
 
-    public Produit(int id, String nom, double prix, String type, long date) {
+    public Produit(int id, String nom, double prix, String type, long date, ArrayList<String> listTag) {
         this.idProduit = id;
         this.nomProduit = nom;
         this.typeProduit = type;
         this.prixDeBase = prix;
+        this.listTag = listTag;
         this.dateSortie = date;
         desirabilite = 0;
     }
@@ -68,7 +72,7 @@ public class Produit implements Comparable {
 
     @Override
     public String toString() {
-        return "Produit{" + "idProduit=" + idProduit + ", prixDeBase=" + prixDeBase + ", nomProduit=" + nomProduit + ", typeProduit=" + typeProduit + ", dateSortie=" + dateSortie + ", desirabilite=" + desirabilite + '}';
+        return "Produit{" + "idProduit=" + idProduit + ", prixDeBase=" + prixDeBase + ", nomProduit=" + nomProduit + ", typeProduit=" + typeProduit + ", dateSortie=" + dateSortie + ", desirabilite=" + desirabilite + ", listTag=" + listTag + '}';
     }
 
     @Override
@@ -80,6 +84,23 @@ public class Produit implements Comparable {
             return 0;
         }
         return 1;
+    }
+
+    public ArrayList<String> getListTag() {
+        return listTag;
+    }
+
+    public boolean containsTag(String tag) {
+        for (String lTag : listTag) {
+            if (lTag.compareTo(tag) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setListTag(ArrayList<String> listTag) {
+        this.listTag = listTag;
     }
 
 }

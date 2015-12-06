@@ -69,7 +69,7 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
@@ -86,17 +86,18 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
 
             if (object.containsKey("requeteInvalide")) {
+                JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 Log.reception(econome.nomAgent(message), message.getContent());
 
-                econome.afficherRaisonInvalide(object, message);
+                econome.afficherRaisonInvalide(jsonObject, message);
                 
                 if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())){
                     
@@ -106,7 +107,7 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
@@ -120,7 +121,7 @@ public class Econome extends CyclicBehaviour {
                 econome.donneAvisProduit(obj.get("idProduit").toString());
                 
                 // arreter agent
-                econome.takeDown();
+                econome.arretAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -137,7 +138,7 @@ public class Econome extends CyclicBehaviour {
                     econome.jeChoisis(econome.moinsCher());
                 } else {
                     Log.arretRecherche();
-                    econome.takeDown();
+                    econome.arretAgent();
                 }
 
             }

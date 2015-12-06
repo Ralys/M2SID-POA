@@ -74,25 +74,26 @@ public class Fidele extends CyclicBehaviour {
                         fidele.jeChoisis(fidele.choixFidelite());
                     } else {
                         Log.arretRecherche();
-                        fidele.takeDown();
+                        fidele.arretAgent();
                     }
                 }
             }
             
             // En cas de requête invalide
             if (object.containsKey("requeteInvalide")) {
+                 JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // Aucune proposition correspond à la recherche pour cet agent
                 fidele.setNbReponseReçu(fidele.getNbReponseReçu() + 1);
                 Log.reception(fidele.nomAgent(message), message.getContent());
 
-                fidele.afficherRaisonInvalide(object, message);
+                fidele.afficherRaisonInvalide(jsonObject, message);
                 
                 if ((fidele.getNbReponseReçu() == fidele.getNbRechercheEnvoye())){
                     if (fidele.getLproposition().size() > 0) {
                         fidele.jeChoisis(fidele.choixFidelite());
                     } else {
                         Log.arretRecherche();
-                        fidele.takeDown();
+                        fidele.arretAgent();
                     }
                 }
             }
@@ -107,7 +108,7 @@ public class Fidele extends CyclicBehaviour {
                 fidele.donneAvisProduit(obj.get("idProduit").toString());
                 
                 // Arreter agent
-                fidele.takeDown();
+                fidele.arretAgent();
             }
             
             // Action lorsque la commande n'est pas OK
@@ -125,7 +126,7 @@ public class Fidele extends CyclicBehaviour {
                     fidele.jeChoisis(fidele.plusTot());
                 } else {
                     Log.arretRecherche();
-                    fidele.takeDown();
+                    fidele.arretAgent();
                 }
             }
         } catch (org.json.simple.parser.ParseException ex) {

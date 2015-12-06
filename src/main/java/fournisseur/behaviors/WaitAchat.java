@@ -57,7 +57,7 @@ public class WaitAchat extends CyclicBehaviour {
 
                         ((StocksEtTransaction) getDataStore()).decrementerStock(idProduit, quantite);
 
-                        //TODO incrementation des pesos
+                        ((StocksEtTransaction) getDataStore()).changePesos(prix);
                     } else {
                         //{“commandePasOK”:{“raison”:”Stock insuffisant”}}
                         replyJson.put("commandePasOK", replyContenu);

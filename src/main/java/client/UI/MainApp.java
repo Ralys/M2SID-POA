@@ -8,9 +8,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
+/**
+ * Classe d'entrée de l'application, permettant de lancer l'application pour un client 
+ * @author mercier
+ */
 public class MainApp extends Application {
 
+    /**
+     * Méthode permettant de créer la fênetre de l'application
+     * @param stage La fenêtre de l'application
+     * @throws Exception Les exceptions
+     */
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));

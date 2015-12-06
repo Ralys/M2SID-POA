@@ -286,7 +286,8 @@ public class ClientAgent extends SuperAgent {
     public void donneAvis(String typeAgent, String nomAgent) {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
-        int avis = 0;
+        // avis aléatoire entre 0 et 5
+        int avis = (int) (Math.random() * (5));
 
         // construction de l'objet JSON à envoyé
         JSONObject donneAvis = new JSONObject();

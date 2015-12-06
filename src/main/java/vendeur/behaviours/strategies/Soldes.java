@@ -19,8 +19,18 @@ public class Soldes {
         put(10, 0);
     }};
 
-    public static double getPrix(double prixU, double prixL, int dureeLiv){
-        return (prixU-prixL)/2+prixL+tableauPrixLiv.get(dureeLiv);
+    public static double getPrix(double prixU, double prixL, int dureeLiv, double desir){
+        double var = 0;
+        double price;
+        if(desir > 5) {
+            var = desir - 5;
+            price = prixU+(prixU*var*5/100);
+        }
+        else {
+            var = 5 - desir;
+            price = prixU-(prixU*var*5/100);
+        }
+        return (price-prixL)/2+prixL+tableauPrixLiv.get(dureeLiv);
     }
 
 }

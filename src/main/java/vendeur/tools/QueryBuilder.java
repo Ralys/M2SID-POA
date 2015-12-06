@@ -44,6 +44,7 @@ public class QueryBuilder {
         String sql = "SELECT STOCK.REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, PRIX_LIMITE, QTE "
                 + "FROM PRODUIT,STOCK "
                 + "WHERE PRODUIT.REF_PRODUIT = STOCK.REF_PRODUIT "
+                + "AND PRODUIT.REF_PRODUIT = \""+reference+"\" "
                 + "AND STOCK.VENDEUR_NAME = \"" + vendeur + "\"";
         return JSONRequest("select", sql);
     }
@@ -99,4 +100,5 @@ public class QueryBuilder {
 
         return JSONRequest("insert", sql);
     }
+
 }

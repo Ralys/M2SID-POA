@@ -52,6 +52,7 @@ create table STOCK
   REF_PRODUIT          varchar(255) not null,
   VENDEUR_NAME         varchar(255) not null,
   PRIX_UNITAIRE        float(9,2) not null,
+  PRIX_LIMITE        float(9,2) not null,
   QTE                  int not null,
   primary key (REF_PRODUIT, VENDEUR_NAME)
 );
@@ -209,12 +210,40 @@ INSERT INTO `produit` (`REF_PRODUIT`, `ID_CATEGORIE`, `NOM_PRODUIT`,`DATE_SORTIE
   (49, 5, 'Marina Kaye : Fearless',strftime('%s', 'now')+50,5.5),
   (50, 5, 'Etienne Daho : L homme qui marche',strftime('%s', 'now')+70,5.5);
 
+
+
+INSERT INTO `stock` (`REF_PRODUIT`,`VENDEUR_NAME`,`PRIX_UNITAIRE`,`PRIX_LIMITE`,`QTE`) VALUES
+  (1, 'w',7,5.5,3),
+  (2, 'w',8,5.5,0);
+
 INSERT INTO `categorie` (`ID_CATEGORIE`, `NOM_CATEGORIE`) VALUES
   (1, 'DVD'),
   (2, 'Jeux-vidéo'),
   (3, 'Téléphone'),
   (4, 'Appareil photo'),
   (5, 'CD');
+
+INSERT INTO `possede` (`ID_TAG`,`REF_PRODUIT`) VALUES
+(1,2),
+(1,3),
+(1,6),
+(1,10),
+(1,17),
+(1,18),
+(2,2),
+(2,11),
+(2,12),
+(2,17),
+(2,18),
+(3,1),
+(4,19),
+(4,20);
+
+INSERT INTO `tags` (`ID_TAG`,`LABEL_TAG`) VALUES
+  (1, "action"),
+  (2, "tir"),
+  (3, "anime"),
+  (4, "aventure");
 
 INSERT INTO `FOURNISSEUR_PRODUIT` (`ID_FOURNISSEUR`, `REF_PRODUIT`) VALUES
   (1, 1),

@@ -39,12 +39,23 @@ public class QueryBuilder {
     
     public static String verifierVente(String idVente) {
         //TO DO ecrire la requête
-        String sql = "";
+        String sql = "SELECT  ((VENTE.PRIX>=PRIX_CREATION) " +
+                    "OR " +
+                "((DATE_VENTE < ANY(SELECT DATE_START FROM SOLDE WHERE VENDEUR ='DARTY')) " +
+                    "AND " +
+                "(DATE_VENTE < ANY (SELECT DATE_END FROM SOLDE WHERE VENDEUR ='DARTY')))) AS statusVente " +
+                "FROM `VENTE` INNER JOIN `PRODUIT` ON VENTE.REF_PRODUIT = PRODUIT.REF_PRODUIT " +
+                "WHERE ID_VENTE = 1";
         return JSONRequest("select", sql);
     }
     
     public static String insertNegociation(String comportement, boolean success, long nb_negociations) {
         String sql = "INSERT INTO NEGOCIATION(COMPORTEMENT_CLIENT, SUCCESS, NB_NEGOCIATIONS) VALUES(\"" + comportement + "\"," + (success ? 1 : 0) + "," +  nb_negociations + ")";
+        return JSONRequest("insert", sql);
+    }
+    
+    public static String insertSolde(String vendeur, String dateDebut, String dateFin) {
+        String sql = "INSERT INTO SOLDES(VENDEUR, DATE_START, DATE_END) VALUES(\"" + vendeur + "\"," + dateDebut+ "," +  dateFin + ")";
         return JSONRequest("insert", sql);
     }
             

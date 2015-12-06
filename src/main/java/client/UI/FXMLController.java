@@ -1,5 +1,6 @@
 package client.UI;
 
+import client.outils.Produit;
 import client.outils.TypeAgentClient;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
@@ -23,6 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import common.TypeAgent;
 import common.TypeProduit;
+import java.util.HashMap;
 import javafx.scene.control.RadioButton;
 
 /**
@@ -161,6 +163,11 @@ public class FXMLController implements Initializable {
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
 
     /**
+     * Liste des achats nomClient - Produit
+     */
+    public static HashMap<String, Produit> lAchatsEffectues = new HashMap();
+    
+    /**
      * Méthode appelé lors de la création de l'interface javafx
      * @param url L'URL
      * @param rb La ressourceBundle
@@ -281,10 +288,10 @@ public class FXMLController implements Initializable {
      * @param tf Le champ "limite" à vérifier 
      * @return true si la limite est un entier, sinon false
      */
-    public boolean testerLimite(TextField tf){
-        boolean res = false;
+   public boolean testerLimite(TextField tf){
+        boolean res = true;
+        if(limite.isVisible()){
         if(!limite.getText().isEmpty()){
-               res = true;
                try {
                    int lim = Integer.parseInt(limite.getText().toString());
                }
@@ -295,8 +302,9 @@ public class FXMLController implements Initializable {
                 res = false;
             }
         }
-        return res;
-    }
+        
+    } return res;
+   }
 
     /**
      * Permet de vérifié si un choix à bien été fait dans une combobox

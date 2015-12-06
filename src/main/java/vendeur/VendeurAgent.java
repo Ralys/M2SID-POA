@@ -29,6 +29,7 @@ public class VendeurAgent extends SuperAgent {
     private final JSONParser parser = new JSONParser();
     private boolean enSoldes;
     private int nbNegoce = 0;
+    private AID ERepAgent;
 
     @Override
     protected void setup() {
@@ -45,12 +46,30 @@ public class VendeurAgent extends SuperAgent {
         return this.BDDAgent;
     }
 
+    public AID getERepAgent() {
+        if (this.ERepAgent == null) {
+            this.ERepAgent = findERepAgent();
+        }
+
+        return this.ERepAgent;
+    }
+
     private AID findBDDAgent() {
-        //Parametre : numero du fournisseur
         try {
             return this.findAgentsFromService(TypeAgent.BDD)[0];
         } catch (IndexOutOfBoundsException io) {
             System.out.println("Error Vendeur : Can't find BDDAgent");
+            this.takeDown();
+        }
+
+        return null;
+    }
+
+    private AID findERepAgent() {
+        try {
+            return this.findAgentsFromService(TypeAgent.EReputation)[0];
+        } catch (IndexOutOfBoundsException io) {
+            System.out.println("Error Vendeur : Can't find ERepAgent");
             this.takeDown();
         }
 
@@ -132,7 +151,7 @@ public class VendeurAgent extends SuperAgent {
                 demande.put("id", refProd);
                 ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
                     put("demandeDesirabilite", demande);
-                }}).toJSONString(), sender, true);
+                }}).toJSONString(), getERepAgent(), true);
                 JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
                 Integer desir = 0;
                 for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
@@ -214,6 +233,19 @@ public class VendeurAgent extends SuperAgent {
                     prendreCommande(REF_PRODUIT, 5);
                 } else {
                     Integer QTE = Integer.valueOf(QTE_);
+                    final JSONObject demande = new JSONObject();
+                    demande.put("type", "Produit");
+                    demande.put("id", REF_PRODUIT);
+                    ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
+                        put("demandeDesirabilite", demande);
+                    }}).toJSONString(), getERepAgent(), true);
+
+                    JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
+                    for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                        JSONObject retour = (JSONObject) it.next();
+                        Integer desir = Integer.valueOf(retour.get("desirabilite") + "");
+
+                    }
                 }
             }
 
@@ -341,7 +373,7 @@ public class VendeurAgent extends SuperAgent {
                 demande.put("id", refProd);
                 ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
                     put("demandeDesirabilite", demande);
-                }}).toJSONString(), sender, true);
+                }}).toJSONString(), getERepAgent(), true);
 
                 JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
                 for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet

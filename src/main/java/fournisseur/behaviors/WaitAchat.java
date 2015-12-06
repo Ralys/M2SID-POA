@@ -41,7 +41,7 @@ public class WaitAchat extends CyclicBehaviour {
                 //Vérifier les stocks
                 boolean stockOk = ((StocksEtTransaction) getDataStore()).verifierStock(idProduit, quantite);
 
-                if (((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, date, sender, prix)) {
+                if (((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, date, sender)) {
                     //Json réponse
                     JSONObject replyJson = new JSONObject();
                     JSONObject replyContenu = new JSONObject();

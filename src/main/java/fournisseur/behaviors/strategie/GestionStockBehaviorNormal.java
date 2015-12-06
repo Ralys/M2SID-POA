@@ -8,7 +8,6 @@ package fournisseur.behaviors.strategie;
 import fournisseur.behaviors.GestionStockBehavior;
 import fournisseur.utils.Produit;
 import fournisseur.utils.StocksEtTransaction;
-import jade.core.AID;
 import jade.core.Agent;
 import java.util.HashMap;
 import java.util.Set;

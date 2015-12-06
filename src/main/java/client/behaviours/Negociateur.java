@@ -63,7 +63,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.takeDown();
+                        negociateur.finAgent();
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.takeDown();
+                        negociateur.finAgent();
                     }
                 }
             }
@@ -96,7 +96,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.takeDown();
+                        negociateur.finAgent();
                     }
                 }
             }
@@ -112,7 +112,7 @@ public class Negociateur extends CyclicBehaviour {
                 //laisser les informations à l'ereputation
                 negociateur.achatEffectue(Boolean.TRUE, nbNegociation);
                 // arreter agent
-                negociateur.takeDown();
+                negociateur.finAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -127,18 +127,19 @@ public class Negociateur extends CyclicBehaviour {
                     jeNegocie(negociateur.moinsCher());
                 } else {
                     Log.arretRecherche();
-                    negociateur.takeDown();
+                    negociateur.finAgent();
                 }
 
             }
 
             if (object.containsKey("jeNegocie")) {
-                JSONObject obj = (JSONObject) object.get("commandePasOK");
+                Log.reception(negociateur.nomAgent(message), message.getContent());
+                JSONObject obj = (JSONObject) object.get("jeNegocie");
                 Double nouveauPrix = Double.parseDouble(obj.get("prix").toString());
 
                 // on ne negocie pas plus de deux fois
                 // sinon perte de temps pour le negociateur
-                if (nbNegociation <= 2) {
+                if (nbNegociation < 2) {
 
                     // si l'offre est inférieur au prix final désiré
                     // on effectue l'achat
@@ -159,6 +160,8 @@ public class Negociateur extends CyclicBehaviour {
 
                     //on supprime les produits du vendeur/fournisseur en question
                     nettoyerPropositionFournisseur(produitEnNegociation.getProvenance());
+                    
+                    Log.affiche("Arrêt des négociations avec : "+negociateur.nomAgent(produitEnNegociation.getProvenance()));
 
                     //remise à zero des variables
                     nbNegociation = 0;
@@ -169,7 +172,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.takeDown();
+                        negociateur.finAgent();
                     }
                 }
 
@@ -193,6 +196,7 @@ public class Negociateur extends CyclicBehaviour {
             prixFinal = prixDepart * facteurFinNegociation;
             produitEnNegociation.setPrix(prixDepart * facteurDebutNegociation);
             produitReference=p;
+            Log.affiche("Prix à atteindre : "+prixFinal);
         }
 
         

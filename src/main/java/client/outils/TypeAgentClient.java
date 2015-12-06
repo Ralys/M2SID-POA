@@ -30,4 +30,9 @@ public class TypeAgentClient {
      */
     public static final String Fidele = "Fidèle";
     
+    /**
+     * Chaine de caractères du comportement "Fidèle"
+     */
+    public static final String Negociateur = "Négociateur";
+    
 }

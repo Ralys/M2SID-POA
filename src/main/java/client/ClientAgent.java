@@ -10,6 +10,7 @@ import client.outils.Log;
 import client.outils.Produit;
 import client.behaviours.Econome;
 import client.behaviours.Mefiant;
+import client.behaviours.Negociateur;
 import client.behaviours.Presse;
 import jade.core.AID;
 import jade.core.Agent;
@@ -153,6 +154,11 @@ public class ClientAgent extends SuperAgent {
         // écoute
         if (typeAgentClient.equals(TypeAgentClient.Mefiant)) {
             addBehaviour(new Mefiant(this));
+        }
+        
+        //ecoute
+        if(typeAgentClient.equals(TypeAgentClient.Negociateur)){
+            addBehaviour(new Negociateur(this));
         }
 
         if (typeRecherche.equalsIgnoreCase("true")) {

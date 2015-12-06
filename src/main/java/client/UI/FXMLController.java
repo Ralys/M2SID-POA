@@ -155,7 +155,7 @@ public class FXMLController implements Initializable {
     /**
      * Initialise la liste des différents types de client (comportements du client)
      */
-    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome, TypeAgentClient.Mefiant);
+    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome, TypeAgentClient.Mefiant, TypeAgentClient.Negociateur);
 
     /**
      * Contient la liste des logs de l'application

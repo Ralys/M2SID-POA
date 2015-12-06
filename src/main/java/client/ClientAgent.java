@@ -25,24 +25,79 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- *
+ * Classe permettant de créer des agents client et de leur affecter un comportement
  * @author Aymeric
  */
 public class ClientAgent extends SuperAgent {
 
+    /**
+     * 
+     */
     private final String monService = TypeAgent.Client;
+    
+    /**
+     * La liste des propositions reçu par les vendeurs ou fournisseurs pour une recherche effectué par le client
+     */
     private ArrayList<Produit> lproposition;
+    
+    /**
+     * La liste des noms complet des agents ayant répondus
+     */
     private ArrayList<String> lAgentsRepond;
+    
+    /**
+     * Le nombre de recherche envoyé
+     */
     private int nbRechercheEnvoye = 0;
+    
+    /**
+     * Le nombre de recherche reçu
+     */
     private int nbReponseReçu = 0;
+    
+    /**
+     * Le nombre de demande d'avis sur le produit envoyé
+     */
     private int nbDemandeAvisProduitEnvoye = 0;
+    
+    /**
+     * Le nombre de demande d'avis sur le produit reçu
+     */
     private int nbDemandeAvisProduitRecu = 0;
+    
+    /**
+     * Le nombre de demande d'avis sur le revendeur envoyé
+     */
     private int nbDemandeAvisRevendeurEnvoye = 0;
+    
+    /**
+     * Le nombre de demande d'avis sur le revendeur reçu
+     */
     private int nbDemandeAvisRevendeurRecu = 0;
+    
+    /**
+     * Le type (comportement) de l'agent client
+     */
     private String typeAgentClient;
+    
+    /**
+     * Le type de l'agent cible (erep, fournisseur, vendeur)
+     */
     private String typeAgentCible;
+    
+    /**
+     * La date limite accepté par le client pour faire son achat
+     */
     private long limiteDate =0;
+    
+    /**
+     * La prix maximum accepté par le client pour faire son achat
+     */
     private double limitePrix = 0;
+    
+    /**
+     * La quantité souhaité du produit par le client
+     */
     private int quantite = 0;
 
     // **************************************************************** //
@@ -50,6 +105,11 @@ public class ClientAgent extends SuperAgent {
     //  Méthodes d'exécution de l'agent
     //
     // **************************************************************** //
+   /**
+    * Méthode exécuté lors de la création d'un agent client, permet de lui affecter
+    * les paramètres voulu en fonction de la saisi dans l'interface ainsi que de 
+    * lui affecter son comportement
+    */
     protected void setup() {
 
         // initailisation des attributs
@@ -102,6 +162,9 @@ public class ClientAgent extends SuperAgent {
 
     }
 
+    /**
+     * Méthode permettant de tuer un agent client, une fois que celui-ci a fini son achat
+     */
     public void takeDown() {
         try {
             // on se retire du registre de service afin q'un autre
@@ -119,6 +182,13 @@ public class ClientAgent extends SuperAgent {
     //  Méthodes liées à l'envoi de message
     //
     // **************************************************************** //
+    /**
+     * Permet d'envoyer un message de recherche de produit par nom de produit aux destinataires
+     * @param typeAgent Le type du destinataire
+     * @param typeProduit Le type de produit
+     * @param recherche La recherche effectuée
+     * @param quantite La quantité souhaitée
+     */
     public void jeCherche(String typeAgent, String typeProduit, String recherche, int quantite) {
 
         // construction de l'objet JSON à envoyé
@@ -140,6 +210,12 @@ public class ClientAgent extends SuperAgent {
         }
     }
 
+    /**
+     * Permet d'envoyer un message de recherche de produit par référence aux destinataires
+     * @param typeAgent Le type de destinataire
+     * @param reference La référence du produit
+     * @param quantite La quantité souhaité
+     */
     public void jeChercheReference(String typeAgent, String reference, int quantite) {
 
         // construction de l'objet JSON à envoyé
@@ -149,8 +225,7 @@ public class ClientAgent extends SuperAgent {
         elementRecherche.put("reference", reference);
         jeChercheReference.put("jeChercheRef", elementRecherche);
 
-        // envoi du message de recherche à tous les agents
-        // du type choisi
+        // envoi du message de recherche à tous les agents du type choisi
         AID[] agent = findAgentsFromService(typeAgentCible);
         for (AID f : agent) {
             String message = jeChercheReference.toString();
@@ -160,6 +235,11 @@ public class ClientAgent extends SuperAgent {
         }
     }
 
+    /**
+     * Permet de choisi le produit passé en paramètre (lui même sélectionné dans la liste des propositions
+     * faites par les vendeurs ou fournisseurs) et de prévenir son destinataire
+     * @param p Le produit qui a été choisi
+     */
     public void jeChoisis(Produit p) {
 
         AID aid = new AID(p.getProvenance());
@@ -197,6 +277,10 @@ public class ClientAgent extends SuperAgent {
         Log.envoi(TypeAgent.EReputation, donneAvis.toString());
     }
 
+    /**
+     * Permet de donner un avis sur un produit et d'envoyer un message à l'erep
+     * @param idProduit L'ID du produit
+     */
     public void donneAvisProduit(String idProduit) {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
@@ -237,6 +321,10 @@ public class ClientAgent extends SuperAgent {
         Log.envoi(TypeAgent.EReputation, demandeAvis.toString());
     }
 
+    /**
+     * Permet de demander un avis à l'erep sur un produit
+     * @param idProduit L'ID du produit
+     */
     public void demandeAvisProduit(String idProduit) {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
@@ -254,6 +342,11 @@ public class ClientAgent extends SuperAgent {
         Log.envoi(TypeAgent.EReputation, demandeAvis.toString());
     }
 
+    /**
+     * Permet de demander la désirabilité d'un produit à l'agent erep
+     * @param adresseAgentErep L'agetn erep à qui demander
+     * @param idProduit L'ID du produit recherché
+     */
     public void demandeDesirabilite(String adresseAgentErep, String idProduit) {
         AID aid = new AID(adresseAgentErep);
 
@@ -264,12 +357,18 @@ public class ClientAgent extends SuperAgent {
         contenu.put("id", idProduit);
         demandeDesirabilite.put("demandeDesirabilite", contenu);
 
-        // envoi du message + afficahge dans les logs
+        // Envoi du message + affichage dans les logs
         envoyerMessage(this, ACLMessage.REQUEST, aid, demandeDesirabilite.toString());
         Log.envoi(nomAgent(adresseAgentErep), demandeDesirabilite.toString());
     }
     
-    public void achatEffectue(String adresseAgentErep,Boolean reussi, int NbNegociation){
+    /**
+     * Permet d'ajouter un log sur l'achat(réussi ou non) et d'envoyer un message à l'erep sur le résultat de l'achat
+     * @param adresseAgentErep nom complet de l'agent erep
+     * @param reussi true si la négociation a réussi sinon false
+     * @param NbNegociation Le nombre de négociation effectué
+     */
+    public void achatEffectue(String adresseAgentErep, Boolean reussi, int NbNegociation){
         AID aid = new AID(adresseAgentErep);
         
         // construction de l'objet JSON à envoyé
@@ -280,7 +379,7 @@ public class ClientAgent extends SuperAgent {
         contenu.put("nbNegociations",NbNegociation);
         achatEffectue.put("achatEffectue", contenu);
         
-        // envoi du message + afficahge dans les logs
+        // Envoi du message + affichage dans les logs
         envoyerMessage(this, ACLMessage.INFORM, aid, achatEffectue.toString());
         Log.envoi(nomAgent(adresseAgentErep), achatEffectue.toString());
         
@@ -291,6 +390,11 @@ public class ClientAgent extends SuperAgent {
     //  Méthodes de traitement
     //
     // **************************************************************** //
+    /**
+     * Permet d'ajouter une proposition reçu dans la liste des propositions et d'ajouter un log du message reçu
+     * @param array Le tableau contenant les informations sur le produit
+     * @param message Le message reçu
+     */
     public void ajouterProposition(JSONArray array, ACLMessage message) {
 
         for (Object obj : array.toArray()) {
@@ -310,6 +414,11 @@ public class ClientAgent extends SuperAgent {
     //  Méthodes d'affichage
     //
     // **************************************************************** //
+    /**
+     * Permet d'afficher le message final lors d'un achat réussi
+     * @param jsonObj Le tableau JSON contenant les informations sur le produit
+     * @param message Le message reçu
+     */
     public void afficherAchat(JSONObject jsonObj, ACLMessage message) {
 
         Log.reception(nomAgent(message), message.getContent());
@@ -334,6 +443,11 @@ public class ClientAgent extends SuperAgent {
         Log.achat(sb.toString());
     }
 
+    /**
+     * Afficher la raison de l'annulation d'une commande
+     * @param obj Le tableau JSON contenant les informations sur le produit
+     * @param message Le message reçu
+     */
     public void afficherRaison(JSONObject obj, ACLMessage message) {
         StringBuilder sb = new StringBuilder("Commande impossible chez : ");
         sb.append(nomAgent(message));
@@ -343,6 +457,11 @@ public class ClientAgent extends SuperAgent {
         Log.commandeAnnulee(sb.toString());
     }
 
+    /**
+     * Affiche la raison d'une commande impossible
+     * @param obj Le tableau JSON contenant les informations sur le produit
+     * @param message Le message reçu
+     */
     public void afficherRaisonInvalide(JSONObject obj, ACLMessage message) {
         StringBuilder sb = new StringBuilder("Commande impossible chez : ");
         sb.append(nomAgent(message));
@@ -357,15 +476,29 @@ public class ClientAgent extends SuperAgent {
     //  Méthodes outils
     //
     // **************************************************************** //
+    /**
+     * Permet de retourner le nom complet de l'agent
+     * @param message Le message envoyé par l'agent dont on souhaite connaitre le nom complet
+     * @return Le nom complet de l'agent
+     */
     public String nomAgent(ACLMessage message) {
         return message.getSender().getLocalName();
     }
 
+    /**
+     * Permet de retourner le nom simple de l'agent
+     * @param adresseAgent Le nom complet de l'agent
+     * @return Le nom simple de l'agent sans son adresse IP
+     */
     public String nomAgent(String adresseAgent) {
         String split[] = adresseAgent.split("@");
         return split[0];
     }
 
+    /**
+     * Permet de retirer une proposition qui est dans la liste des propositions
+     * @param produitARetirer Le produit à retirer
+     */
     public void retirerProposition(Produit produitARetirer) {
         Produit produitASupprimer = null;
         for (Produit prod : lproposition) {
@@ -394,8 +527,6 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
-    
-
     /**
      * Méthode retournant le produit livré au plut tot parmi la liste des
      * propositions
@@ -413,6 +544,10 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
+    /**
+     * Méthode permettant de trouver le produit ayant le meilleur avis parmi les propositions qui ont été effectués
+     * @return Le produit avec le meilleur avis
+     */
     public Produit meilleurAvisProduit() {
         Produit produitChoisi = lproposition.get(0);
         for (Produit produit : lproposition) {
@@ -423,7 +558,10 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
-    
+    /**
+     * Permet de retirer toutes les propositions de la liste dont le prix dépasse le prix maximum accepté par le client
+     * @param prixMaximum Le prix maximum accepté par le client pour l'achat du produit
+     */
     public void nettoyerPropositionPrix(Double prixMaximum) {
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
@@ -431,12 +569,16 @@ public class ClientAgent extends SuperAgent {
                 lisProduitASupprimer.add(produit);
             }
         }
-        // suppression des proposition ne correspondant pas aux critères
+        // Suppression des proposition ne correspondant pas aux critères
         for (Produit produit : lisProduitASupprimer) {
             lproposition.remove(produit);
         }
     }
     
+    /**
+     * Permet de retirer toutes les propositions de la liste dont la date dépasse le date limite acceptée par le client
+     * @param dateMaximum La date limite accepté par le client pour l'achat du produit
+     */
     public void nettoyerPropositionDate(long dateMaximum){
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
@@ -450,6 +592,13 @@ public class ClientAgent extends SuperAgent {
         }
     }
 
+    /**
+     * Permet d'envoyer un message
+     * @param client Le client
+     * @param typeMessage Le type de messahe
+     * @param receiver Le receveur du message
+     * @param message Le message à envoyer
+     */
     public void envoyerMessage(Agent client, int typeMessage, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(typeMessage);
         msg.setContent(message);
@@ -462,108 +611,212 @@ public class ClientAgent extends SuperAgent {
     //  Getter & Setter
     //
     // **************************************************************** //
+    
+    /**
+     * Getter permettant de retourner la liste des propositions faite par les vendeurs et fournisseurs
+     * @return La liste des propositions
+     */
     public ArrayList<Produit> getLproposition() {
         return lproposition;
     }
 
+    /**
+     * Setter de la liste des propositions
+     * @param lproposition La nouvelle liste de proposition
+     */
     public void setLproposition(ArrayList<Produit> lproposition) {
         this.lproposition = lproposition;
     }
 
+    /**
+     * Getter de la liste des agents ayant répondus
+     * @return La liste des agents ayant répondu
+     */
     public ArrayList<String> getlAgentsRepond() {
         return lAgentsRepond;
     }
 
+    /**
+     * Setter de la liste des agents ayants répondu
+     * @param lAgentsRepond La nouvelle liste des agents ayant répondu
+     */
     public void setlAgentsRepond(ArrayList<String> lAgentsRepond) {
         this.lAgentsRepond = lAgentsRepond;
     }
 
+    /**
+     * Getter du nombre de recherche envoyé
+     * @return Le nombre de recherche envoyé
+     */
     public int getNbRechercheEnvoye() {
         return nbRechercheEnvoye;
     }
 
+    /**
+     * Setter du nombre de recherche envoyé
+     * @param nbRechercheEnvoye Le nouveau nombre de recherche envoyé
+     */
     public void setNbRechercheEnvoye(int nbRechercheEnvoye) {
         this.nbRechercheEnvoye = nbRechercheEnvoye;
     }
 
+    /**
+     * Getter du type d'agent client
+     * @return Le type (comportement) de l'agent client
+     */
     public String getTypeAgentClient() {
         return typeAgentClient;
     }
 
+    /**
+     * Setter de du type d'agent client
+     * @param typeAgentClient Le nouveau type (comportement) du client
+     */
     public void setTypeAgentClient(String typeAgentClient) {
         this.typeAgentClient = typeAgentClient;
     }
 
+    /**
+     * Getter du type d'agent cible
+     * @return Le type de l'agent cyible
+     */
     public String getTypeAgentCible() {
         return typeAgentCible;
     }
-
+    
+    /**
+     * Setter de l'agent cicle
+     * @param typeAgentCible Le nouveau type de l'agent cible
+     */
     public void setTypeAgentCible(String typeAgentCible) {
         this.typeAgentCible = typeAgentCible;
     }
 
+    /**
+     * La date limite d'achat pour un client
+     * @return La date limite d'achat
+     */
     public long getLimiteDate() {
         return limiteDate;
     }
-
+    
+    /**
+     * Setter de la date limite d'achat du client
+     * @param limiteDate La nouvelle date d'achat limite du client
+     */
     public void setLimiteDate(long limiteDate) {
         this.limiteDate = limiteDate;
     }
 
+    /**
+     * Getter du maximum auquel le client accepte de faire un achat
+     * @return La prix maximum accepté par le client pour faire un achat
+     */
     public double getLimitePrix() {
         return limitePrix;
     }
 
+    /**
+     * Setter du prix maximum d'achat du client
+     * @param limitePrix Le prix limite d'achet
+     */
     public void setLimitePrix(double limitePrix) {
         this.limitePrix = limitePrix;
     }
 
+    /**
+     * Getter du nombre de réponse reçu
+     * @return Le nombre de réponse reçu
+     */
     public int getNbReponseReçu() {
         return nbReponseReçu;
     }
 
+    /**
+     * Setter du nombre de réponse reçu
+     * @param nbReponseReçu Le nouveau nombre de réponse reçu
+     */
     public void setNbReponseReçu(int nbReponseReçu) {
         this.nbReponseReçu = nbReponseReçu;
     }
 
+    /**
+     * Getter du nombre de produit voulu par le client
+     * @return La quantité voulu
+     */
     public int getQuantite() {
         return quantite;
     }
 
+    /**
+     * Setter de la quantité voulu par le client
+     * @param quantite La nouvelle quantité voulu par le client
+     */
     public void setQuantite(int quantite) {
         this.quantite = quantite;
     }
 
+    /**
+     * Getter du nombre de demande d'avis sur le produit envoyé
+     * @return Le nombre de demande d'avis envoyé sur le produit
+     */
     public int getNbDemandeAvisProduitEnvoye() {
         return nbDemandeAvisProduitEnvoye;
     }
 
+    /**
+     * Setter du nombre de demande d'avis envoyé sur le produit
+     * @param nbDemandeAvisProduitEnvoye Le nouveau nombre de demande d'avis
+     */
     public void setNbDemandeAvisProduitEnvoye(int nbDemandeAvisProduitEnvoye) {
         this.nbDemandeAvisProduitEnvoye = nbDemandeAvisProduitEnvoye;
     }
-
+    
+    /**
+     * Getter du nombre de demande d'avis reçu sur le produit
+     * @return Le nombre de demande d'avis reçu sur le produit
+     */
     public int getNbDemandeAvisProduitRecu() {
         return nbDemandeAvisProduitRecu;
     }
 
+    /**
+     * Setter du nombre de demande d'avis sur le produit reçu
+     * @param nbDemandeAvisProduitRecu Le nouveua nombre de demande d'avis reçu sur le produit
+     */
     public void setNbDemandeAvisProduitRecu(int nbDemandeAvisProduitRecu) {
         this.nbDemandeAvisProduitRecu = nbDemandeAvisProduitRecu;
     }
 
+    /**
+     * Getter du nombre de demande d'avis envoyé par le revendeur
+     * @return Le nombre de demande d'avis envoyé par le revendeur
+     */
     public int getNbDemandeAvisRevendeurEnvoye() {
         return nbDemandeAvisRevendeurEnvoye;
     }
 
+    /**
+     * Setter du nombre de demande d'avis envoyé par le revendeur
+     * @param nbDemandeAvisRevendeurEnvoye Le nouveau nombre de demande d'avis envoyé par le revendeur
+     */
     public void setNbDemandeAvisRevendeurEnvoye(int nbDemandeAvisRevendeurEnvoye) {
         this.nbDemandeAvisRevendeurEnvoye = nbDemandeAvisRevendeurEnvoye;
     }
 
+    /**
+     * Getter du nombre de demande d'avis reçu par le revendeur
+     * @return Le nombre de demande d'avis reçu par le revendeur
+     */
     public int getNbDemandeAvisRevendeurRecu() {
         return nbDemandeAvisRevendeurRecu;
     }
 
+    /**
+     * Setter du nombre de demande d'avis reçu par le revendeur
+     * @param nbDemandeAvisRevendeurRecu  Le nouveau nombre de demande d'avis reçu par le revendeur
+     */
     public void setNbDemandeAvisRevendeurRecu(int nbDemandeAvisRevendeurRecu) {
         this.nbDemandeAvisRevendeurRecu = nbDemandeAvisRevendeurRecu;
     }
-
 }

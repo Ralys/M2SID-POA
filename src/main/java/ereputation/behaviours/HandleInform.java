@@ -42,6 +42,11 @@ public class HandleInform extends CyclicBehaviour {
         block();
     }
     
+    /**
+     * Méthode principale qui parse le contenu du message 
+     * pour déterminer quelle méthode doit être appelée
+     * @param message 
+     */
     private void traiterInformation(ACLMessage message) {
         String content = message.getContent();
         
@@ -63,6 +68,12 @@ public class HandleInform extends CyclicBehaviour {
         }
     }
     
+    /**
+     * Gestion lorsqu'un agent donne un avis
+     * @param donneAvis contenu du message
+     * @param agent l'émetteur du message
+     * @throws ParseException 
+     */
     private void donneAvis(JSONObject donneAvis, AID agent) throws ParseException {
         String nom = "";
         String type = donneAvis.get("type").toString();
@@ -89,6 +100,12 @@ public class HandleInform extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+": Enregistrement en base de données :"+donneAvis.toJSONString());
     }
     
+    /**
+     * Gestion lorsqu'un client nous informe d'un achat (dans le cadre d'un négociation)
+     * @param achatEffectue contenu du message
+     * @param agent l'émetteur du message
+     * @throws ParseException 
+     */
     private void achatEffectue(JSONObject achatEffectue, AID agent) throws ParseException {
         boolean success = (boolean) achatEffectue.get("success");
         
@@ -104,6 +121,12 @@ public class HandleInform extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+": Enregistrement en base de données :"+achatEffectue.toJSONString());
     }
     
+    /**
+     * Gestion lorsqu'un vendeur nous informe d'une vente
+     * @param demandeSolde contenu du message
+     * @param agent l'émetteur du message
+     * @throws ParseException 
+     */
     private void venteEffectuee(JSONObject demandeSolde, AID agent) throws ParseException{
         
          String idVente = demandeSolde.get("id").toString();

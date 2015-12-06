@@ -127,13 +127,13 @@ create table TAGS
 /*==============================================================*/
 create table VENTE
 (
-  ID                   int not null,
+  ID                   INTEGER PRIMARY KEY AUTOINCREMENT ,
   REF_PRODUIT          varchar(255) not null,
   PRIX                 decimal(9,2) not null,
   QTE                  int not null,
   PROVIDER             varchar(255) not null,
   ACHETEUR             varchar(255) not null,
-  primary key (ID)
+  DATE_VENTE           BIGINT
 );
 
 create table AVIS (

@@ -21,8 +21,8 @@ public class WaitNegociationStrategie1 extends WaitNegociation {
         double prixBase = p.getPrixDeBase();
         double prixDelai = Livraison.prixLivraisonByDelai(t.getDelai());
         double prixNego = Math.max(prixBase, prixDemande - prixDelai);
-        
-        double prixVente = t.getPrixPropose() - (t.getPrixPropose() - prixNego);
+
+        double prixVente = prixBase + (t.getPrixPropose() - prixNego) / 2;
         prixVente = Math.round(prixVente * 100) / 100;
         t.setPrixPropose(prixVente);
         return prixVente + prixDelai;

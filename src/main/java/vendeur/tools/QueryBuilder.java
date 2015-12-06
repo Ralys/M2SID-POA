@@ -82,9 +82,21 @@ public class QueryBuilder {
         return JSONRequest("insert", sql);
     }
 
+    public static String updateStock(String idProduit, Integer quantite, String localName) {
+        String sql = "UPDATE STOCK SET QTE = " + quantite +" WHERE VENDEUR_NAME = \"" + localName + "\" AND REF_PRODUIT = " + idProduit;
+
+        return JSONRequest("insert", sql);
+    }
+
     public static String isSoldes(String localName, Long dateJour) {
         String sql = "SELECT * FROM SOLDE WHERE VENDEUR LIKE \"" + localName + "\" AND DATE_START <= " + dateJour + " AND DATE_END >= " + dateJour;
 
         return JSONRequest("select", sql);
+    }
+
+    public static String vente(String reference, Integer quantite, Float prix, long date, String vendeur, String acheteur) {
+        String sql = "INSERT INTO VENTE(REF_PRODUIT, PRIX, QTE, PROVIDER, ACHETEUR, DATE_VENTE) VALUES("+reference+", "+prix+", "+quantite+", "+vendeur+", "+acheteur+", "+date+")";
+
+        return JSONRequest("insert", sql);
     }
 }

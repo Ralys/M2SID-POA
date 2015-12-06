@@ -12,7 +12,7 @@ import java.util.Iterator;
  * @author Tom
  */
 public class StocksEtTransaction extends DataStore {
-
+    
     public boolean verifierStock(int idProduit, int qte) {
         int qteDispo = (int) this.get(getProduitById(idProduit));
         if (qteDispo < qte) {
@@ -20,7 +20,7 @@ public class StocksEtTransaction extends DataStore {
         }
         return true;
     }
-
+    
     public Produit getProduitById(int idProduit) {
         Long dateNow = new Date().getTime() / 1000;
         Set cles = this.keySet();
@@ -36,7 +36,7 @@ public class StocksEtTransaction extends DataStore {
         }
         return null;
     }
-
+    
     public Transaction getTransaction(int idProduit, long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
@@ -53,7 +53,7 @@ public class StocksEtTransaction extends DataStore {
         }
         return null;
     }
-
+    
     public boolean removeTransaction(int idProduit, long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
@@ -71,16 +71,16 @@ public class StocksEtTransaction extends DataStore {
         }
         return false;
     }
-
+    
     public void decrementerStock(int id, int qte) {
         Produit p = getProduitById(id);
         this.put(p, ((Integer) this.get(p)) - qte);
     }
-
+    
     public void incrementerStock(Produit p, int qte) {
         this.put(p, ((Integer) this.get(p)) + qte);
     }
-
+    
     public HashMap<Produit, Integer> listStock() {
         ArrayList<Produit> listProduit = listProduit();
         HashMap<Produit, Integer> res = new HashMap<>();
@@ -89,7 +89,7 @@ public class StocksEtTransaction extends DataStore {
         }
         return res;
     }
-
+    
     public ArrayList<Produit> listProduit() {
         Long dateNow = new Date().getTime() / 1000;
         ArrayList<Produit> res = new ArrayList<>();
@@ -106,7 +106,7 @@ public class StocksEtTransaction extends DataStore {
         }
         return res;
     }
-
+    
     public int stockUse() {
         ArrayList<Produit> listProduit = listProduit();
         int res = 0;
@@ -115,21 +115,21 @@ public class StocksEtTransaction extends DataStore {
         }
         return res;
     }
-
+    
     public double getPesos() {
         return (double) this.get("Tresorerie");
     }
-
+    
     public void changePesos(double valeur) {
         this.put("Tresorerie", getPesos() + valeur);
     }
-
+    
     public ArrayList<Produit> rechercheProduit(String motRecherche, String typeProduit, int qte) {
         ArrayList<Produit> listProduit = this.listProduit();
         ArrayList<Produit> res = new ArrayList<>();
         for (Produit p : listProduit) {
             if (p.getTypeProduit().compareToIgnoreCase(typeProduit) == 0) {
-                if (p.getNomProduit().contains(motRecherche)) {
+                if (p.getNomProduit().contains(motRecherche) || p.containsTag(motRecherche)) {
                     res.add(p);
                 }
             }

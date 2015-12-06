@@ -89,10 +89,24 @@ public class Econome extends CyclicBehaviour {
 
                 econome.afficherRaisonInvalide(object, message);
                 // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
-                if ((econome.getNbReponseReçu() != econome.getNbRechercheEnvoye())
+                if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())
                         && econome.getLproposition().isEmpty()) {
                     Log.arretRecherche();
                     econome.takeDown();
+                }
+                
+                // il n'y a pus d'attendte de réponse et des propostions existent dans la liste 
+                if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())
+                    && !econome.getLproposition().isEmpty()){
+                    
+                    // on nettoye les propositions en fonction du critère de prix max
+                    econome.nettoyerPropositionPrix(econome.getLimite());
+                    if (econome.getLproposition().size() > 0) {
+                        econome.jeChoisis(econome.moinsCher());
+                    } else {
+                        Log.arretRecherche();
+                        econome.takeDown();
+                    }
                 }
             }
 

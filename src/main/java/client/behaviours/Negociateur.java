@@ -26,8 +26,8 @@ import org.json.simple.parser.JSONParser;
 public class Negociateur extends CyclicBehaviour {
 
     private final ClientAgent negociateur;
-    private final double facteurDebutNegociation = 0.3;
-    private final double facteurFinNegociation = 0.15;
+    private final double facteurDebutNegociation = 0.70;
+    private final double facteurFinNegociation = 0.85;
     private Produit produitReference;
     private Produit produitEnNegociation;
     private double prixDepart = 0;
@@ -132,7 +132,7 @@ public class Negociateur extends CyclicBehaviour {
 
             }
 
-            if (object.containsKey("jeNégocie")) {
+            if (object.containsKey("jeNegocie")) {
                 JSONObject obj = (JSONObject) object.get("commandePasOK");
                 Double nouveauPrix = Double.parseDouble(obj.get("prix").toString());
 
@@ -205,7 +205,7 @@ public class Negociateur extends CyclicBehaviour {
         contenu.put("quantite", produitEnNegociation.getQuantite());
         contenu.put("prix", produitEnNegociation.getPrix());
         contenu.put("date", produitEnNegociation.getDateLivraison());
-        jeNegocie.put("jeNégocie", contenu);
+        jeNegocie.put("jeNegocie", contenu);
 
         // envoi du message + afficahge dans les logs
         negociateur.envoyerMessage(negociateur, ACLMessage.PROPOSE, aid, jeNegocie.toString());

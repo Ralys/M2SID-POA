@@ -1,19 +1,16 @@
 package vendeur;
 
-import com.sun.deploy.security.ValidationState;
-import fournisseur.FournisseurAgent;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import vendeur.behaviours.ACLController;
-import vendeur.behaviours.ACLController;
-import vendeur.behaviours.PurchaseProduct;
 import common.SuperAgent;
 import common.TypeAgent;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import vendeur.behaviours.ACLController;
+import vendeur.behaviours.PurchaseProduct;
 import vendeur.tools.QueryBuilder;
 
 import java.util.Iterator;
@@ -28,12 +25,7 @@ import java.util.logging.Logger;
 public class VendeurAgent extends SuperAgent {
 
     private AID BDDAgent;
-    private final JSONParser parser;
-
-    public VendeurAgent(JSONParser parser) {
-        this.parser = new JSONParser();
-    }
-
+    private final JSONParser parser = new JSONParser();
 
     @Override
     protected void setup() {
@@ -96,6 +88,8 @@ public class VendeurAgent extends SuperAgent {
         // du type choisi
         AID[] agent = findAgentsFromService(TypeAgent.Fournisseur);
         for (AID f : agent) {
+            System.out.println("agent Fournisseur :  "+ f.getLocalName());
+
             String message = jeChercheReference.toString();
             sendMessage(ACLMessage.REQUEST, message, f, true);
         }
@@ -148,6 +142,6 @@ public class VendeurAgent extends SuperAgent {
     }
 
     public void fournisseurPropose(JSONObject jePropose, AID sender) {
-
+        System.out.println(jePropose);
     }
 }

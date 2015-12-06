@@ -43,11 +43,13 @@ public class PurchaseProduct extends CyclicBehaviour {
             for (Iterator iterator = resultatsStockProducts.iterator(); iterator.hasNext();) {
                 JSONObject resultat = (JSONObject) iterator.next();
 
-                String QTE_ = resultat.get("QTE").toString();
-                String REF_PRODUIT = resultat.get("REF_PRODUIT").toString();
+                System.out.println(resultat.get("QTE"));
+
+                String QTE_ = resultat.get("QTE")+"";
+                String REF_PRODUIT = resultat.get("REF_PRODUIT")+"";
 
                 //test quantity
-                if(QTE_ == "null") {
+                if(QTE_.contains("null")) {
 
                 }
                 else {
@@ -64,9 +66,8 @@ public class PurchaseProduct extends CyclicBehaviour {
         VendeurAgent vendeur = (VendeurAgent) myAgent;
 
 
+        System.out.println("jeChercheReference "+ ref);
         vendeur.jeChercheReference(TypeAgent.Fournisseur, ref, qte);
-
-
     }
 
 

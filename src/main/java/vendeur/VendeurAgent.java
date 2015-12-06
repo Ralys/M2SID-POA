@@ -88,8 +88,6 @@ public class VendeurAgent extends SuperAgent {
         // du type choisi
         AID[] agent = findAgentsFromService(TypeAgent.Fournisseur);
         for (AID f : agent) {
-            System.out.println("agent Fournisseur :  "+ f.getLocalName());
-
             String message = jeChercheReference.toString();
             sendMessage(ACLMessage.REQUEST, message, f, true);
         }

@@ -27,14 +27,16 @@ public class ACLController extends CyclicBehaviour {
     public void action() {
         VendeurAgent vendeur = (VendeurAgent) myAgent;
 
-        MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-        ACLMessage msg = myAgent.receive(mt);
+        //MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+        ACLMessage msg = myAgent.receive();
         if (msg != null) {
             //Réception
             String content = msg.getContent();
 
             try {
                 JSONObject object = (JSONObject) this.parser.parse(content);
+
+                System.out.println(content);
 
                 if(object.containsKey("jeCherche")) {
                     vendeur.ClientRecherche((JSONObject) object.get("jeCherche"), msg.getSender(), "Cherche");

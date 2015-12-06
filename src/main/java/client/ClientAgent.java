@@ -4,6 +4,7 @@ package client;
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
+import client.UI.FXMLController;
 import client.outils.TypeAgentClient;
 import client.outils.Log;
 import client.outils.Produit;
@@ -23,6 +24,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Classe permettant de créer des agents client et de leur affecter un comportement
@@ -590,6 +592,54 @@ public class ClientAgent extends SuperAgent {
         for (Produit produit : lisProduitASupprimer) {
             lproposition.remove(produit);
         }
+    }
+    
+        /**
+     * Méthode qui permet de choisir une proposition d'un vendeur ou fournisseur pour un client fidèle
+     *
+     * @return le produit choisi
+     */
+    public Produit choixFidelite() {
+//        System.out.println("La fidelite c'est le client");
+        Produit produitChoisi = lproposition.get(0);
+        String provenanceAncienAchat = "";
+        
+        boolean existAncienAchat = false;
+        // On parcours la liste des achats effectués
+        if (FXMLController.lAchatsEffectues.size() > 0) {
+            for (Map.Entry<String, Produit> entrySet : FXMLController.lAchatsEffectues.entrySet()) {
+                String key = entrySet.getKey();
+                Produit value = entrySet.getValue();
+//                System.out.println("Dans 1er boucle clé = "+key);
+                // Si l'un d'entre eux a été effectué par le client en question on enregistre la provenance
+                if (key.compareTo(this.getName()) == 0) {
+                    provenanceAncienAchat = value.getProvenance();
+                    existAncienAchat = true;
+                    System.out.println("Ancien achat client "+this.getName() +" provenance "+ value.getProvenance());
+                    break;
+                }
+            }
+        }
+        
+        // On choisit le produit ayant la même provenance
+        for (Produit produit : lproposition) {
+            if(existAncienAchat){
+//                System.out.println("test provenance : "+ produit.getProvenance() + " =? " +provenanceAncienAchat);
+                if (produit.getProvenance().compareTo(provenanceAncienAchat) == 0) {
+//                    System.out.println("Dans provenance : "+ produit.getProvenance());
+                    // Si plusieurs produit de même provenance on choisit le moins cher
+                    if(produit.getPrix() < produitChoisi.getPrix()){
+                        produitChoisi = produit;
+                    }
+                }
+            }else {
+//                System.out.println("Else pas d'ancien achat");
+                if(produit.getPrix() < produitChoisi.getPrix()){
+                    produitChoisi = produit;
+                }
+            }
+        }
+        return produitChoisi;
     }
 
     /**

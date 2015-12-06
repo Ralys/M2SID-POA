@@ -25,4 +25,9 @@ public class TypeAgentClient {
      */
     public static final String Mefiant = "Méfiant";
     
+    /**
+     * Chaine de caractères du comportement "Fidèle"
+     */
+    public static final String Fidele = "Fidèle";
+    
 }

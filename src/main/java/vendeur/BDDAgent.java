@@ -11,11 +11,7 @@ import jade.lang.acl.ACLMessage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,13 +41,20 @@ public class BDDAgent extends SuperAgent {
 
         try {
             Files.delete(Paths.get(DB_FILE));
+        } catch ( Exception e ) {
+        }
+
+        try {
             Class.forName(DB_DRIVER);
             connection = DriverManager.getConnection(DB_URL);
-        } catch ( Exception e ) {
+        } catch (SQLException e) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(2);
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        
+
         System.out.println("Opened database successfully");
 
 

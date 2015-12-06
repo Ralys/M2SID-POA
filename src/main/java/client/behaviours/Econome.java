@@ -69,7 +69,7 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
@@ -86,7 +86,7 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
@@ -107,7 +107,7 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class Econome extends CyclicBehaviour {
                 econome.donneAvisProduit(obj.get("idProduit").toString());
                 
                 // arreter agent
-                econome.takeDown();
+                econome.arretAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -138,7 +138,7 @@ public class Econome extends CyclicBehaviour {
                     econome.jeChoisis(econome.moinsCher());
                 } else {
                     Log.arretRecherche();
-                    econome.takeDown();
+                    econome.arretAgent();
                 }
 
             }

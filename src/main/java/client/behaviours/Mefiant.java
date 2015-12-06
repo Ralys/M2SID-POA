@@ -96,7 +96,7 @@ public class Mefiant extends CyclicBehaviour {
                         mefiant.jeChoisis(mefiant.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        mefiant.takeDown();
+                        mefiant.arretAgent();
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class Mefiant extends CyclicBehaviour {
                         mefiant.jeChoisis(mefiant.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        mefiant.takeDown();
+                        mefiant.arretAgent();
                     }
                 }
             }
@@ -174,7 +174,7 @@ public class Mefiant extends CyclicBehaviour {
                         mefiant.jeChoisis(mefiant.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        mefiant.takeDown();
+                        mefiant.arretAgent();
                     }
                 }
             }
@@ -188,7 +188,7 @@ public class Mefiant extends CyclicBehaviour {
                 mefiant.donneAvisProduit(obj.get("idProduit").toString());
 
                 // arreter agent
-                mefiant.takeDown();
+                mefiant.arretAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -205,7 +205,7 @@ public class Mefiant extends CyclicBehaviour {
                     mefiant.jeChoisis(mefiant.moinsCher());
                 } else {
                     Log.arretRecherche();
-                    mefiant.takeDown();
+                    mefiant.arretAgent();
                 }
             }
 

@@ -74,7 +74,7 @@ public class Fidele extends CyclicBehaviour {
                         fidele.jeChoisis(fidele.choixFidelite());
                     } else {
                         Log.arretRecherche();
-                        fidele.takeDown();
+                        fidele.arretAgent();
                     }
                 }
             }
@@ -93,7 +93,7 @@ public class Fidele extends CyclicBehaviour {
                         fidele.jeChoisis(fidele.choixFidelite());
                     } else {
                         Log.arretRecherche();
-                        fidele.takeDown();
+                        fidele.arretAgent();
                     }
                 }
             }
@@ -108,7 +108,7 @@ public class Fidele extends CyclicBehaviour {
                 fidele.donneAvisProduit(obj.get("idProduit").toString());
                 
                 // Arreter agent
-                fidele.takeDown();
+                fidele.arretAgent();
             }
             
             // Action lorsque la commande n'est pas OK
@@ -126,7 +126,7 @@ public class Fidele extends CyclicBehaviour {
                     fidele.jeChoisis(fidele.plusTot());
                 } else {
                     Log.arretRecherche();
-                    fidele.takeDown();
+                    fidele.arretAgent();
                 }
             }
         } catch (org.json.simple.parser.ParseException ex) {

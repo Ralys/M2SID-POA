@@ -80,7 +80,7 @@ public class Presse extends CyclicBehaviour {
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Log.arretRecherche();
-                        presse.takeDown();
+                        presse.arretAgent();
                     }
                 }
 
@@ -101,7 +101,7 @@ public class Presse extends CyclicBehaviour {
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Log.arretRecherche();
-                        presse.takeDown();
+                        presse.arretAgent();
                     }
                 }
             }
@@ -123,7 +123,7 @@ public class Presse extends CyclicBehaviour {
                         presse.jeChoisis(presse.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        presse.takeDown();
+                        presse.arretAgent();
                     }
                 }
                 
@@ -138,7 +138,7 @@ public class Presse extends CyclicBehaviour {
                 presse.donneAvisProduit(obj.get("idProduit").toString());
                 
                 // arreter agent
-                presse.takeDown();
+                presse.arretAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -155,7 +155,7 @@ public class Presse extends CyclicBehaviour {
                     presse.jeChoisis(presse.plusTot());
                 } else {
                     Log.arretRecherche();
-                    presse.takeDown();
+                    presse.arretAgent();
                 }
             }
 

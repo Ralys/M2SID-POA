@@ -179,30 +179,17 @@ public class ClientAgent extends SuperAgent {
      * Méthode permettant de tuer un agent client, une fois que celui-ci a fini
      * son achat
      */
-    public void takeDown() {
-//        try {
-//             on se retire du registre de service afin q'un autre
-//             agent du même nom puisse se lancer
-//            DFService.deregister(this);
-//            Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
-//            doDelete();
-//        } catch (FIPAException ex) {
-//            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-   }
-
-    /**
-     * Méthode permettant de tuer un agent client, une fois que celui-ci a fini
-     * son achat
-     */
-    public void finAgent() {
+    public void arretAgent() {
         try {
+            //  on se retire du registre de service afin q'un autre
+            //  agent du même nom puisse se lancer
             DFService.deregister(this);
             Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
-            //doDelete();
+            doDelete();
         } catch (FIPAException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     // **************************************************************** //

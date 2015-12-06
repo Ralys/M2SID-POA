@@ -63,7 +63,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.finAgent();
+                        negociateur.arretAgent();
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.finAgent();
+                        negociateur.arretAgent();
                     }
                 }
             }
@@ -97,7 +97,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.finAgent();
+                        negociateur.arretAgent();
                     }
                 }
             }
@@ -113,7 +113,7 @@ public class Negociateur extends CyclicBehaviour {
                 //laisser les informations à l'ereputation
                 negociateur.achatEffectue(Boolean.TRUE, nbNegociation);
                 // arreter agent
-                negociateur.finAgent();
+                negociateur.arretAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -128,7 +128,7 @@ public class Negociateur extends CyclicBehaviour {
                     jeNegocie(negociateur.moinsCher());
                 } else {
                     Log.arretRecherche();
-                    negociateur.finAgent();
+                    negociateur.arretAgent();
                 }
 
             }
@@ -173,7 +173,7 @@ public class Negociateur extends CyclicBehaviour {
                         jeNegocie(negociateur.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        negociateur.finAgent();
+                        negociateur.arretAgent();
                     }
                 }
 

@@ -131,6 +131,8 @@ public class BDDAgent extends SuperAgent {
         }
      }
 
+
+
     private class ExecuteRequest extends CyclicBehaviour {
         private JSONParser parser;
     
@@ -152,16 +154,17 @@ public class BDDAgent extends SuperAgent {
                 
                 if(type.equals("insert"))
                     insert(object.get("sql").toString());
-                
+
                 if(type.equals("select"))
                     select(object.get("sql").toString(), msg.getSender());
-                
+
                 
             } catch (ParseException ex) {
                 Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide", ex);
             }
          }
-     }
+
+    }
 
  }
 

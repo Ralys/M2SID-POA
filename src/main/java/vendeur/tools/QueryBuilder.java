@@ -1,5 +1,6 @@
 package vendeur.tools;
 
+import jade.core.AID;
 import org.json.simple.JSONObject;
 
 /**
@@ -51,11 +52,31 @@ public class QueryBuilder {
      * @return
      */
     public static String getRefListStock(String vendeur) {
-       String sql = "SELECT PRODUIT.REF_PRODUIT, QTE "
+        String sql = "SELECT PRODUIT.REF_PRODUIT, QTE "
                 + "FROM PRODUIT LEFT JOIN STOCK ON STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT"
                 + " WHERE VENDEUR_NAME = \"vendeur_"+ vendeur + "\" OR VENDEUR_NAME IS NULL";
 
 
         return JSONRequest("select", sql);
+    }
+
+
+    public static String getRefStock(String ref, String vendeur) {
+        String sql = "SELECT REF_PRODUIT, QTE FROM STOCK WHERE VENDEUR_NAME = \""+vendeur+"\" AND REF_PRODUIT = "+ref;
+
+        return JSONRequest("select", sql);
+    }
+
+
+    public static String newStock(String idProduit, Integer quantite, Float prix, String localName) {
+        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_UNITAIRE, QTE) VALUES("+idProduit+", "+quantite+", "+prix+", \""+localName+"\") ";
+
+        return JSONRequest("insert", sql);
+    }
+
+    public static String updateStock(String idProduit,  Integer quantite, Float prix,String localName) {
+        String sql = "UPDATE STOCK SET QTE = "+quantite+", PRIX_UNITAIRE = "+prix+" WHERE VENDEUR_NAME = \""+localName+"\" AND REF_PRODUIT = "+idProduit;
+
+        return JSONRequest("insert", sql);
     }
 }

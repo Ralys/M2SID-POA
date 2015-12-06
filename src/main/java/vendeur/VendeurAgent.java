@@ -89,6 +89,7 @@ public class VendeurAgent extends SuperAgent {
         for (AID f : agent) {
             String message = jeChercheReference.toString();
             sendMessage(ACLMessage.REQUEST, message, f, false);
+            Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à " + f.getLocalName() + " : " + message);
         }
     }
 
@@ -237,9 +238,7 @@ public class VendeurAgent extends SuperAgent {
         // envoi de la réponse
         sendMessage(ACLMessage.PROPOSE, reponseJSON, sender);
 
-        String envoiMessage = "(" + getLocalName() + ") Message envoyé : " + reponseJSON;
-        Logger.getLogger(VendeurAgent.class.getName()).log(Level.INFO, envoiMessage);
-
+        Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à " + sender.getLocalName() + " : " + reponseJSON);
     }
 
     public void CheckStock() {
@@ -278,7 +277,6 @@ public class VendeurAgent extends SuperAgent {
     }
 
     public void prendreCommande(String ref, Integer qte) {
-        System.out.println("jeChercheReference "+ ref);
         jeChercheReference(TypeAgent.Fournisseur, ref, qte);
     }
 
@@ -301,6 +299,43 @@ public class VendeurAgent extends SuperAgent {
     }
 
     public void fournisseurPropose(JSONObject jePropose, AID sender) {
-        System.out.println(jePropose);
+        // construction de l'objet JSON à envoyé
+        JSONObject jeChercheReference = new JSONObject();
+        JSONObject elementRecherche = new JSONObject();
+
+        elementRecherche.put("idProduit", jePropose.get("idProduit")+"");
+        elementRecherche.put("nomProduit", jePropose.get("nomProduit")+"");
+        elementRecherche.put("prix", jePropose.get("prix")+"");
+        elementRecherche.put("quantite", jePropose.get("quantite")+"");
+        elementRecherche.put("date", jePropose.get("date")+"");
+
+        jeChercheReference.put("jeChoisis", elementRecherche);
+
+        Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à "+sender.getLocalName()+" : "+jeChercheReference.toJSONString());
+
+        sendMessage(ACLMessage.ACCEPT_PROPOSAL, jeChercheReference.toJSONString(), sender, false);
+    }
+
+
+    public void ajoutStock(JSONObject commandeOK, AID sender) {
+        String idProduit =  commandeOK.get("idProduit")+"";
+        Integer quantite =  Integer.valueOf(commandeOK.get("quantite")+"");
+        Float prix = Double.valueOf(commandeOK.get("prix")+"").floatValue() ;
+
+        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(idProduit, sender.getLocalName()), getBDDAgent(), true);
+
+
+        try {
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+            if(resultatsBDD.size() == 0) {
+                sendMessage(ACLMessage.INFORM, QueryBuilder.newStock(idProduit, quantite, prix, sender.getLocalName()), getBDDAgent(), true);
+            }
+            else {
+                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size()+quantite, prix, sender.getLocalName()), getBDDAgent(), true);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

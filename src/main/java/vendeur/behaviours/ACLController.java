@@ -30,8 +30,6 @@ public class ACLController extends CyclicBehaviour {
 
         vendeur.CheckStock();
 
-        System.out.println("Helloo");
-
         //MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage msg = myAgent.receive();
 
@@ -43,20 +41,26 @@ public class ACLController extends CyclicBehaviour {
             try {
                 JSONObject object = (JSONObject) this.parser.parse(content);
 
+                Logger.getLogger(vendeur.getLocalName()).log(Level.INFO, "("+vendeur.getLocalName()+") Message reçu de "+msg.getSender().getLocalName() +" : "+content);
 
                 if(object.containsKey("jeCherche")) {
                     vendeur.ClientRecherche((JSONObject) object.get("jeCherche"), msg.getSender(), "Cherche");
-                } else if (object.containsKey("jeChercheRef")) {
+                }
+                else if (object.containsKey("jeChercheRef")) {
                     vendeur.ClientRecherche((JSONObject) object.get("jeChercheRef"), msg.getSender(), "ChercheRef");
-                } else if (object.containsKey("jePropose")) {
+                }
+                else if (object.containsKey("jePropose")) {
                     if(object.get("jePropose") instanceof JSONObject)
                         vendeur.fournisseurPropose((JSONObject) object.get("jePropose"), msg.getSender());
                     else if(object.get("jePropose") instanceof JSONArray)
                         vendeur.fournisseurPropose((JSONArray) object.get("jePropose"), msg.getSender());
                 }
+                else if (object.containsKey("commandeOk")) {
+                    vendeur.ajoutStock((JSONObject) object.get("commandeOk"), msg.getSender());
+                }
 
             } catch (ParseException ex) {
-                Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
+                Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "("+vendeur.getLocalName()+") Format de message invalide");
             }
         }
     }

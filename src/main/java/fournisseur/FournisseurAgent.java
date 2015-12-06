@@ -28,13 +28,14 @@ import java.util.logging.Logger;
  */
 public class FournisseurAgent extends SuperAgent {
 
-    private StocksEtTransaction catalogue = new StocksEtTransaction();
+    private StocksEtTransaction catalogue;
 
     /**
      * Méthode de mise en place de l'agent
      */
     @Override
     protected void setup() {
+        this.catalogue = new StocksEtTransaction();
         this.registerService(TypeAgent.Fournisseur);
         AID agentBDD = null;
         //Parametre : numero du fournisseur

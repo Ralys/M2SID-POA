@@ -23,7 +23,9 @@ public class WaitNegociationStrategie3 extends WaitNegociation {
         t.incNbNego();
         double prixBase = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit).getPrixDeBase();
         double prix = ((prixBase * marge)) + Livraison.prixLivraisonByDelai(t.getDelai());
-        return Math.ceil(prix * 100) / 100;
+        double prixDelai = Livraison.prixLivraisonByDelai(t.getDelai());
+        prix = Math.ceil(prix * 100) / 100;
+        return prix + prixDelai;
     }
 
 }

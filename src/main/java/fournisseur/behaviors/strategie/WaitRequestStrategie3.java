@@ -3,7 +3,6 @@ package fournisseur.behaviors.strategie;
 import fournisseur.behaviors.WaitRequest;
 import fournisseur.utils.Livraison;
 import fournisseur.utils.StocksEtTransaction;
-import jade.core.AID;
 
 /**
  *
@@ -20,8 +19,10 @@ public class WaitRequestStrategie3 extends WaitRequest {
     @Override
     public double definirPrix(int idProduit, int quantite, int delai) {
         double prixBase = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit).getPrixDeBase();
-        double prix = ((prixBase * marge)) + Livraison.prixLivraisonByDelai(delai);
-        return Math.ceil(prix * 100) / 100;
+        double prix = ((prixBase * marge));
+        double prixDelai = Livraison.prixLivraisonByDelai(delai);
+        prix = Math.ceil(prix * 100) / 100;
+        return prix + prixDelai;
     }
 
 }

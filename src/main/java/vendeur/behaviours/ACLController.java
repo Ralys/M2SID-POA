@@ -27,8 +27,7 @@ public class ACLController extends CyclicBehaviour {
     @Override
     public void action() {
         VendeurAgent vendeur = (VendeurAgent) myAgent;
-
-        vendeur.CheckStock();
+        //vendeur.CheckStock();
         //MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage msg = myAgent.receive();
 
@@ -43,13 +42,18 @@ public class ACLController extends CyclicBehaviour {
                 Logger.getLogger(vendeur.getLocalName()).log(Level.INFO, "("+vendeur.getLocalName()+") Message reçu de "+msg.getSender().getLocalName() +" : "+content);
 
                 if(object.containsKey("jeCherche")) {
-                    vendeur.ClientRecherche((JSONObject) object.get("jeCherche"), msg.getSender(), "Cherche");
+                    vendeur.clientRecherche((JSONObject) object.get("jeCherche"), msg.getSender(), "Cherche");
                 }
                 else if (object.containsKey("jeChercheRef")) {
-                    vendeur.ClientRecherche((JSONObject) object.get("jeChercheRef"), msg.getSender(), "ChercheRef");
+                    vendeur.clientRecherche((JSONObject) object.get("jeChercheRef"), msg.getSender(), "ChercheRef");
+                }
+                else if(object.containsKey("jeChoisis")) {
+                    vendeur.clientChoisis((JSONObject) object.get("jeChoisis"), msg.getSender());
+                }
+                else if(object.containsKey("jeNégocie")) {
+                    vendeur.clientNégocie((JSONObject) object.get("jeNégocie"), msg.getSender());
                 }
                 else if (object.containsKey("jePropose")) {
-                    System.out.println("teeeeeest");
                     if(object.get("jePropose") instanceof JSONObject)
                         vendeur.fournisseurPropose((JSONObject) object.get("jePropose"), msg.getSender());
                     else if(object.get("jePropose") instanceof JSONArray)

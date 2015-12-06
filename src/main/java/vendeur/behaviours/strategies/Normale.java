@@ -5,25 +5,21 @@
  */
 package vendeur.behaviours.strategies;
 
-import jade.core.behaviours.CyclicBehaviour;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
+import java.util.HashMap;
 
 /**
- *
  * @author jonathan
  */
-public class Normale extends CyclicBehaviour{
+public class Normale {
 
-    @Override
-    public void action() {
-        MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-        ACLMessage msg = myAgent.receive(mt);
-        if (msg != null) { 
-            
-        }else{
-           block(); 
-        }
+    private final static HashMap<Integer, Integer> tableauPrixLiv = new HashMap() {{
+        put(1, 8);
+        put(3, 4);
+        put(10, 0);
+    }};
+
+    public static double getPrix(double prix, int dureeLiv){
+        return prix+tableauPrixLiv.get(dureeLiv);
     }
-    
+
 }

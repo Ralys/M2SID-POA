@@ -29,7 +29,8 @@ public class WaitNegociationStrategie2 extends WaitNegociation {
         double prix = (prixBase * (margeMax - reducStock + (reducNego * nbNego))) + Livraison.prixLivraisonByDelai(delai);
         prix = Math.round(prix * 100) / 100;
         t.setPrixPropose(prix);
-        return prix;
+        double prixDelai = Livraison.prixLivraisonByDelai(t.getDelai());
+        return prix + prixDelai;
     }
 
 }

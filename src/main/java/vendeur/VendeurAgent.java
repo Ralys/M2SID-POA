@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import vendeur.behaviours.ACLController;
-import vendeur.behaviours.PurchaseProduct;
 import vendeur.tools.QueryBuilder;
 
 import java.util.Iterator;
@@ -32,7 +31,6 @@ public class VendeurAgent extends SuperAgent {
         this.registerService(TypeAgent.Vendeur);
 
         this.addBehaviour(new ACLController(this));
-        this.addBehaviour(new PurchaseProduct(this));
     }
 
     public AID getBDDAgent() {
@@ -89,7 +87,7 @@ public class VendeurAgent extends SuperAgent {
         AID[] agent = findAgentsFromService(TypeAgent.Fournisseur);
         for (AID f : agent) {
             String message = jeChercheReference.toString();
-            sendMessage(ACLMessage.REQUEST, message, f, true);
+            sendMessage(ACLMessage.REQUEST, message, f, false);
         }
     }
 
@@ -137,6 +135,64 @@ public class VendeurAgent extends SuperAgent {
         String envoiMessage = "(" + getLocalName() + ") Message envoyé : " + reponseJSON;
         Logger.getLogger(VendeurAgent.class.getName()).log(Level.INFO, envoiMessage);
 
+    }
+
+    public void CheckStock() {
+
+        // Get quantity for each product
+
+        ACLMessage stockProducts = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefListStock(getLocalName()), getBDDAgent(), true);
+
+
+        JSONArray resultatsStockProducts = null;
+        try {
+            resultatsStockProducts = (JSONArray) this.parser.parse(stockProducts.getContent());
+
+            JSONObject reponse = new JSONObject();
+            JSONArray list = new JSONArray();
+
+            for (Iterator iterator = resultatsStockProducts.iterator(); iterator.hasNext();) {
+                JSONObject resultat = (JSONObject) iterator.next();
+
+                String QTE_ = resultat.get("QTE")+"";
+                String REF_PRODUIT = resultat.get("REF_PRODUIT")+"";
+
+                //test quantity
+                if(QTE_.contains("null")) {
+                    prendreCommande(REF_PRODUIT, 5);
+                }
+                else {
+                    Integer QTE = Integer.valueOf(QTE_);
+                }
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void prendreCommande(String ref, Integer qte) {
+        System.out.println("jeChercheReference "+ ref);
+        jeChercheReference(TypeAgent.Fournisseur, ref, qte);
+    }
+
+    public void fournisseurPropose(JSONArray jePropose, AID sender) {
+        JSONObject reponse = new JSONObject();
+        JSONArray list = new JSONArray();
+
+        Double minPrix = -1.00;
+        JSONObject min = null;
+
+        for (Iterator iterator = jePropose.iterator(); iterator.hasNext();) {
+            JSONObject resultat = (JSONObject) iterator.next();
+            if(Double.valueOf(resultat.get("prix")+"") <  minPrix || minPrix == -1) {
+                minPrix = Double.valueOf(resultat.get("prix")+"");
+                min = resultat;
+            }
+        }
+
+        fournisseurPropose(min, sender);
     }
 
     public void fournisseurPropose(JSONObject jePropose, AID sender) {

@@ -46,7 +46,8 @@ public class ClientAgent extends SuperAgent {
     private int nbDemandeAvisRevendeurRecu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
-    private double limite =0;
+    private long limiteDate =0;
+    private double limitePrix = 0;
     private int quantite = 0;
 
     // **************************************************************** //
@@ -68,7 +69,14 @@ public class ClientAgent extends SuperAgent {
         String reference = arguments[4].toString();
         quantite = Integer.parseInt(arguments[5].toString());
         String typeRecherche = arguments[6].toString();
-        limite = Double.parseDouble(arguments[7].toString());
+        
+        if(typeAgentClient.equalsIgnoreCase(TypeAgentClient.Econome)){
+            limitePrix = Double.parseDouble(arguments[7].toString());
+        }
+        
+        if(typeAgentClient.equalsIgnoreCase(TypeAgentClient.Presse)){
+            limitePrix = Long.parseLong(arguments[7].toString());
+        }
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
 
@@ -499,12 +507,20 @@ public class ClientAgent extends SuperAgent {
         this.typeAgentCible = typeAgentCible;
     }
 
-    public double getLimite() {
-        return limite;
+    public long getLimiteDate() {
+        return limiteDate;
     }
 
-    public void setLimite(double prixMax) {
-        this.limite = limite;
+    public void setLimiteDate(long limiteDate) {
+        this.limiteDate = limiteDate;
+    }
+
+    public double getLimitePrix() {
+        return limitePrix;
+    }
+
+    public void setLimitePrix(double limitePrix) {
+        this.limitePrix = limitePrix;
     }
 
     public int getNbReponseReçu() {

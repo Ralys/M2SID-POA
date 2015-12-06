@@ -62,7 +62,7 @@ public class Presse extends CyclicBehaviour {
 
                     // on nettoye les propositions en fonction du critère du temps max
                     Long dateJour = new Date().getTime() / 1000;
-                    long result = (long)presse.getLimite()*timeStamp+dateJour;
+                    long result = presse.getLimiteDate()*timeStamp+dateJour;
                     presse.nettoyerPropositionDate(result);
                     if (presse.getLproposition().size() > 0) {
                         // on nettoye les propositions en fonction du critère du temps max
@@ -97,11 +97,28 @@ public class Presse extends CyclicBehaviour {
                 presse.afficherRaisonInvalide(object, message);
 
                 // il n'y a pus d'attendre de réponse et aucune propostion existe dans la liste 
-                if ((presse.getNbReponseReçu() != presse.getNbRechercheEnvoye())
+                if ((presse.getNbReponseReçu() == presse.getNbRechercheEnvoye())
                         && presse.getLproposition().isEmpty()) {
                     Log.arretRecherche();
                     presse.takeDown();
                 }
+                
+                // il n'y a pus d'attendte de réponse et des propostions existent dans la liste 
+                if ((presse.getNbReponseReçu() == presse.getNbRechercheEnvoye())
+                    && !presse.getLproposition().isEmpty()){
+                    
+                    // on nettoye les propositions en fonction du critère de prix max
+                    Long dateJour = new Date().getTime() / 1000;
+                    long result = presse.getLimiteDate()*timeStamp+dateJour;
+                    presse.nettoyerPropositionDate(result);
+                    if (presse.getLproposition().size() > 0) {
+                        presse.jeChoisis(presse.moinsCher());
+                    } else {
+                        Log.arretRecherche();
+                        presse.takeDown();
+                    }
+                }
+                
             }
 
             if (object.containsKey("commandeOk")) {

@@ -52,7 +52,7 @@ public class Econome extends CyclicBehaviour {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
                     // on nettoye les propositions en fonction du critère de prix max
-                    econome.nettoyerPropositionPrix(econome.getLimite());
+                    econome.nettoyerPropositionPrix(econome.getLimitePrix());
                     if (econome.getLproposition().size() > 0) {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
@@ -71,7 +71,7 @@ public class Econome extends CyclicBehaviour {
                 Log.reception(econome.nomAgent(message), message.getContent());
                 if (econome.getNbReponseReçu() == econome.getNbRechercheEnvoye()) {
                     // on nettoye les propositions en fonction du critère de prix max
-                    econome.nettoyerPropositionPrix(econome.getLimite());
+                    econome.nettoyerPropositionPrix(econome.getLimitePrix());
                     if (econome.getLproposition().size() > 0) {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
@@ -100,7 +100,7 @@ public class Econome extends CyclicBehaviour {
                     && !econome.getLproposition().isEmpty()){
                     
                     // on nettoye les propositions en fonction du critère de prix max
-                    econome.nettoyerPropositionPrix(econome.getLimite());
+                    econome.nettoyerPropositionPrix(econome.getLimitePrix());
                     if (econome.getLproposition().size() > 0) {
                         econome.jeChoisis(econome.moinsCher());
                     } else {

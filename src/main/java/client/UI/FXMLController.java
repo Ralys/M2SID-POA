@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Date;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
@@ -27,9 +28,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import common.TypeAgent;
 import common.TypeProduit;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 
 public class FXMLController implements Initializable {
@@ -81,6 +85,10 @@ public class FXMLController implements Initializable {
 
     @FXML
     private ListView log;
+    
+    @FXML
+    private TextField limite;
+
 
     private final ObservableList<String> listTypeAgentVend = FXCollections.observableArrayList(TypeAgent.Fournisseur, TypeAgent.Vendeur);
 
@@ -89,7 +97,7 @@ public class FXMLController implements Initializable {
 
     private final ObservableList<String> listTypeProduit = FXCollections.observableArrayList(TypeProduit.allProducts);
 
-    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome);
+    private final ObservableList<String> listTypeClient = FXCollections.observableArrayList(TypeAgentClient.Presse, TypeAgentClient.Econome, TypeAgentClient.Mefiant);
 
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
 
@@ -123,7 +131,7 @@ public class FXMLController implements Initializable {
                 // true: recherche false:recherche par reference
                 boolean typeRecherche = rbRecherche.isSelected();
                 AgentContainer ac = rt.createAgentContainer(p);
-                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), reference.getText(), choixQte.getValue(), typeRecherche};
+                Object[] arguments = {choixClient.getValue(), choixVendeur.getValue(), choixProd.getValue(), nomProd.getText(), reference.getText(), choixQte.getValue(), typeRecherche, limite.getText()};
 
                 // création de l'agent
                 AgentController agent = ac.createNewAgent(nomAgent.getText(), "client.ClientAgent", arguments);
@@ -165,17 +173,16 @@ public class FXMLController implements Initializable {
                 && !nomProd.getText().isEmpty()
                 && choixProd.getSelectionModel().getSelectedIndex() != -1)
                 || (rbReference.isSelected()
-                && !reference.getText().isEmpty()))) {
-
+                && !reference.getText().isEmpty()))
+                && testerLimite(limite)) {
             valide = true;
             messageErreur.setVisible(false);
 
-            // verrouillage du bouton de validation
-            btnValider.setDisable(true);
-
-        } else {
+        }
+        else {
+            /**/
             testerContenu(choixClient, choixVendeur, choixQte);
-            testerContenu(ip, port, nomAgent);
+            testerContenu(ip, port, nomAgent, limite);
 
             if (rbRecherche.isSelected()) {
                 testerContenu(nomProd);
@@ -184,12 +191,31 @@ public class FXMLController implements Initializable {
             if (rbReference.isSelected()) {
                 testerContenu(reference);
             }
-
-            messageErreur.setText("Merci de remplir tous les champs !");
-            messageErreur.setVisible(true);
+            testerLimite(limite);
+           // messageErreur.setText("Merci de remplir tous les champs !");
+            //messageErreur.setVisible(true);
         }
 
         return valide;
+    }
+    
+    public boolean testerLimite(TextField tf){
+        boolean res = false;
+        if(!limite.getText().isEmpty()){
+               res = true;
+               try {
+                   int lim = Integer.parseInt(limite.getText().toString());
+               }
+               catch(Exception e){
+                messageErreur.setText("Ce champ ne peux contenir que des nombres");
+                messageErreur.setVisible(true);
+                limite.setStyle("-fx-border-color:red");
+                res = false;
+            }
+               
+        }
+        return res;
+            
     }
 
     public void testerContenu(ComboBox... cbx) {
@@ -198,19 +224,35 @@ public class FXMLController implements Initializable {
                 cb.setStyle("-fx-border-color:green");
             } else {
                 cb.setStyle("-fx-border-color:red");
+                messageErreur.setText("Merci de remplir tous les champs !");
+                messageErreur.setVisible(true);
             }
         }
     }
 
     public void testerContenu(TextField... tfs) {
         for (TextField tf : tfs) {
-            if (tf.getText().isEmpty()) {
+            if (tf.isVisible() && tf.getText().isEmpty()) {
                 tf.setStyle("-fx-border-color:red");
+                messageErreur.setText("Merci de remplir tous les champs !");
+                messageErreur.setVisible(true);
             } else {
                 tf.setStyle("-fx-border-color:green");
 
             }
         }
+    }
+    
+    public void selectionType(){
+        if (choixClient.getSelectionModel().getSelectedItem().equals("Econome")){
+            limite.setPromptText("Prix maximal");
+            limite.setVisible(true);
+            
+        } else if (choixClient.getSelectionModel().getSelectedItem().equals("Pressé")) {
+            limite.setPromptText("Delai maximal(en jours)");
+            limite.setVisible(true);
+                
+        }else limite.setVisible(false);
     }
 
 }

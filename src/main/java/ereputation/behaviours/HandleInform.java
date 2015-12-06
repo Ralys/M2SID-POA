@@ -11,6 +11,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,7 +35,7 @@ public class HandleInform extends CyclicBehaviour {
         if(message == null) return;
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterInformation(message);
@@ -52,6 +53,9 @@ public class HandleInform extends CyclicBehaviour {
             
             if(object.containsKey("achatEffectue"))
                 this.achatEffectue((JSONObject)object.get("achatEffectue"), message.getSender());
+            
+            if(object.containsKey("venteEffectuee")) 
+                this.venteEffectuee((JSONObject)object.get("venteEffectuee"), message.getSender());
             
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide " + ex);
@@ -80,6 +84,9 @@ public class HandleInform extends CyclicBehaviour {
         
         // ajout en base de données
         erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertAvis(agent.getLocalName(), type+"_"+nom, avis), erep.getBDDAgent());
+        
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": Enregistrement en base de données :"+donneAvis.toString());
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": Enregistrement en base de données :"+donneAvis.toJSONString());
     }
     
     private void achatEffectue(JSONObject achatEffectue, AID agent) throws ParseException {
@@ -92,5 +99,32 @@ public class HandleInform extends CyclicBehaviour {
         
         // ajout en base de données
         erep.sendMessage(ACLMessage.INFORM, QueryBuilder.insertNegociation(comportement, success, nb_negociations), erep.getBDDAgent());
+        
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": Enregistrement en base de données :"+achatEffectue.toString());
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": Enregistrement en base de données :"+achatEffectue.toJSONString());
+    }
+    
+    private void venteEffectuee(JSONObject demandeSolde, AID agent) throws ParseException{
+        
+         String idVente = demandeSolde.get("id").toString();
+         
+         EReputationAgent erep = (EReputationAgent)myAgent;
+         
+        // recherche en base de données
+        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.verifierVente(idVente), erep.getBDDAgent(), true);
+        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
+        
+        
+        //TO DO deux cas, verfification OK / KO
+        if(resultat.get("status").toString().equals("true")){
+            //TO DO definir le cas ok
+        }else{
+            //TO DO definir le cas ko
+        }
+        
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": verification de la vente :"+resultat);
+        TypeLog.logEreputation.Info(myAgent.getLocalName()+": verification de la vente :"+resultat);
+        
     }
 }

@@ -38,7 +38,7 @@ public class HandleRequest extends CyclicBehaviour {
         if(message == null) return;
         
         String receptionMessage = "(" + myAgent.getLocalName() + ") Message reçu : " + message.getContent().replace("\n", "").replace("\t", "") + " de " + message.getSender().getName();
-        //Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
+        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, receptionMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+receptionMessage);
         
         traiterRequete(message);
@@ -62,9 +62,6 @@ public class HandleRequest extends CyclicBehaviour {
             
             if(object.containsKey("demandeAllSolde"))
                 this.demandeAllSolde((JSONObject)object.get("demandeAllSolde"), message.getSender());
-            
-            if(object.containsKey("venteEffectuee"))
-                this.venteEffectuee((JSONObject)object.get("venteEffectuee"), message.getSender());
             
         } catch (ParseException ex) {
             Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "Format de message invalide");
@@ -209,25 +206,6 @@ public class HandleRequest extends CyclicBehaviour {
         String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + reponseJSON;
         Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
-        
-    }
-
-    private void venteEffectuee(JSONObject demandeSolde, AID agent) throws ParseException{
-        
-         String idVente = demandeSolde.get("id").toString();
-         
-         EReputationAgent erep = (EReputationAgent)myAgent;
-         
-          // recherche en base de données
-            // recherche en base de données
-        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.verifierVente(idVente), erep.getBDDAgent(), true);
-        JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
-        JSONObject resultat = (JSONObject) resultatsBDD.get(0);
-        
-        //TO DO deux cas, verfification OK / KO
-        
-        Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, myAgent.getLocalName()+": verification de la vente :"+resultat);
-        TypeLog.logEreputation.Info(myAgent.getLocalName()+": verification de la vente :"+resultat);
         
     }
     

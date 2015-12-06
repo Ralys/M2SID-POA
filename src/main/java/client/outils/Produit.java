@@ -23,16 +23,18 @@ public class Produit {
     private String nom;
     private double prix;
     private int quantite;
-    private int dateLivraison;
+    private long dateLivraison;
+    private double avis;
 
 
-    public Produit(String provenance, String id, String nom, int quantite, double prix, int dateLivraison) {
+    public Produit(String provenance, String id, String nom, int quantite, double prix, long dateLivraison) {
         this.provenance = provenance;
         this.id = id;
         this.nom = nom;
         this.quantite = quantite;
         this.prix = prix;
         this.dateLivraison = dateLivraison;
+        this.avis = 0;
     }
     
     public Produit(JSONObject jsonObject, String provenance){
@@ -41,7 +43,7 @@ public class Produit {
             this.nom = jsonObject.get("nomProduit").toString();
             this.quantite = Integer.parseInt(jsonObject.get("quantite").toString());
             this.prix = Double.parseDouble(jsonObject.get("prix").toString());
-            this.dateLivraison = Integer.parseInt(jsonObject.get("date").toString());
+            this.dateLivraison = Long.parseLong(jsonObject.get("date").toString());
     }
 
     public JSONObject getJSONObject(){
@@ -103,7 +105,7 @@ public class Produit {
         this.prix = prix;
     }
 
-    public int getDateLivraison() {
+    public long getDateLivraison() {
         return this.dateLivraison;
     }
 
@@ -119,4 +121,13 @@ public class Produit {
         this.quantite = quantite;
     }
 
+    public double getAvis() {
+        return avis;
+    }
+
+    public void setAvis(double avis) {
+        this.avis = avis;
+    }
+
+    
 }

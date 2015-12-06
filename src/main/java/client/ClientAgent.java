@@ -8,7 +8,9 @@ import client.outils.TypeAgentClient;
 import client.outils.Log;
 import client.outils.Produit;
 import client.behaviours.Econome;
+import client.behaviours.Mefiant;
 import client.behaviours.Presse;
+import static client.outils.TypeAgentClient.Mefiant;
 import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.core.behaviours.*;
@@ -23,6 +25,8 @@ import common.*;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -36,8 +40,13 @@ public class ClientAgent extends SuperAgent {
     private ArrayList<String> lAgentsRepond;
     private int nbRechercheEnvoye = 0;
     private int nbReponseReçu = 0;
+    private int nbDemandeAvisProduitEnvoye = 0;
+    private int nbDemandeAvisProduitRecu = 0;
+    private int nbDemandeAvisRevendeurEnvoye = 0;
+    private int nbDemandeAvisRevendeurRecu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
+    private double limite =0;
     private int quantite = 0;
 
     // **************************************************************** //
@@ -59,6 +68,7 @@ public class ClientAgent extends SuperAgent {
         String reference = arguments[4].toString();
         quantite = Integer.parseInt(arguments[5].toString());
         String typeRecherche = arguments[6].toString();
+        limite = Double.parseDouble(arguments[7].toString());
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
 
@@ -73,6 +83,11 @@ public class ClientAgent extends SuperAgent {
         // écoute
         if (typeAgentClient.equals(TypeAgentClient.Presse)) {
             addBehaviour(new Presse(this));
+        }
+
+        // écoute
+        if (typeAgentClient.equals(TypeAgentClient.Mefiant)) {
+            addBehaviour(new Mefiant(this));
         }
 
         if (typeRecherche.equalsIgnoreCase("true")) {
@@ -90,6 +105,7 @@ public class ClientAgent extends SuperAgent {
             // agent du même nom puisse se lancer
             DFService.deregister(this);
             Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
+            doDelete();
         } catch (FIPAException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -228,6 +244,8 @@ public class ClientAgent extends SuperAgent {
         contenu.put("id", idProduit);
         demandeAvis.put("demandeAvis", contenu);
 
+        nbDemandeAvisProduitEnvoye++;
+
         // envoi du message + afficahge dans les logs
         envoyerMessage(this, ACLMessage.REQUEST, agent[0], demandeAvis.toString());
         Log.envoi(TypeAgent.EReputation, demandeAvis.toString());
@@ -246,6 +264,23 @@ public class ClientAgent extends SuperAgent {
         // envoi du message + afficahge dans les logs
         envoyerMessage(this, ACLMessage.REQUEST, aid, demandeDesirabilite.toString());
         Log.envoi(nomAgent(adresseAgentErep), demandeDesirabilite.toString());
+    }
+    
+    public void achatEffectue(String adresseAgentErep,Boolean reussi, int NbNegociation){
+        AID aid = new AID(adresseAgentErep);
+        
+        // construction de l'objet JSON à envoyé
+        JSONObject achatEffectue = new JSONObject();
+        JSONObject contenu = new JSONObject();
+        contenu.put("success",reussi );
+        contenu.put("comportement",typeAgentClient);
+        contenu.put("nbNegociations",NbNegociation);
+        achatEffectue.put("achatEffectue", contenu);
+        
+        // envoi du message + afficahge dans les logs
+        envoyerMessage(this, ACLMessage.INFORM, aid, achatEffectue.toString());
+        Log.envoi(nomAgent(adresseAgentErep), achatEffectue.toString());
+        
     }
 
     // **************************************************************** //
@@ -266,7 +301,6 @@ public class ClientAgent extends SuperAgent {
         Log.reception(nomAgent(message), message.getContent());
 
     }
-
 
     // **************************************************************** //
     //
@@ -290,16 +324,11 @@ public class ClientAgent extends SuperAgent {
         sb.append(jsonObj.get("prix").toString());
         sb.append("\n");
         sb.append("Date Livraison : ");
-        sb.append(jsonObj.get("date").toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dateStr = simpleDateFormat.format(new Date((Long.parseLong(jsonObj.get("date").toString()))*1000));
+        sb.append(dateStr);
 
         Log.achat(sb.toString());
-
-        // laisser avis
-        lproposition.clear();
-        lAgentsRepond.clear();
-
-        // arrêt de l'agent 
-        doDelete();
     }
 
     public void afficherRaison(JSONObject obj, ACLMessage message) {
@@ -310,7 +339,7 @@ public class ClientAgent extends SuperAgent {
         sb.append(obj.get("raison").toString());
         Log.commandeAnnulee(sb.toString());
     }
-    
+
     public void afficherRaisonInvalide(JSONObject obj, ACLMessage message) {
         StringBuilder sb = new StringBuilder("Commande impossible chez : ");
         sb.append(nomAgent(message));
@@ -319,7 +348,6 @@ public class ClientAgent extends SuperAgent {
         sb.append(obj.get("raison").toString());
         Log.affiche(sb.toString());
     }
-    
 
     // **************************************************************** //
     //
@@ -363,6 +391,8 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
+    
+
     /**
      * Méthode retournant le produit livré au plut tot parmi la liste des
      * propositions
@@ -370,17 +400,28 @@ public class ClientAgent extends SuperAgent {
      * @return le produit livrable en premier
      */
     public Produit plusTot() {
-            
-            Produit produitChoisi = lproposition.get(0);
-            for (Produit produit : lproposition) {
-                if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
-                    produitChoisi = produit;
-                }
+
+        Produit produitChoisi = lproposition.get(0);
+        for (Produit produit : lproposition) {
+            if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
+                produitChoisi = produit;
             }
+        }
         return produitChoisi;
     }
+
+    public Produit meilleurAvisProduit() {
+        Produit produitChoisi = lproposition.get(0);
+        for (Produit produit : lproposition) {
+            if (produit.getAvis() > produitChoisi.getAvis()) {
+                produitChoisi = produit;
+            }
+        }
+        return produitChoisi;
+    }
+
     
-    public void nettoyerProposition(Double prixMaximum){
+    public void nettoyerPropositionPrix(Double prixMaximum) {
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
             if (produit.getPrix() > prixMaximum) {
@@ -388,12 +429,12 @@ public class ClientAgent extends SuperAgent {
             }
         }
         // suppression des proposition ne correspondant pas aux critères
-        for(Produit produit : lisProduitASupprimer){
+        for (Produit produit : lisProduitASupprimer) {
             lproposition.remove(produit);
         }
     }
     
-    public void nettoyerProposition(int dateMaximum){
+    public void nettoyerPropositionDate(long dateMaximum){
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
             if (produit.getDateLivraison() > dateMaximum) {
@@ -401,34 +442,10 @@ public class ClientAgent extends SuperAgent {
             }
         }
         // suppression des proposition ne correspondant pas aux critères
-        for(Produit produit : lisProduitASupprimer){
+        for (Produit produit : lisProduitASupprimer) {
             lproposition.remove(produit);
         }
     }
-    
-    
-
-//    public boolean offreInteressante(Double prixMaximum) {
-//        boolean res = false;
-//
-//        for (Produit produit : lproposition) {
-//            if (produit.getPrix() < prixMaximum) {
-//                res = true;
-//            }
-//        }
-//        return res;
-//    }
-//
-//    public boolean offreInteressante(int dateMaximum) {
-//        boolean res = false;
-//
-//        for (Produit produit : lproposition) {
-//            if (produit.getDateLivraison() <= dateMaximum) {
-//                res = true;
-//            }
-//        }
-//        return res;
-//    }
 
     public void envoyerMessage(Agent client, int typeMessage, AID receiver, String message) {
         ACLMessage msg = new ACLMessage(typeMessage);
@@ -482,6 +499,14 @@ public class ClientAgent extends SuperAgent {
         this.typeAgentCible = typeAgentCible;
     }
 
+    public double getLimite() {
+        return limite;
+    }
+
+    public void setLimite(double prixMax) {
+        this.limite = limite;
+    }
+
     public int getNbReponseReçu() {
         return nbReponseReçu;
     }
@@ -490,13 +515,44 @@ public class ClientAgent extends SuperAgent {
         this.nbReponseReçu = nbReponseReçu;
     }
 
-
     public int getQuantite() {
         return quantite;
     }
 
     public void setQuantite(int quantite) {
         this.quantite = quantite;
+    }
+
+    public int getNbDemandeAvisProduitEnvoye() {
+        return nbDemandeAvisProduitEnvoye;
+    }
+
+    public void setNbDemandeAvisProduitEnvoye(int nbDemandeAvisProduitEnvoye) {
+        this.nbDemandeAvisProduitEnvoye = nbDemandeAvisProduitEnvoye;
+    }
+
+    public int getNbDemandeAvisProduitRecu() {
+        return nbDemandeAvisProduitRecu;
+    }
+
+    public void setNbDemandeAvisProduitRecu(int nbDemandeAvisProduitRecu) {
+        this.nbDemandeAvisProduitRecu = nbDemandeAvisProduitRecu;
+    }
+
+    public int getNbDemandeAvisRevendeurEnvoye() {
+        return nbDemandeAvisRevendeurEnvoye;
+    }
+
+    public void setNbDemandeAvisRevendeurEnvoye(int nbDemandeAvisRevendeurEnvoye) {
+        this.nbDemandeAvisRevendeurEnvoye = nbDemandeAvisRevendeurEnvoye;
+    }
+
+    public int getNbDemandeAvisRevendeurRecu() {
+        return nbDemandeAvisRevendeurRecu;
+    }
+
+    public void setNbDemandeAvisRevendeurRecu(int nbDemandeAvisRevendeurRecu) {
+        this.nbDemandeAvisRevendeurRecu = nbDemandeAvisRevendeurRecu;
     }
 
 }

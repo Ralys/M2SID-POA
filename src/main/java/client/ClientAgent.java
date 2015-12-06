@@ -179,6 +179,21 @@ public class ClientAgent extends SuperAgent {
         }
     }
 
+    /**
+     * Méthode permettant de tuer un agent client, une fois que celui-ci a fini son achat
+     */
+    public void takeDown2() {
+        try {
+            // on se retire du registre de service afin q'un autre
+            // agent du même nom puisse se lancer
+            DFService.deregister(this);
+            Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
+            doDelete();
+        } catch (FIPAException ex) {
+            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     // **************************************************************** //
     //
     //  Méthodes liées à l'envoi de message
@@ -287,7 +302,7 @@ public class ClientAgent extends SuperAgent {
         AID[] agent = findAgentsFromService(TypeAgent.EReputation);
 
         // avis aléatoire entre 0 et 5
-        double avis = (Math.random() * (5));
+        long avis = (long) (Math.random() * (5));
 
         // construction de l'objet JSON à envoyé
         JSONObject donneAvis = new JSONObject();
@@ -531,16 +546,34 @@ public class ClientAgent extends SuperAgent {
 
     /**
      * Méthode retournant le produit livré au plut tot parmi la liste des
-     * propositions
+     * propositions (vérifie si la quantité est bonne)
      *
      * @return le produit livrable en premier
      */
     public Produit plusTot() {
-
-        Produit produitChoisi = lproposition.get(0);
+        Produit produitChoisi = null;
+        // On instancie produitChoisi si une proposition possède la quantité suffisante
         for (Produit produit : lproposition) {
-            if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
+            if (produit.getQuantite() >= this.quantite) {
                 produitChoisi = produit;
+                break;
+            }
+        }
+        // Si il existe au moins un produit dont la quantité est suffisante
+        if (produitChoisi != null) {
+            for (Produit produit : lproposition) {
+                // On choisi en fonction de la date au plus tôt et de la quantité
+                if (produit.getDateLivraison() < produitChoisi.getDateLivraison() && produit.getQuantite() >= this.quantite) {
+                    produitChoisi = produit;
+                }
+            }
+        } else {
+            produitChoisi = lproposition.get(0);
+            for (Produit produit : lproposition) {
+                // On choisi en fonction de la date au plus tôt
+                if (produit.getDateLivraison() < produitChoisi.getDateLivraison() ) {
+                    produitChoisi = produit;
+                }
             }
         }
         return produitChoisi;

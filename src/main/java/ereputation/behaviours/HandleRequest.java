@@ -45,6 +45,11 @@ public class HandleRequest extends CyclicBehaviour {
         block();
     }
     
+    /**
+     * Méthode principale qui parse le contenu du message 
+     * pour déterminer quelle méthode doit être appelée
+     * @param message 
+     */
     private void traiterRequete(ACLMessage message) {
         String content = message.getContent();
         
@@ -69,6 +74,12 @@ public class HandleRequest extends CyclicBehaviour {
         }
     }
     
+    /**
+     * Gestion lorsqu'un agent demande un avis
+     * @param demandeAvis contenu du message
+     * @param agent l'émetteur du message
+     * @throws ParseException 
+     */
     private void demandeAvis(JSONObject demandeAvis, AID agent) throws ParseException {
         String nom = "";
         String type = demandeAvis.get("type").toString();
@@ -107,6 +118,12 @@ public class HandleRequest extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
     
+    /**
+     * Gestion lorsqu'un agent demande la désirabilité d'un produit
+     * @param demandeDesirabilite contenu du message
+     * @param agent émetteur du message
+     * @throws ParseException 
+     */
     private void demandeDesirabilite(JSONObject demandeDesirabilite, AID agent) throws ParseException {
         String type = demandeDesirabilite.get("type").toString(),
                ref = demandeDesirabilite.get("id").toString();
@@ -135,6 +152,13 @@ public class HandleRequest extends CyclicBehaviour {
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
     }
 
+    /**
+     * Gestion lorsque le vendeur souhaite savoir s'il est autorisé à effectuer 
+     * une période flottante de soldes
+     * @param demandeSolde contenu du message
+     * @param agent l'émetteur du message
+     * @throws ParseException 
+     */
     private void demandeSolde(JSONObject demandeSolde, AID agent) throws ParseException{
         
          String dateDebut = demandeSolde.get("date_debut").toString(),
@@ -176,6 +200,13 @@ public class HandleRequest extends CyclicBehaviour {
         
     }
     
+    /**
+     * Gestion lorsqu'un vendeur souhaite connaître les périodes flottantes de
+     * soldes de ses concurrents
+     * @param demandeSolde contenu du message
+     * @param agent l'émetteur du message
+     * @throws ParseException 
+     */
     private void demandeAllSolde(JSONObject demandeSolde, AID agent) throws ParseException{
         
          String non = demandeSolde.get("vendeur").toString();

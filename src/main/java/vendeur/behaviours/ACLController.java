@@ -27,7 +27,9 @@ public class ACLController extends CyclicBehaviour {
     @Override
     public void action() {
         VendeurAgent vendeur = (VendeurAgent) myAgent;
-        //vendeur.CheckStock();
+
+        vendeur.CheckStock();
+
         //MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage msg = myAgent.receive();
 
@@ -51,7 +53,7 @@ public class ACLController extends CyclicBehaviour {
                     vendeur.clientChoisis((JSONObject) object.get("jeChoisis"), msg.getSender());
                 }
                 else if(object.containsKey("jeNégocie")) {
-                    vendeur.clientNégocie((JSONObject) object.get("jeNégocie"), msg.getSender());
+                    vendeur.clientNegocie((JSONObject) object.get("jeNégocie"), msg.getSender());
                 }
                 else if (object.containsKey("jePropose")) {
                     if(object.get("jePropose") instanceof JSONObject)

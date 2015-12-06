@@ -28,6 +28,7 @@ public class VendeurAgent extends SuperAgent {
     private AID BDDAgent;
     private final JSONParser parser = new JSONParser();
     private boolean enSoldes;
+    private int nbNegoce = 0;
 
     @Override
     protected void setup() {
@@ -126,7 +127,18 @@ public class VendeurAgent extends SuperAgent {
                 Long qteProd = (Long) resultat.get("QTE");
 
                 // /!\ faire un truc avec le prix pour savoir a combien vendre /!\
-
+                final JSONObject demande = new JSONObject();
+                demande.put("type", "Produit");
+                demande.put("id", refProd);
+                ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
+                    put("demandeDesirabilite", demande);
+                }}).toJSONString(), sender, true);
+                JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
+                Integer desir = 0;
+                for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                    JSONObject retour = (JSONObject) it.next();
+                    desir = Integer.valueOf(retour.get("desirabilite") + "");
+                }
                 //int qte = 1;
                 if (qteProd > 0) { // il y a assez de stock
                     //proposer 3 prix a chaque fois
@@ -138,9 +150,9 @@ public class VendeurAgent extends SuperAgent {
                         retour.put("nomProduit", nomProd);
                         retour.put("quantite", quantite);
                         if (!enSoldes)
-                            retour.put("prix", Normale.getPrix(prixUProd, jour));
+                            retour.put("prix", Normale.getPrix(prixUProd, jour, desir));
                         else
-                            retour.put("prix", Soldes.getPrix(prixUProd, prixLProd, jour));
+                            retour.put("prix", Soldes.getPrix(prixUProd, prixLProd, jour, desir));
                         retour.put("date", Dates.addDays(jour).toString());
                         list.add(retour);
                     }
@@ -295,15 +307,86 @@ public class VendeurAgent extends SuperAgent {
                     put("commandeOk", jeChoisis);
                 }}).toJSONString(), sender, true);
                 System.out.println(a);
-                //Notifier agentERep !!!!!
+                //TODO Notifier agentERep !!!!!
                 //Erreur client jade.domain.FIPAAgentManagement.FailureException pour INFOS: (trinity) Message envoyé à Bob : {"jePropose":[{"date":"1449509503","idProduit":"2","prix":10.75,"nomProduit":"La ligne verte","quantite":1},{"date":"1449682303","idProduit":"2","prix":8.75,"nomProduit":"La ligne verte","quantite":1},{"date":"
             }
+            nbNegoce = 0;
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    public void clientNégocie(JSONObject jeNégocie, AID sender) {
-        
+    public void clientNegocie(final JSONObject jeNegocie, AID sender) throws ParseException {
+        String reference = jeNegocie.get("idProduit") + "";
+        Double prix = Double.valueOf(jeNegocie.get("prix") + "");
+        int max = 0;
+        if (enSoldes) {
+            max = 2;
+        } else {
+            max = 4;
+        }
+        if (nbNegoce < max) {
+            nbNegoce++;
+            ACLMessage messageBDD = sendMessage(ACLMessage.PROPOSE, QueryBuilder.rechercheRef(reference, getLocalName()), getBDDAgent(), true);
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+
+            for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                JSONObject resultat = (JSONObject) iterator.next();
+                String refProd = (String) resultat.get("REF_PRODUIT");
+                Double prixUProd = Double.valueOf(resultat.get("PRIX_UNITAIRE") + "");
+                Double prixLProd = Double.valueOf(resultat.get("PRIX_LIMITE") + "");
+
+                final JSONObject demande = new JSONObject();
+                demande.put("type", "Produit");
+                demande.put("id", refProd);
+                ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
+                    put("demandeDesirabilite", demande);
+                }}).toJSONString(), sender, true);
+
+                JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
+                for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                    JSONObject retour = (JSONObject) it.next();
+                    Integer desir = Integer.valueOf(retour.get("desirabilite") + "");
+
+                    Double newPrice;
+                    if (enSoldes) {
+                        newPrice = Normale.getNegoce(prix, nbNegoce, desir);
+                        if (newPrice < prixLProd) {
+                            newPrice = prixLProd;
+                            nbNegoce = max;
+                        }
+                    } else {
+                        newPrice = Normale.getNegoce(prix, nbNegoce, desir);
+                        if (newPrice < prixLProd - (max * 10 * prixUProd / 100)) {
+                            newPrice = prixLProd - (max * 10 * prixUProd / 100);
+                            nbNegoce = max;
+                        }
+                    }
+
+                    jeNegocie.replace("prix", newPrice);
+                    sendMessage(ACLMessage.PROPOSE, (new JSONObject() {{
+                        put("jeNegocie", jeNegocie);
+                    }}).toJSONString(), sender, true);
+                }
+            }
+        } else {
+            ACLMessage messageBDD = sendMessage(ACLMessage.PROPOSE, QueryBuilder.rechercheRef(reference, getLocalName()), getBDDAgent(), true);
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+
+            for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                JSONObject resultat = (JSONObject) iterator.next();
+                Double prixLProd = Double.valueOf(resultat.get("PRIX_LIMITE") + "");
+
+                if(!enSoldes && prix < prixLProd) {
+                    jeNegocie.put("raison", "je vend pas à perte !");
+                    sendMessage(ACLMessage.DISCONFIRM, (new JSONObject() {{
+                        put("commandePasOK", jeNegocie);
+                    }}).toJSONString(), sender, true);
+                }
+                else {
+                    clientChoisis(jeNegocie,sender);
+                }
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ package fournisseur.utils;
 import jade.core.behaviours.DataStore;
 import jade.util.leap.Set;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -21,13 +22,14 @@ public class StocksEtTransaction extends DataStore {
     }
 
     public Produit getProduitById(int idProduit) {
+        Long dateNow = new Date().getTime() / 1000;
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {
             Object o = it.next();
             if (o instanceof Produit) {
                 Produit p = (Produit) o;
-                if (p.getIdProduit() == idProduit) {
+                if (p.getIdProduit() == idProduit && p.getDateSortie() < dateNow) {
                     return p;
                 }
             }
@@ -52,8 +54,23 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public void removeTransaction(int idProduit, Long dateLivraison, String client) {
-        this.remove(this.getTransaction(idProduit, dateLivraison, client));
+    public boolean removeTransaction(int idProduit, Long dateLivraison, String client, double prix) {
+        Set cles = this.keySet();
+        Iterator it = cles.iterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (o instanceof Transaction) {
+                Transaction t = (Transaction) o;
+                if (t.getClient().compareTo(client) == 0
+                        && t.getIdProduit() == idProduit
+                        && t.getDateLivraison() == dateLivraison
+                        & t.getPrixPropose() == prix) {
+                    t.setAbouti(true);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void decrementerStock(int id, int qte) {
@@ -66,15 +83,36 @@ public class StocksEtTransaction extends DataStore {
     }
 
     public HashMap<Produit, Integer> listStock() {
+        ArrayList<Produit> listProduit = listProduit();
         HashMap<Produit, Integer> res = new HashMap<>();
+        for (Produit p : listProduit) {
+            res.put(p, (Integer) this.get(p));
+        }
+        return res;
+    }
+
+    public ArrayList<Produit> listProduit() {
+        Long dateNow = new Date().getTime() / 1000;
+        ArrayList<Produit> res = new ArrayList<>();
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {
             Object o = it.next();
             if (o instanceof Produit) {
                 Produit p = (Produit) o;
-                res.put(p, (Integer) this.get(p));
+                if (p.getDateSortie() < dateNow) {
+                    res.add(p);
+                }
             }
+        }
+        return res;
+    }
+
+    public int stockUse() {
+        ArrayList<Produit> listProduit = listProduit();
+        int res = 0;
+        for (Produit p : listProduit) {
+            res += (Integer) this.get(p);
         }
         return res;
     }

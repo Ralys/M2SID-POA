@@ -16,7 +16,7 @@ public class WaitRequestStrategie2 extends WaitRequest {
     @Override
     public double definirPrix(int idProduit, int quantite, int delai) {
         Produit p = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit);
-        double prixBase = p.getPrixdeBase();
+        double prixBase = p.getPrixDeBase();
         int stock = (int) getDataStore().get(p);
         double reducStock = stock / 100;
         double prix = (prixBase * (margeMax - reducStock)) + Livraison.prixLivraisonByDelai(delai);

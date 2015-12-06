@@ -13,20 +13,18 @@ public class WaitNegociationStrategie1 extends WaitNegociation {
 
     private double margeBase = 1.10;
     private double reductionQte = 0.01;
-    private double reductionNego = 0.01;
 
     @Override
     public double définirNouveauPrix(int idProduit, Long date, String sender, double prixDemande) {
         Transaction t = ((StocksEtTransaction) getDataStore()).getTransaction(idProduit, date, sender);
         t.incNbNego();
-        int delai = t.getDelai();
-        double prixBase = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit).getPrixDeBase();
-        int nbNego = Math.min(5, t.getNbNego());
-        double reducNego = reductionNego * nbNego;
-        double prix = ((prixBase * (margeBase - reducNego)) * (1 - (reductionQte * t.getQte()))) + Livraison.prixLivraisonByDelai(delai);
-        prix = Math.round(prix * 100) / 100;
-        t.setPrixPropose(prix);
-        return prix;
+        double prixDelai =Livraison.prixLivraisonByDelai(t.getDelai());
+        double prix = ((StocksEtTransaction) getDataStore()).getProduitById(idProduit).getPrixDeBase();
+        double prixNego = Math.max(prix, prixDemande - prixDelai);
+        double prixVente = prix + (margeBase * prix - prixNego);
+        prixVente = Math.round(prix * 100) / 100;
+        t.setPrixPropose(prixVente);
+        return prixVente + prixDelai;
     }
 
 }

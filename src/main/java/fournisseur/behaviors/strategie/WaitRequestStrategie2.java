@@ -20,7 +20,9 @@ public class WaitRequestStrategie2 extends WaitRequest {
         int stock = (int) getDataStore().get(p);
         double reducStock = stock / 100;
         double prix = (prixBase * (margeMax - reducStock)) + Livraison.prixLivraisonByDelai(delai);
-        return Math.round(prix * 100) / 100;
+        double prixDelai = Livraison.prixLivraisonByDelai(delai);
+        prix = Math.ceil(prix * 100) / 100;
+        return prix + prixDelai;
     }
 
 }

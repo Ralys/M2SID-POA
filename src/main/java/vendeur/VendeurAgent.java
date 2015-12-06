@@ -152,12 +152,10 @@ public class VendeurAgent extends SuperAgent {
                 ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
                     put("demandeDesirabilite", demande);
                 }}).toJSONString(), getERepAgent(), true);
-                JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
-                Double desir = 0.0;
-                for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
-                    JSONObject retour = (JSONObject) it.next();
-                    desir = Double.valueOf(retour.get("desirabilite") + "");
-                }
+                JSONObject resultats = (JSONObject) this.parser.parse(desirabilite.getContent());
+                Double desir = 5.0;
+                if (!(resultats.get("desirabilite") + "").contains("null"))
+                    desir = Double.valueOf(resultats.get("desirabilite") + "");
                 //int qte = 1;
                 if (qteProd > 0) { // il y a assez de stock
                     //proposer 3 prix a chaque fois
@@ -219,9 +217,6 @@ public class VendeurAgent extends SuperAgent {
         try {
             resultatsStockProducts = (JSONArray) this.parser.parse(stockProducts.getContent());
 
-            JSONObject reponse = new JSONObject();
-            JSONArray list = new JSONArray();
-
             for (Iterator iterator = resultatsStockProducts.iterator(); iterator.hasNext(); ) {
                 JSONObject resultat = (JSONObject) iterator.next();
 
@@ -240,12 +235,16 @@ public class VendeurAgent extends SuperAgent {
                         put("demandeDesirabilite", demande);
                     }}).toJSONString(), getERepAgent(), true);
 
-                    JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
-                    for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
-                        JSONObject retour = (JSONObject) it.next();
-                        Double desir = Double.valueOf(retour.get("desirabilite") + "");
-
+                    JSONObject resultats = (JSONObject) this.parser.parse(desirabilite.getContent());
+                    Double desir = 5.0;
+                    if (!(resultats.get("desirabilite") + "").contains("null")) {
+                        desir = Double.valueOf(resultats.get("desirabilite") + "");
+                        int stockCible = (int) (3*desir-QTE);
+                        if(stockCible > 0)
+                            prendreCommande(REF_PRODUIT, stockCible);
                     }
+                    else
+                        prendreCommande(REF_PRODUIT, 5);
                 }
             }
 
@@ -375,31 +374,30 @@ public class VendeurAgent extends SuperAgent {
                     put("demandeDesirabilite", demande);
                 }}).toJSONString(), getERepAgent(), true);
 
-                JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
-                for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
-                    JSONObject retour = (JSONObject) it.next();
-                    Double desir = Double.valueOf(retour.get("desirabilite") + "");
-
-                    Double newPrice;
-                    if (enSoldes) {
-                        newPrice = Normale.getNegoce(prix, nbNegoce, desir);
-                        if (newPrice < prixLProd) {
-                            newPrice = prixLProd;
-                            nbNegoce = max;
-                        }
-                    } else {
-                        newPrice = Normale.getNegoce(prix, nbNegoce, desir);
-                        if (newPrice < prixLProd - (max * 10 * prixUProd / 100)) {
-                            newPrice = prixLProd - (max * 10 * prixUProd / 100);
-                            nbNegoce = max;
-                        }
-                    }
-
-                    jeNegocie.replace("prix", newPrice);
-                    sendMessage(ACLMessage.PROPOSE, (new JSONObject() {{
-                        put("jeNegocie", jeNegocie);
-                    }}).toJSONString(), sender, true);
+                JSONObject resultats = (JSONObject) this.parser.parse(desirabilite.getContent());
+                Double desir = 5.0;
+                if (!(resultats.get("desirabilite") + "").contains("null")) {
+                    desir = Double.valueOf(resultats.get("desirabilite") + "");
                 }
+                Double newPrice;
+                if (enSoldes) {
+                    newPrice = Normale.getNegoce(prix, nbNegoce, desir);
+                    if (newPrice < prixLProd) {
+                        newPrice = prixLProd;
+                        nbNegoce = max;
+                    }
+                } else {
+                    newPrice = Normale.getNegoce(prix, nbNegoce, desir);
+                    if (newPrice < prixLProd - (max * 10 * prixUProd / 100)) {
+                        newPrice = prixLProd - (max * 10 * prixUProd / 100);
+                        nbNegoce = max;
+                    }
+                }
+
+                jeNegocie.replace("prix", newPrice);
+                sendMessage(ACLMessage.PROPOSE, (new JSONObject() {{
+                    put("jeNegocie", jeNegocie);
+                }}).toJSONString(), sender, true);
             }
         } else {
             ACLMessage messageBDD = sendMessage(ACLMessage.PROPOSE, QueryBuilder.rechercheRef(reference, getLocalName()), getBDDAgent(), true);
@@ -409,14 +407,13 @@ public class VendeurAgent extends SuperAgent {
                 JSONObject resultat = (JSONObject) iterator.next();
                 Double prixLProd = Double.valueOf(resultat.get("PRIX_LIMITE") + "");
 
-                if(!enSoldes && prix < prixLProd) {
+                if (!enSoldes && prix < prixLProd) {
                     jeNegocie.put("raison", "je vend pas à perte !");
                     sendMessage(ACLMessage.DISCONFIRM, (new JSONObject() {{
                         put("commandePasOK", jeNegocie);
                     }}).toJSONString(), sender, true);
-                }
-                else {
-                    clientChoisis(jeNegocie,sender);
+                } else {
+                    clientChoisis(jeNegocie, sender);
                 }
             }
         }

@@ -210,7 +210,8 @@ INSERT INTO `produit` (`REF_PRODUIT`, `ID_CATEGORIE`, `NOM_PRODUIT`,`DATE_SORTIE
   (49, 5, 'Marina Kaye : Fearless',strftime('%s', 'now')+50,5.5),
   (50, 5, 'Etienne Daho : L homme qui marche',strftime('%s', 'now')+70,5.5);
 
-
+INSERT INTO `solde` (`ID`,`VENDEUR`,`DATE_START`,`DATE_END`) VALUES
+  (1, 'trinity', strftime('%s', 'now'), strftime('%s', 'now')+86400*3);
 
 INSERT INTO `stock` (`REF_PRODUIT`,`VENDEUR_NAME`,`PRIX_UNITAIRE`,`PRIX_LIMITE`,`QTE`) VALUES
   (1, 'w',7,5.5,3),

@@ -25,8 +25,8 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
 
-    public static String recherche(String recherche, String typeProduit) {
-        String sql = "SELECT PRODUIT.REF_PRODUIT "
+    public static String recherche(String recherche, String typeProduit, String vendeur) {
+        String sql = "SELECT PRODUIT.REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, PRIX_LIMITE, QTE "
                 + "FROM PRODUIT, STOCK, CATEGORIE, POSSEDE, TAGS "
                 + "WHERE PRODUIT.ID_CATEGORIE = CATEGORIE.ID_CATEGORIE "
                 + "AND PRODUIT.REF_PRODUIT = POSSEDE.REF_PRODUIT "
@@ -34,7 +34,8 @@ public class QueryBuilder {
                 + "AND POSSEDE.ID_TAG = TAGS.ID_TAG "
                 + "AND NOM_CATEGORIE LIKE \"" + typeProduit + "\" "
                 + "AND (LABEL_TAG LIKE \"%" + recherche + "%\" "
-                + "OR NOM_PRODUIT LIKE \"%" + recherche + "%\") ";
+                + "OR NOM_PRODUIT LIKE \"%" + recherche + "%\") "
+                + "AND STOCK.VENDEUR_NAME = \"" + vendeur + "\"";
         System.out.println(sql);
         return JSONRequest("select", sql);
     }
@@ -79,5 +80,11 @@ public class QueryBuilder {
         String sql = "UPDATE STOCK SET QTE = " + quantite + ", PRIX_UNITAIRE = " + prix + " WHERE VENDEUR_NAME = \"" + localName + "\" AND REF_PRODUIT = " + idProduit;
 
         return JSONRequest("insert", sql);
+    }
+
+    public static String isSoldes(String localName, Long dateJour) {
+        String sql = "SELECT * FROM SOLDE WHERE VENDEUR LIKE \"" + localName + "\" AND DATE_START <= " + dateJour + " AND DATE_END >= " + dateJour;
+
+        return JSONRequest("select", sql);
     }
 }

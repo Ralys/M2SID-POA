@@ -21,8 +21,9 @@
                   <TextField fx:id="port" layoutX="170.0" layoutY="67.0" />
                   <Label layoutX="383.0" layoutY="32.0" text="Nom Agent :" />
                   <TextField fx:id="nomAgent" layoutX="479.0" layoutY="27.0" />
-                <ComboBox fx:id="choixClient" layoutX="718.0" layoutY="23.0" prefWidth="150.0" promptText="Type de client" />
-                <ComboBox fx:id="choixVendeur" layoutX="718.0" layoutY="75.0" prefHeight="25.0" prefWidth="205.0" promptText="Cible" />
+                <ComboBox fx:id="choixClient" layoutX="718.0" layoutY="23.0" onAction="#selectionType" prefWidth="150.0" promptText="Type de client" />
+                <ComboBox fx:id="choixVendeur" layoutX="381.0" layoutY="65.0" prefHeight="25.0" prefWidth="205.0" promptText="Cible" />
+                  <TextField fx:id="limite" layoutX="718.0" layoutY="67.0" visible="false" />
              </children>
           </AnchorPane>
         <AnchorPane maxWidth="1000.0" minHeight="0.0" minWidth="1000.0" prefHeight="185.0" prefWidth="1000.0">

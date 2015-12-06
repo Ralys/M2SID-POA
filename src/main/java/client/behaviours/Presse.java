@@ -13,6 +13,9 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,9 +30,8 @@ import org.json.simple.parser.JSONParser;
 public class Presse extends CyclicBehaviour {
 
     private final ClientAgent presse;
-    private final double facteurPrixMax = 1.2;
     // 1J
-    private final int facteurDateMax = 86400000;
+    private final long timeStamp = 86400000;
 
     public Presse(Agent agent) {
         this.presse = (ClientAgent) agent;
@@ -57,11 +59,14 @@ public class Presse extends CyclicBehaviour {
                 presse.setNbReponseReçu(presse.getNbReponseReçu() + 1);
 
                 if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
+
                     // on nettoye les propositions en fonction du critère du temps max
-                    presse.nettoyerPropositionPrix(facteurPrixMax);
+                    Long dateJour = new Date().getTime() / 1000;
+                    long result = (long)presse.getLimite()*timeStamp+dateJour;
+                    presse.nettoyerPropositionDate(result);
                     if (presse.getLproposition().size() > 0) {
                         // on nettoye les propositions en fonction du critère du temps max
-                        presse.nettoyerPropositionPrix(facteurPrixMax);
+                        presse.nettoyerPropositionDate(result);
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Log.arretRecherche();

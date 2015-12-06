@@ -25,6 +25,8 @@ import common.*;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -44,6 +46,7 @@ public class ClientAgent extends SuperAgent {
     private int nbDemandeAvisRevendeurRecu = 0;
     private String typeAgentClient;
     private String typeAgentCible;
+    private double limite =0;
     private int quantite = 0;
 
     // **************************************************************** //
@@ -65,6 +68,7 @@ public class ClientAgent extends SuperAgent {
         String reference = arguments[4].toString();
         quantite = Integer.parseInt(arguments[5].toString());
         String typeRecherche = arguments[6].toString();
+        limite = Double.parseDouble(arguments[7].toString());
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
 
@@ -320,7 +324,9 @@ public class ClientAgent extends SuperAgent {
         sb.append(jsonObj.get("prix").toString());
         sb.append("\n");
         sb.append("Date Livraison : ");
-        sb.append(jsonObj.get("date").toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String dateStr = simpleDateFormat.format(new Date((Long.parseLong(jsonObj.get("date").toString()))*1000));
+        sb.append(dateStr);
 
         Log.achat(sb.toString());
     }
@@ -414,6 +420,7 @@ public class ClientAgent extends SuperAgent {
         return produitChoisi;
     }
 
+    
     public void nettoyerPropositionPrix(Double prixMaximum) {
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
@@ -426,8 +433,8 @@ public class ClientAgent extends SuperAgent {
             lproposition.remove(produit);
         }
     }
-
-    public void nettoyerPropositionDate(int dateMaximum) {
+    
+    public void nettoyerPropositionDate(long dateMaximum){
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : lproposition) {
             if (produit.getDateLivraison() > dateMaximum) {
@@ -490,6 +497,14 @@ public class ClientAgent extends SuperAgent {
 
     public void setTypeAgentCible(String typeAgentCible) {
         this.typeAgentCible = typeAgentCible;
+    }
+
+    public double getLimite() {
+        return limite;
+    }
+
+    public void setLimite(double prixMax) {
+        this.limite = limite;
     }
 
     public int getNbReponseReçu() {

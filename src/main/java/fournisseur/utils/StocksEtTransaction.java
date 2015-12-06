@@ -13,6 +13,8 @@ import java.util.Iterator;
  */
 public class StocksEtTransaction extends DataStore {
 
+    private String tresorerie = "Tresorerie";
+
     public boolean verifierStock(int idProduit, int qte) {
         int qteDispo = (int) this.get(getProduitById(idProduit));
         if (qteDispo < qte) {
@@ -117,11 +119,15 @@ public class StocksEtTransaction extends DataStore {
     }
 
     public double getPesos() {
-        return (double) this.get("Tresorerie");
+        return (double) this.get(tresorerie);
     }
 
     public void changePesos(double valeur) {
-        this.put("Tresorerie", getPesos() + valeur);
+        this.put(tresorerie, getPesos() + valeur);
+    }
+
+    public void initPesos(double valeur) {
+        this.put(tresorerie, valeur);
     }
 
     public ArrayList<Produit> rechercheProduit(String motRecherche, String typeProduit, int qte) {

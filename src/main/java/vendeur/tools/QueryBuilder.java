@@ -17,12 +17,11 @@ public class QueryBuilder {
         return request.toJSONString();
     }
 
-    public static String getStock(String type, String vendeur, String ref_prod) {
-        String sql = "SELECT REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, QTE "
-                + "FROM STOCK, PRODUIT "
+    public static String getStock(String vendeur, String ref_prod) {
+        String sql = "SELECT QTE "
+                + "FROM STOCK "
                 + "WHERE STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT "
-                + "AND VENDEUR_NAME = \"vendeur_\" "+ vendeur + "\" "
-                + "AND REF_PRODUIT LIKE \"" + ref_prod + "\"";
+                + "AND VENDEUR_NAME = \""+ vendeur + "\" ";
         return JSONRequest("select", sql);
     }
 
@@ -37,10 +36,12 @@ public class QueryBuilder {
         return JSONRequest("select", sql);
     }
 
-    public static String rechercheRef(String reference) {
-        String sql = "SELECT REF_PRODUIT, NOM_PRODUIT, DATE_SORTIE, PRIX_CREATION "
-                + "FROM PRODUIT "
-                + "WHERE PRODUIT.REF_PRODUIT = " +reference;
+    public static String rechercheRef(String reference, String vendeur) {
+        String sql = "SELECT STOCK.REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, PRIX_LIMITE, QTE "
+                + "FROM PRODUIT,STOCK "
+                + "WHERE PRODUIT.REF_PRODUIT = \"" +reference+"\" "
+                + "AND STOCK.REF_PRODUIT = \""+reference+"\" "
+                + "AND STOCK.VENDEUR_NAME = \""+ vendeur +"\"";
         System.out.println(sql);
         return JSONRequest("select", sql);
     }

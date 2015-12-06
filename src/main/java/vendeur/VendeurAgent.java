@@ -16,6 +16,7 @@ import vendeur.tools.QueryBuilder;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import vendeur.tools.Dates;
 
 
 /**
@@ -98,7 +99,7 @@ public class VendeurAgent extends SuperAgent {
     public void ClientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
 
         String ref = (typeRech.compareTo("ChercheRef") == 0) ? jsonObject.get("reference").toString() : "";
-        String quantite = jsonObject.get("quantite").toString();
+        int quantite = Integer.parseInt(jsonObject.get("quantite").toString());
         String recherche = (typeRech.compareTo("Cherche") == 0) ? jsonObject.get("recherche").toString() : "";
         String typeProduit = (typeRech.compareTo("Cherche") == 0) ? jsonObject.get("typeProduit").toString() : "";
 
@@ -107,27 +108,131 @@ public class VendeurAgent extends SuperAgent {
             messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit), getBDDAgent(), true);
 
         } else {
-            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref), getBDDAgent(), true);
+            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref,getLocalName()), getBDDAgent(), true);
         }
 
         System.out.println(messageBDD.toString());
 
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
-
         JSONObject reponse = new JSONObject();
         JSONArray list = new JSONArray();
-        for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext();) {
-            JSONObject resultat = (JSONObject) iterator.next();
-            JSONObject retourRecherche = jsonObject;
-            retourRecherche.put("ref_produit", resultat.get("REF_PRODUIT"));
-            retourRecherche.put("nom_produit", resultat.get("NOM_PRODUIT"));
-            retourRecherche.put("prix", resultat.get("PRIX_CREATION"));
 
-            //verifier la quantite
-            retourRecherche.put("qte", resultat.get("QTE"));
-            list.add(retourRecherche);
+        if (!resultatsBDD.isEmpty()) { // si le produit existe
+            if (typeRech.compareTo("ChercheRef") == 0) { //qu'un seul resultat
+                for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext();) { //iterator sur chaque objet
+                    JSONObject resultat = (JSONObject) iterator.next();
+                    String refProd = (String) resultat.get("REF_PRODUIT");
+                    String nomProd = (String) resultat.get("NOM_PRODUIT");
+                    Double prixUProd = (Double) resultat.get("PRIX_UNITAIRE");
+                    Double prixLProd = (Double) resultat.get("PRIX_LIMITE");
+                    Long qteProd = (Long) resultat.get("QTE");
+
+                    JSONObject retourRecherche1 = new JSONObject();
+                    JSONObject retourRecherche2 = new JSONObject();
+                    JSONObject retourRecherche3 = new JSONObject();
+
+                    // /!\ faire un truc avec le prix pour savoir a combien vendre /!\
+
+                    //int qte = 1;
+                    if (qteProd > 0) { // il y a assez de stock
+                        //proposer 3 prix a chaque fois
+
+                        //prix avec 1 jour de livraison
+                        retourRecherche1.put("idProduit", refProd);
+                        retourRecherche1.put("nomProduit", nomProd);
+                        retourRecherche1.put("quantite", quantite);
+                        retourRecherche1.put("prix", prixLProd);
+                        retourRecherche1.put("date", Dates.addDays(1).toString());
+                        list.add(retourRecherche1);
+
+                        //prix avec 3 jours de livraison
+                        retourRecherche2.put("idProduit", refProd);
+                        retourRecherche2.put("nomProduit", nomProd);
+                        retourRecherche2.put("quantite", quantite);
+                        retourRecherche2.put("prix", prixLProd);
+                        retourRecherche2.put("date", Dates.addDays(3).toString());
+                        list.add(retourRecherche2);
+
+                        //prix avec 10 jours de livraison
+                        retourRecherche3.put("idProduit", refProd);
+                        retourRecherche3.put("nomProduit", nomProd);
+                        retourRecherche3.put("quantite", quantite);
+                        retourRecherche3.put("prix", prixLProd);
+                        retourRecherche3.put("date", Dates.addDays(10).toString());
+
+                        list.add(retourRecherche3);
+                        if (qteProd >= quantite) {
+                            reponse.put("jePropose", list);
+                        } else {
+                            reponse.put("quantiteInsuffisante", list);
+
+                        }
+                    } else if (qteProd == 0) {
+                        retourRecherche1.put("idProduit", resultat.get("REF_PRODUIT"));
+                        retourRecherche1.put("raison", "quantite a zero");
+                        reponse.put("requeteInvalide", retourRecherche1);
+                    }
+                }
+            } else { //plusieurs resultats
+                for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext();) { //iterator sur chaque objet
+                    JSONObject resultat = (JSONObject) iterator.next();
+                    String refProd = (String) resultat.get("REF_PRODUIT");
+                    String nomProd = (String) resultat.get("NOM_PRODUIT");
+                    Double prixUProd = (Double) resultat.get("PRIX_UNITAIRE");
+                    Double prixLProd = (Double) resultat.get("PRIX_LIMITE");
+                    Long qteProd = (Long) resultat.get("QTE");
+
+                    JSONObject retourRecherche1 = new JSONObject();
+                    JSONObject retourRecherche2 = new JSONObject();
+                    JSONObject retourRecherche3 = new JSONObject();
+
+                    //faire un truc avec le prix pour savoir a combien vendre
+
+                    //int qte = 1;
+                    if (qteProd > 0) { // il y a assez de stock
+                        //proposer 3 prix a chaque fois
+
+                        //prix avec 1 jour de livraison
+                        retourRecherche1.put("idProduit", refProd);
+                        retourRecherche1.put("nomProduit", nomProd);
+                        retourRecherche1.put("quantite", quantite);
+                        retourRecherche1.put("prix", prixLProd);
+                        retourRecherche1.put("date", Dates.addDays(1).toString());
+                        list.add(retourRecherche1);
+
+                        //prix avec 3 jours de livraison
+                        retourRecherche2.put("idProduit", refProd);
+                        retourRecherche2.put("nomProduit", nomProd);
+                        retourRecherche2.put("quantite", quantite);
+                        retourRecherche2.put("prix", prixLProd);
+                        retourRecherche2.put("date", Dates.addDays(3).toString());
+                        list.add(retourRecherche2);
+
+                        //prix avec 10 jours de livraison
+                        retourRecherche3.put("idProduit", refProd);
+                        retourRecherche3.put("nomProduit", nomProd);
+                        retourRecherche3.put("quantite", quantite);
+                        retourRecherche3.put("prix", prixLProd);
+                        retourRecherche3.put("date", Dates.addDays(10).toString());
+
+                        list.add(retourRecherche3);
+                        if (qteProd >= quantite) {
+                            reponse.put("jePropose", list);
+                        } else {
+                            reponse.put("quantiteInsuffisante", list);
+
+                        }
+                    } else if (qteProd == 0) {
+                        retourRecherche1.put("idProduit", resultat.get("REF_PRODUIT"));
+                        retourRecherche1.put("raison", "quantite a zero");
+                        reponse.put("requeteInvalide", retourRecherche1);
+                    }
+                }
+            }
+
+        } else { // si le produit n'existe pas
+            //requete invalide, raison n'existe pas
         }
-        reponse.put("jePropose", list);
 
         String reponseJSON = reponse.toJSONString();
 

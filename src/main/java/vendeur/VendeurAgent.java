@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import vendeur.behaviours.ACLController;
+import vendeur.behaviours.strategies.Normale;
+import vendeur.behaviours.strategies.Soldes;
 import vendeur.tools.QueryBuilder;
 
 import java.util.Iterator;
@@ -25,6 +27,7 @@ public class VendeurAgent extends SuperAgent {
 
     private AID BDDAgent;
     private final JSONParser parser = new JSONParser();
+    private boolean enSoldes;
 
     @Override
     protected void setup() {
@@ -87,7 +90,7 @@ public class VendeurAgent extends SuperAgent {
         for (AID f : agent) {
             String message = jeChercheReference.toString();
             sendMessage(ACLMessage.REQUEST, message, f, false);
-            Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à " + f.getLocalName() + " : " + message);
+            Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message envoyé à " + f.getLocalName() + " : " + message);
         }
     }
 
@@ -99,18 +102,22 @@ public class VendeurAgent extends SuperAgent {
         String typeProduit = (typeRech.compareTo("Cherche") == 0) ? jsonObject.get("typeProduit").toString() : "";
 
         ACLMessage messageBDD;
+        messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.isSoldes(getLocalName(), Dates.dateJour), getBDDAgent(), true);
+        enSoldes = !messageBDD.getContent().isEmpty();
+
         if (typeRech.compareTo("Cherche") == 0) {
-            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit), getBDDAgent(), true);
+            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit, getLocalName()), getBDDAgent(), true);
 
         } else {
             messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref, getLocalName()), getBDDAgent(), true);
         }
 
-        System.out.println(messageBDD.toString());
-
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject reponse = new JSONObject();
         JSONArray list = new JSONArray();
+
+        System.out.println(enSoldes);
+        System.out.println(resultatsBDD);
 
         if (!resultatsBDD.isEmpty()) { // si le produit existe
             for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
@@ -128,28 +135,30 @@ public class VendeurAgent extends SuperAgent {
                     //proposer 3 prix a chaque fois
 
                     int[] range = {1, 3, 10}; //jour de livraison
-                    for (int i : range) {
+                    for (int jour : range) {
                         JSONObject retour = new JSONObject();
                         retour.put("idProduit", refProd);
                         retour.put("nomProduit", nomProd);
                         retour.put("quantite", quantite);
-                        retour.put("prix", prixLProd);
-                        retour.put("date", Dates.addDays(i).toString());
+                        if(!enSoldes)
+                            retour.put("prix", Normale.getPrix(prixUProd, jour));
+                        else
+                            retour.put("prix", Soldes.getPrix(prixUProd, prixLProd, jour));
+                        retour.put("date", Dates.addDays(jour).toString());
                         list.add(retour);
                     }
                     if (qteProd >= quantite) {
                         reponse.put("jePropose", list);
                     } else {
                         reponse.put("quantiteInsuffisante", list);
-
                     }
+                    reponse.put("jePropose", list);
                 } else if (qteProd == 0) {
                     JSONObject retour = new JSONObject();
                     retour.put("idProduit", resultat.get("REF_PRODUIT"));
                     retour.put("raison", "quantite a zero");
                     reponse.put("requeteInvalide", retour);
                 }
-                reponse.put("jePropose", list);
             }
 
         } else { // si le produit n'existe pas
@@ -169,7 +178,7 @@ public class VendeurAgent extends SuperAgent {
         // envoi de la réponse
         sendMessage(ACLMessage.PROPOSE, reponseJSON, sender);
 
-        Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à " + sender.getLocalName() + " : " + reponseJSON);
+        Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message envoyé à " + sender.getLocalName() + " : " + reponseJSON);
     }
 
     public void CheckStock() {
@@ -232,35 +241,34 @@ public class VendeurAgent extends SuperAgent {
         JSONObject jeChercheReference = new JSONObject();
         JSONObject elementRecherche = new JSONObject();
 
-        elementRecherche.put("idProduit", jePropose.get("idProduit")+"");
-        elementRecherche.put("nomProduit", jePropose.get("nomProduit")+"");
-        elementRecherche.put("prix", jePropose.get("prix")+"");
-        elementRecherche.put("quantite", jePropose.get("quantite")+"");
-        elementRecherche.put("date", jePropose.get("date")+"");
+        elementRecherche.put("idProduit", jePropose.get("idProduit") + "");
+        elementRecherche.put("nomProduit", jePropose.get("nomProduit") + "");
+        elementRecherche.put("prix", jePropose.get("prix") + "");
+        elementRecherche.put("quantite", jePropose.get("quantite") + "");
+        elementRecherche.put("date", jePropose.get("date") + "");
 
         jeChercheReference.put("jeChoisis", elementRecherche);
 
-        Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à "+sender.getLocalName()+" : "+jeChercheReference.toJSONString());
+        Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message envoyé à " + sender.getLocalName() + " : " + jeChercheReference.toJSONString());
 
         sendMessage(ACLMessage.ACCEPT_PROPOSAL, jeChercheReference.toJSONString(), sender, false);
     }
 
 
     public void ajoutStock(JSONObject commandeOK, AID sender) {
-        String idProduit =  commandeOK.get("idProduit")+"";
-        Integer quantite =  Integer.valueOf(commandeOK.get("quantite")+"");
-        Float prix = Double.valueOf(commandeOK.get("prix")+"").floatValue() ;
+        String idProduit = commandeOK.get("idProduit") + "";
+        Integer quantite = Integer.valueOf(commandeOK.get("quantite") + "");
+        Float prix = Double.valueOf(commandeOK.get("prix") + "").floatValue();
 
         ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(idProduit, sender.getLocalName()), getBDDAgent(), true);
 
 
         try {
             JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
-            if(resultatsBDD.size() == 0) {
+            if (resultatsBDD.size() == 0) {
                 sendMessage(ACLMessage.INFORM, QueryBuilder.newStock(idProduit, quantite, prix, sender.getLocalName()), getBDDAgent(), true);
-            }
-            else {
-                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size()+quantite, prix, sender.getLocalName()), getBDDAgent(), true);
+            } else {
+                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size() + quantite, prix, sender.getLocalName()), getBDDAgent(), true);
             }
 
         } catch (ParseException e) {

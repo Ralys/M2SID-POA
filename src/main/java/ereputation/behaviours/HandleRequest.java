@@ -169,6 +169,11 @@ public class HandleRequest extends CyclicBehaviour {
         Logger.getLogger(myAgent.getLocalName()).log(Level.INFO, envoiMessage);
         TypeLog.logEreputation.Info(myAgent.getLocalName()+":"+envoiMessage);
         
+        //ENREGITREMENT DE LA DEMANDE DE SOLE
+        if((nbJourConsomme+nbJourdemande)<=10){
+            erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.insertSolde(agent.getName(), dateDebut, dateFin), erep.getBDDAgent(), true);
+        }
+        
     }
     
     private void demandeAllSolde(JSONObject demandeSolde, AID agent) throws ParseException{

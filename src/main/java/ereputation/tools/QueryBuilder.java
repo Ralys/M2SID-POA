@@ -53,6 +53,11 @@ public class QueryBuilder {
         String sql = "INSERT INTO NEGOCIATION(COMPORTEMENT_CLIENT, SUCCESS, NB_NEGOCIATIONS) VALUES(\"" + comportement + "\"," + (success ? 1 : 0) + "," +  nb_negociations + ")";
         return JSONRequest("insert", sql);
     }
+    
+    public static String insertSolde(String vendeur, String dateDebut, String dateFin) {
+        String sql = "INSERT INTO SOLDES(VENDEUR, DATE_START, DATE_END) VALUES(\"" + vendeur + "\"," + dateDebut+ "," +  dateFin + ")";
+        return JSONRequest("insert", sql);
+    }
             
     private static String JSONRequest(String typeRequest, String sql) {
         JSONObject request = new JSONObject();

@@ -94,9 +94,13 @@ public class QueryBuilder {
     }
 
     public static String vente(String reference, Integer quantite, Float prix, long date, String vendeur, String acheteur) {
-        String sql = "INSERT INTO VENTE(REF_PRODUIT, PRIX, QTE, PROVIDER, ACHETEUR, DATE_VENTE) VALUES("+reference+", "+prix+", "+quantite+", "+vendeur+", "+acheteur+", "+date+")";
+        String sql = "INSERT INTO VENTE(REF_PRODUIT, PRIX, QTE, PROVIDER, ACHETEUR, DATE_VENTE) VALUES("+reference+", "+prix+", "+quantite+", \""+vendeur+"\", \""+acheteur+"\", "+date+")";
 
         return JSONRequest("insert", sql);
     }
 
+    public static String getID() {
+        String sql = "SELECT last_insert_rowid() AS idProduit";
+        return JSONRequest("select", sql);
+    }
 }

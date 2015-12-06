@@ -76,6 +76,11 @@ public class VendeurAgent extends SuperAgent {
         return null;
     }
 
+    public ACLMessage sendMessageAndGetId(int typeMessage, String contenu, AID destinataire) {
+        this.sendMessage(typeMessage, contenu, destinataire, false);
+        return sendMessage(typeMessage, QueryBuilder.getID(), destinataire, true);
+    }
+
     public ACLMessage sendMessage(int typeMessage, String contenu, AID destinataire) {
         return this.sendMessage(typeMessage, contenu, destinataire, false);
     }
@@ -239,11 +244,10 @@ public class VendeurAgent extends SuperAgent {
                     Double desir = 5.0;
                     if (!(resultats.get("desirabilite") + "").contains("null")) {
                         desir = Double.valueOf(resultats.get("desirabilite") + "");
-                        int stockCible = (int) (3*desir-QTE);
-                        if(stockCible > 0)
+                        int stockCible = (int) (3 * desir - QTE);
+                        if (stockCible > 0)
                             prendreCommande(REF_PRODUIT, stockCible);
-                    }
-                    else
+                    } else
                         prendreCommande(REF_PRODUIT, 5);
                 }
             }
@@ -322,7 +326,7 @@ public class VendeurAgent extends SuperAgent {
         Float prix = Double.valueOf(jeChoisis.get("prix") + "").floatValue();
         long date = Long.valueOf(jeChoisis.get("date") + "");
 
-        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(reference, sender.getLocalName()), getBDDAgent(), true);
+        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(reference, getLocalName()), getBDDAgent(), true);
 
         try {
             JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
@@ -330,16 +334,18 @@ public class VendeurAgent extends SuperAgent {
                 jeChoisis.put("raison", "stock insuffisant");
                 sendMessage(ACLMessage.DISCONFIRM, (new JSONObject() {{
                     put("commandePasOK", jeChoisis);
-                }}).toJSONString(), sender, true);
+                }}).toJSONString(), sender);
             } else {
-                ACLMessage a = sendMessage(ACLMessage.REQUEST, QueryBuilder.vente(reference, quantite, prix, date, getLocalName(), sender.getLocalName()), getBDDAgent(), true);
-                sendMessage(ACLMessage.REQUEST, QueryBuilder.updateStock(reference, quantite, getLocalName()), getBDDAgent(), true);
+                ACLMessage rep = sendMessageAndGetId(ACLMessage.REQUEST, QueryBuilder.vente(reference, quantite, prix, date, getLocalName(), sender.getLocalName()), getBDDAgent());
+                sendMessage(ACLMessage.REQUEST, QueryBuilder.updateStock(reference, quantite, getLocalName()), getBDDAgent());
                 sendMessage(ACLMessage.CONFIRM, (new JSONObject() {{
                     put("commandeOk", jeChoisis);
-                }}).toJSONString(), sender, true);
-                System.out.println(a);
-                //TODO Notifier agentERep !!!!!
-                //Erreur client jade.domain.FIPAAgentManagement.FailureException pour INFOS: (trinity) Message envoyé à Bob : {"jePropose":[{"date":"1449509503","idProduit":"2","prix":10.75,"nomProduit":"La ligne verte","quantite":1},{"date":"1449682303","idProduit":"2","prix":8.75,"nomProduit":"La ligne verte","quantite":1},{"date":"
+                }}).toJSONString(), sender);
+                JSONArray resp = (JSONArray) this.parser.parse(rep.getContent());
+                final int id = Integer.valueOf(((JSONObject)resp.get(0)).get("idProduit") + "");
+                sendMessage(ACLMessage.INFORM, (new JSONObject() {{
+                    put("venteEffectuee", new JSONObject(){{put("id",id);}});
+                }}).toJSONString(), getERepAgent());
             }
             nbNegoce = 0;
         } catch (ParseException e) {

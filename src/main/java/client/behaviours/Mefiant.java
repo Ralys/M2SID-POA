@@ -131,11 +131,36 @@ public class Mefiant extends CyclicBehaviour {
                 mefiant.setNbReponseReçu(mefiant.getNbReponseReçu() + 1);
                 Log.reception(mefiant.nomAgent(message), message.getContent());
                 mefiant.afficherRaisonInvalide(object, message);
-                // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
-                if ((mefiant.getNbReponseReçu() != mefiant.getNbRechercheEnvoye())
-                        && mefiant.getLproposition().isEmpty()) {
-                    Log.arretRecherche();
-                    mefiant.takeDown();
+                
+                if (mefiant.getNbReponseReçu() == mefiant.getNbRechercheEnvoye()) {
+                    // récupation des différents id des produits
+                    for (Produit produit : mefiant.getLproposition()) {
+                        if (!hmAvisProduit.containsKey(produit.getId())) {
+                            hmAvisProduit.put(produit.getId(), 0.0);
+                            mefiant.demandeAvisProduit(produit.getId());
+                        }
+                        if(!hmAvisRevendeur.containsKey(mefiant.nomAgent(message))){
+                            hmAvisRevendeur.put(mefiant.nomAgent(message), 0.0);
+                            mefiant.demandeAvis(mefiant.getTypeAgentCible(),mefiant.nomAgent(message));
+                        }
+                    }
+                }
+                
+                if ((mefiant.getNbReponseReçu() == mefiant.getNbRechercheEnvoye()
+                     && mefiant.getNbDemandeAvisProduitEnvoye() == mefiant.getNbDemandeAvisProduitRecu()
+                     && mefiant.getNbDemandeAvisRevendeurEnvoye() == mefiant.getNbDemandeAvisRevendeurRecu())){
+                    
+                   // on retire les produits des reveudeur peu fiable
+                    nettoyerPropositionRevendeur();
+                    // on retire les produits qui n'on pas le meilleur avis
+                    supprimerAutresProduits(mefiant.meilleurAvisProduit().getId());
+                    
+                    if (mefiant.getLproposition().size() > 0) {
+                        mefiant.jeChoisis(mefiant.moinsCher());
+                    } else {
+                        Log.arretRecherche();
+                        mefiant.takeDown();
+                    }
                 }
             }
 

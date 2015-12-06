@@ -13,6 +13,7 @@ public class Transaction {
     private int qte;
     private int delai;
     private double prixPropose;
+    private boolean abouti;
 
     public Transaction(int idProduit, Long dateLivraison, String client, int qte, int delai, double prixPropose) {
         this.idProduit = idProduit;
@@ -22,6 +23,7 @@ public class Transaction {
         this.qte = qte;
         this.delai = delai;
         this.prixPropose = prixPropose;
+        this.abouti= false;
     }
 
     public double getPrixPropose() {
@@ -59,4 +61,14 @@ public class Transaction {
     public void incNbNego() {
         this.nbNego++;
     }
+
+    public boolean isAbouti() {
+        return abouti;
+    }
+
+    public void setAbouti(boolean abouti) {
+        this.abouti = abouti;
+    }
+    
+    
 }

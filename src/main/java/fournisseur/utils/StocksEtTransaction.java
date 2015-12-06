@@ -65,6 +65,7 @@ public class StocksEtTransaction extends DataStore {
                         && t.getIdProduit() == idProduit
                         && t.getDateLivraison() == dateLivraison
                         & t.getPrixPropose() == prix) {
+                    t.setAbouti(true);
                     return true;
                 }
             }

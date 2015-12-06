@@ -27,7 +27,9 @@ public class ACLController extends CyclicBehaviour {
     @Override
     public void action() {
         VendeurAgent vendeur = (VendeurAgent) myAgent;
-        //vendeur.CheckStock();
+
+        vendeur.CheckStock();
+
         //MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage msg = myAgent.receive();
 

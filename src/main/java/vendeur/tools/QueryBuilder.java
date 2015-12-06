@@ -71,13 +71,13 @@ public class QueryBuilder {
 
 
     public static String newStock(String idProduit, Integer quantite, Float prix, String localName) {
-        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_UNITAIRE, QTE) VALUES(" + idProduit + ", " + quantite + ", " + prix + ", \"" + localName + "\") ";
+        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_LIMITE, PRIX_UNITAIRE, QTE) VALUES(" + idProduit + ", " + quantite + ", " + prix + "," + prix * 1.30f + ", \"" + localName + "\") ";
 
         return JSONRequest("insert", sql);
     }
 
     public static String updateStock(String idProduit, Integer quantite, Float prix, String localName) {
-        String sql = "UPDATE STOCK SET QTE = " + quantite + ", PRIX_UNITAIRE = " + prix + " WHERE VENDEUR_NAME = \"" + localName + "\" AND REF_PRODUIT = " + idProduit;
+        String sql = "UPDATE STOCK SET QTE = " + quantite + ", PRIX_UNITAIRE = " + prix * 1.30f + ", PRIX_LIMITE = " + prix + " WHERE VENDEUR_NAME = \"" + localName + "\" AND REF_PRODUIT = " + idProduit;
 
         return JSONRequest("insert", sql);
     }

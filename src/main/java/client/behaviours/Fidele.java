@@ -49,18 +49,15 @@ public class Fidele extends CyclicBehaviour {
      */
     public void traiterMessage(ACLMessage message) {
         try {
-//            System.out.println("Agent FIDELE");
             JSONParser parser = new JSONParser();
             JSONObject object = (JSONObject) parser.parse(message.getContent());
             
             // On récupère les propositions des fournisseurs ou des vendeurs
             if (object.containsKey("jePropose")) {
-//                System.out.println("Je propose fidele");
                 JSONArray array = (JSONArray) object.get("jePropose");
                 fidele.ajouterProposition(array, message);
                 fidele.setNbReponseReçu(fidele.getNbReponseReçu() + 1);
                 if (fidele.getNbReponseReçu() == fidele.getNbRechercheEnvoye()) {
-//                    System.out.println("If du fidèle");
                     fidele.jeChoisis(fidele.choixFidelite());
                 }
             }
@@ -123,7 +120,7 @@ public class Fidele extends CyclicBehaviour {
                 
                 // Choisir la meilleur proposition suivante si il y en a
                 if (fidele.getLproposition().size() > 0) {
-                    fidele.jeChoisis(fidele.plusTot());
+                    fidele.jeChoisis(fidele.choixFidelite());
                 } else {
                     Log.arretRecherche();
                     fidele.arretAgent();

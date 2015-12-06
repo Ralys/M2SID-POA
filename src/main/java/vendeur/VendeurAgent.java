@@ -18,11 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import vendeur.tools.Dates;
 
-
 /**
  * @author Aurélien
  */
-
 public class VendeurAgent extends SuperAgent {
 
     private AID BDDAgent;
@@ -33,7 +31,7 @@ public class VendeurAgent extends SuperAgent {
         this.registerService(TypeAgent.Vendeur);
 
         this.addBehaviour(new ACLController(this));
-        this.addBehaviour(new PurchaseProduct(this));
+        // this.addBehaviour(new PurchaseProduct(this));
     }
 
     public AID getBDDAgent() {
@@ -75,7 +73,6 @@ public class VendeurAgent extends SuperAgent {
         return messageReponse;
     }
 
-
     public void jeChercheReference(String typeAgent, String reference, int quantite) {
 
         // construction de l'objet JSON à envoyé
@@ -94,8 +91,6 @@ public class VendeurAgent extends SuperAgent {
         }
     }
 
-
-
     public void ClientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
 
         String ref = (typeRech.compareTo("ChercheRef") == 0) ? jsonObject.get("reference").toString() : "";
@@ -108,7 +103,7 @@ public class VendeurAgent extends SuperAgent {
             messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit), getBDDAgent(), true);
 
         } else {
-            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref,getLocalName()), getBDDAgent(), true);
+            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref, getLocalName()), getBDDAgent(), true);
         }
 
         System.out.println(messageBDD.toString());
@@ -132,7 +127,6 @@ public class VendeurAgent extends SuperAgent {
                     JSONObject retourRecherche3 = new JSONObject();
 
                     // /!\ faire un truc avec le prix pour savoir a combien vendre /!\
-
                     //int qte = 1;
                     if (qteProd > 0) { // il y a assez de stock
                         //proposer 3 prix a chaque fois
@@ -140,7 +134,7 @@ public class VendeurAgent extends SuperAgent {
                         //prix avec 1 jour de livraison
                         retourRecherche1.put("idProduit", refProd);
                         retourRecherche1.put("nomProduit", nomProd);
-                        retourRecherche1.put("quantite", quantite);
+                        retourRecherche1.put("quantite", qteProd);
                         retourRecherche1.put("prix", prixLProd);
                         retourRecherche1.put("date", Dates.addDays(1).toString());
                         list.add(retourRecherche1);
@@ -148,7 +142,7 @@ public class VendeurAgent extends SuperAgent {
                         //prix avec 3 jours de livraison
                         retourRecherche2.put("idProduit", refProd);
                         retourRecherche2.put("nomProduit", nomProd);
-                        retourRecherche2.put("quantite", quantite);
+                        retourRecherche2.put("quantite", qteProd);
                         retourRecherche2.put("prix", prixLProd);
                         retourRecherche2.put("date", Dates.addDays(3).toString());
                         list.add(retourRecherche2);
@@ -156,7 +150,7 @@ public class VendeurAgent extends SuperAgent {
                         //prix avec 10 jours de livraison
                         retourRecherche3.put("idProduit", refProd);
                         retourRecherche3.put("nomProduit", nomProd);
-                        retourRecherche3.put("quantite", quantite);
+                        retourRecherche3.put("quantite", qteProd);
                         retourRecherche3.put("prix", prixLProd);
                         retourRecherche3.put("date", Dates.addDays(10).toString());
 
@@ -187,15 +181,14 @@ public class VendeurAgent extends SuperAgent {
                     JSONObject retourRecherche3 = new JSONObject();
 
                     //faire un truc avec le prix pour savoir a combien vendre
-
                     //int qte = 1;
-                    if (qteProd > 0) { // il y a assez de stock
+                    if (qteProd > quantite) { // il y a assez de stock
                         //proposer 3 prix a chaque fois
 
                         //prix avec 1 jour de livraison
                         retourRecherche1.put("idProduit", refProd);
                         retourRecherche1.put("nomProduit", nomProd);
-                        retourRecherche1.put("quantite", quantite);
+                        retourRecherche1.put("quantite", qteProd);
                         retourRecherche1.put("prix", prixLProd);
                         retourRecherche1.put("date", Dates.addDays(1).toString());
                         list.add(retourRecherche1);
@@ -203,7 +196,7 @@ public class VendeurAgent extends SuperAgent {
                         //prix avec 3 jours de livraison
                         retourRecherche2.put("idProduit", refProd);
                         retourRecherche2.put("nomProduit", nomProd);
-                        retourRecherche2.put("quantite", quantite);
+                        retourRecherche2.put("quantite", qteProd);
                         retourRecherche2.put("prix", prixLProd);
                         retourRecherche2.put("date", Dates.addDays(3).toString());
                         list.add(retourRecherche2);
@@ -211,27 +204,26 @@ public class VendeurAgent extends SuperAgent {
                         //prix avec 10 jours de livraison
                         retourRecherche3.put("idProduit", refProd);
                         retourRecherche3.put("nomProduit", nomProd);
-                        retourRecherche3.put("quantite", quantite);
+                        retourRecherche3.put("quantite", qteProd);
                         retourRecherche3.put("prix", prixLProd);
                         retourRecherche3.put("date", Dates.addDays(10).toString());
 
                         list.add(retourRecherche3);
-                        if (qteProd >= quantite) {
-                            reponse.put("jePropose", list);
-                        } else {
-                            reponse.put("quantiteInsuffisante", list);
-
-                        }
-                    } else if (qteProd == 0) {
-                        retourRecherche1.put("idProduit", resultat.get("REF_PRODUIT"));
-                        retourRecherche1.put("raison", "quantite a zero");
-                        reponse.put("requeteInvalide", retourRecherche1);
                     }
                 }
+                reponse.put("jePropose", list);
             }
 
         } else { // si le produit n'existe pas
             //requete invalide, raison n'existe pas
+            JSONObject retourRecherche1 = new JSONObject();
+            if (typeRech.compareTo("ChercheRef") == 0) {
+                retourRecherche1.put("idProduit", ref);
+            } else {
+                retourRecherche1.put("recherche", recherche);
+            }
+            retourRecherche1.put("raison", "n'existe pas");
+            reponse.put("requeteInvalide", retourRecherche1);
         }
 
         String reponseJSON = reponse.toJSONString();

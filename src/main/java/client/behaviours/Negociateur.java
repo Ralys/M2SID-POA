@@ -20,11 +20,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- *
+ * Classe qui permet de définir le comportement Negociateur d'un client.
  * @author Aymeric
  */
 public class Negociateur extends CyclicBehaviour {
 
+     /**
+     * Le client en question
+     */
     private final ClientAgent negociateur;
     private final double facteurDebutNegociation = 0.70;
     private final double facteurFinNegociation = 0.85;
@@ -34,10 +37,17 @@ public class Negociateur extends CyclicBehaviour {
     private double prixFinal = 0;
     private int nbNegociation = 0;
 
+    /**
+     * Constructeur permettant d'affecter le comportement negociateur à un client
+     * @param agent Agent qui possèdera le comportement negociateur
+     */
     public Negociateur(Agent agent) {
         this.negociateur = (ClientAgent) agent;
     }
 
+     /**
+     * Action effectuée par le type comportement negociateur.
+     */
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -47,6 +57,10 @@ public class Negociateur extends CyclicBehaviour {
         }
     }
 
+    /**
+     * Comportement effectué pour traiter un message en fonction de son type
+     * @param message Le message à traiter.
+     */
     public void traiterMessage(ACLMessage message) {
 
         try {
@@ -184,6 +198,10 @@ public class Negociateur extends CyclicBehaviour {
         }
     }
 
+    /**
+     * Méthode de négociation de prix
+     * @param p prduit à négocier
+     */
     public void jeNegocie(Produit p) {
         AID aid = new AID(p.getProvenance());
         produitEnNegociation = p;
@@ -200,8 +218,6 @@ public class Negociateur extends CyclicBehaviour {
             Log.affiche("Prix à atteindre : "+prixFinal);
         }
 
-        
-
         // construction de l'objet JSON à envoyé
         JSONObject jeNegocie = new JSONObject();
         JSONObject contenu = new JSONObject();
@@ -217,6 +233,11 @@ public class Negociateur extends CyclicBehaviour {
         Log.envoi(negociateur.nomAgent(p.getProvenance()), jeNegocie.toString());
     }
 
+    /**
+     * Méthode qui supprime les produits du redendeur en paramètre
+     * de la liste des propositions
+     * @param provenance nom complet du revendeur
+     */
     public void nettoyerPropositionFournisseur(String provenance) {
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : negociateur.getLproposition()) {

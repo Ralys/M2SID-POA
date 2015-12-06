@@ -94,7 +94,7 @@ public class VendeurAgent extends SuperAgent {
         }
     }
 
-    public void ClientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
+    public void clientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
 
         String ref = (typeRech.compareTo("ChercheRef") == 0) ? jsonObject.get("reference").toString() : "";
         int quantite = Integer.parseInt(jsonObject.get("quantite").toString());
@@ -115,9 +115,6 @@ public class VendeurAgent extends SuperAgent {
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject reponse = new JSONObject();
         JSONArray list = new JSONArray();
-
-        System.out.println(enSoldes);
-        System.out.println(resultatsBDD);
 
         if (!resultatsBDD.isEmpty()) { // si le produit existe
             for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
@@ -140,7 +137,7 @@ public class VendeurAgent extends SuperAgent {
                         retour.put("idProduit", refProd);
                         retour.put("nomProduit", nomProd);
                         retour.put("quantite", quantite);
-                        if(!enSoldes)
+                        if (!enSoldes)
                             retour.put("prix", Normale.getPrix(prixUProd, jour));
                         else
                             retour.put("prix", Soldes.getPrix(prixUProd, prixLProd, jour));
@@ -274,5 +271,39 @@ public class VendeurAgent extends SuperAgent {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public void clientChoisis(final JSONObject jeChoisis, AID sender) {
+        String reference = jeChoisis.get("idProduit") + "";
+        Integer quantite = Integer.valueOf(jeChoisis.get("quantite") + "");
+        Float prix = Double.valueOf(jeChoisis.get("prix") + "").floatValue();
+        long date = Long.valueOf(jeChoisis.get("date") + "");
+
+        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(reference, sender.getLocalName()), getBDDAgent(), true);
+
+        try {
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+            if (resultatsBDD.size() == 0) {
+                jeChoisis.put("raison", "stock insuffisant");
+                sendMessage(ACLMessage.DISCONFIRM, (new JSONObject() {{
+                    put("commandePasOK", jeChoisis);
+                }}).toJSONString(), sender, true);
+            } else {
+                ACLMessage a = sendMessage(ACLMessage.REQUEST, QueryBuilder.vente(reference, quantite, prix, date, getLocalName(), sender.getLocalName()), getBDDAgent(), true);
+                sendMessage(ACLMessage.REQUEST, QueryBuilder.updateStock(reference, quantite, getLocalName()), getBDDAgent(), true);
+                sendMessage(ACLMessage.CONFIRM, (new JSONObject() {{
+                    put("commandeOk", jeChoisis);
+                }}).toJSONString(), sender, true);
+                System.out.println(a);
+                //Notifier agentERep !!!!!
+                //Erreur client jade.domain.FIPAAgentManagement.FailureException pour INFOS: (trinity) Message envoyé à Bob : {"jePropose":[{"date":"1449509503","idProduit":"2","prix":10.75,"nomProduit":"La ligne verte","quantite":1},{"date":"1449682303","idProduit":"2","prix":8.75,"nomProduit":"La ligne verte","quantite":1},{"date":"
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clientNégocie(JSONObject jeNégocie, AID sender) {
+        
     }
 }

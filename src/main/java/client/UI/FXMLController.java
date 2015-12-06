@@ -1,5 +1,6 @@
 package client.UI;
 
+import client.outils.Produit;
 import client.outils.TypeAgentClient;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
@@ -23,6 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import common.TypeAgent;
 import common.TypeProduit;
+import java.util.HashMap;
 import javafx.scene.control.RadioButton;
 
 /**
@@ -160,6 +162,11 @@ public class FXMLController implements Initializable {
      */
     public static ObservableList<String> listLog = FXCollections.observableArrayList();
 
+    /**
+     * Liste des achats nomClient - Produit
+     */
+    public static HashMap<String, Produit> lAchatsEffectues = new HashMap();
+    
     /**
      * Méthode appelé lors de la création de l'interface javafx
      * @param url L'URL

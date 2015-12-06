@@ -4,6 +4,7 @@ package client;
  * Auteur : Aymeric ZANIRATO
  * Email: aymeric@zanirato.fr
  */
+import client.UI.FXMLController;
 import client.outils.TypeAgentClient;
 import client.outils.Log;
 import client.outils.Produit;
@@ -166,6 +167,21 @@ public class ClientAgent extends SuperAgent {
      * Méthode permettant de tuer un agent client, une fois que celui-ci a fini son achat
      */
     public void takeDown() {
+        try {
+            // on se retire du registre de service afin q'un autre
+            // agent du même nom puisse se lancer
+            DFService.deregister(this);
+            Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent !");
+            doDelete();
+        } catch (FIPAException ex) {
+            Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Méthode permettant de tuer un agent client, une fois que celui-ci a fini son achat
+     */
+    public void takeDown2() {
         try {
             // on se retire du registre de service afin q'un autre
             // agent du même nom puisse se lancer
@@ -529,16 +545,34 @@ public class ClientAgent extends SuperAgent {
 
     /**
      * Méthode retournant le produit livré au plut tot parmi la liste des
-     * propositions
+     * propositions (vérifie si la quantité est bonne)
      *
      * @return le produit livrable en premier
      */
     public Produit plusTot() {
-
-        Produit produitChoisi = lproposition.get(0);
+        Produit produitChoisi = null;
+        // On instancie produitChoisi si une proposition possède la quantité suffisante
         for (Produit produit : lproposition) {
-            if (produit.getDateLivraison() < produitChoisi.getDateLivraison()) {
+            if (produit.getQuantite() >= this.quantite) {
                 produitChoisi = produit;
+                break;
+            }
+        }
+        // Si il existe au moins un produit dont la quantité est suffisante
+        if (produitChoisi != null) {
+            for (Produit produit : lproposition) {
+                // On choisi en fonction de la date au plus tôt et de la quantité
+                if (produit.getDateLivraison() < produitChoisi.getDateLivraison() && produit.getQuantite() >= this.quantite) {
+                    produitChoisi = produit;
+                }
+            }
+        } else {
+            produitChoisi = lproposition.get(0);
+            for (Produit produit : lproposition) {
+                // On choisi en fonction de la date au plus tôt
+                if (produit.getDateLivraison() < produitChoisi.getDateLivraison() ) {
+                    produitChoisi = produit;
+                }
             }
         }
         return produitChoisi;
@@ -590,6 +624,54 @@ public class ClientAgent extends SuperAgent {
         for (Produit produit : lisProduitASupprimer) {
             lproposition.remove(produit);
         }
+    }
+    
+        /**
+     * Méthode qui permet de choisir une proposition d'un vendeur ou fournisseur pour un client fidèle
+     *
+     * @return le produit choisi
+     */
+    public Produit choixFidelite() {
+//        System.out.println("La fidelite c'est le client");
+        Produit produitChoisi = lproposition.get(0);
+        String provenanceAncienAchat = "";
+        
+        boolean existAncienAchat = false;
+        // On parcours la liste des achats effectués
+        if (FXMLController.lAchatsEffectues.size() > 0) {
+            for (Map.Entry<String, Produit> entrySet : FXMLController.lAchatsEffectues.entrySet()) {
+                String key = entrySet.getKey();
+                Produit value = entrySet.getValue();
+//                System.out.println("Dans 1er boucle clé = "+key);
+                // Si l'un d'entre eux a été effectué par le client en question on enregistre la provenance
+                if (key.compareTo(this.getName()) == 0) {
+                    provenanceAncienAchat = value.getProvenance();
+                    existAncienAchat = true;
+                    System.out.println("Ancien achat client "+this.getName() +" provenance "+ value.getProvenance());
+                    break;
+                }
+            }
+        }
+        
+        // On choisit le produit ayant la même provenance
+        for (Produit produit : lproposition) {
+            if(existAncienAchat){
+//                System.out.println("test provenance : "+ produit.getProvenance() + " =? " +provenanceAncienAchat);
+                if (produit.getProvenance().compareTo(provenanceAncienAchat) == 0) {
+//                    System.out.println("Dans provenance : "+ produit.getProvenance());
+                    // Si plusieurs produit de même provenance on choisit le moins cher
+                    if(produit.getPrix() < produitChoisi.getPrix()){
+                        produitChoisi = produit;
+                    }
+                }
+            }else {
+//                System.out.println("Else pas d'ancien achat");
+                if(produit.getPrix() < produitChoisi.getPrix()){
+                    produitChoisi = produit;
+                }
+            }
+        }
+        return produitChoisi;
     }
 
     /**

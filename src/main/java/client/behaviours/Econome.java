@@ -74,8 +74,6 @@ public class Econome extends CyclicBehaviour {
                 }
             }
 
-
-
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");

@@ -1,6 +1,7 @@
 package fournisseur.behaviors;
 
 import fournisseur.FournisseurAgent;
+import fournisseur.utils.StocksEtTransaction;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -55,6 +56,10 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                     replyContenu.put("prix", newPrix);
                     replyJson.put("commandeOk", replyContenu);
                     replyMessage.setPerformative(ACLMessage.CONFIRM);
+                    ((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, date, sender);
+                    ((StocksEtTransaction) getDataStore()).decrementerStock(idProduit, qte);
+
+                    ((StocksEtTransaction) getDataStore()).changePesos(prix);
                 } else {
                     //send je négocie
                     //{"jeNégocie": {"idProduit": "67D","prix": 20,"date": "20/02/2105",”nomProduit”:”Spectre”,”quantite”:1}}

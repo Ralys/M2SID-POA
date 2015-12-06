@@ -26,7 +26,7 @@ public class QueryBuilder {
     }
 
     public static String recherche(String recherche, String typeProduit) {
-        String sql = "SELECT REF_PRODUIT "
+        String sql = "SELECT PRODUIT.REF_PRODUIT "
                 + "FROM PRODUIT, CATEGORIE, POSSEDE, TAGS "
                 + "WHERE PRODUIT.ID_CATEGORIE = CATEGORIE.ID_CATEGORIE "
                 + "AND PRODUIT.REF_PRODUIT = POSSEDE.REF_PRODUIT "

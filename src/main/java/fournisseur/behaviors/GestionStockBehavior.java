@@ -16,12 +16,16 @@ public abstract class GestionStockBehavior extends TickerBehaviour {
 
     public GestionStockBehavior(Agent a) {
         super(a, 20000);
-        // this.creationproduit();
     }
 
     @Override
     protected void onTick() {
         this.creationproduit();
+    }
+
+    @Override
+    public void onStart() {
+        creationproduit();
     }
 
     public abstract void creationproduit();

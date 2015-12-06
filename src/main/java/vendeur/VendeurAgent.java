@@ -96,7 +96,10 @@ public class VendeurAgent extends SuperAgent {
         }
 
         MessageTemplate mt = MessageTemplate.MatchSender(destinataire);
-        ACLMessage messageReponse = this.blockingReceive(mt);
+        ACLMessage messageReponse = this.blockingReceive(mt, 5000);
+
+        Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message reçu de " + destinataire.getLocalName() + " : " + messageReponse.getContent());
+
         return messageReponse;
     }
 
@@ -304,15 +307,16 @@ public class VendeurAgent extends SuperAgent {
         Integer quantite = Integer.valueOf(commandeOK.get("quantite") + "");
         Float prix = Double.valueOf(commandeOK.get("prix") + "").floatValue();
 
-        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(idProduit, sender.getLocalName()), getBDDAgent(), true);
+        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(idProduit, getLocalName()), getBDDAgent(), true);
 
 
         try {
             JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+
             if (resultatsBDD.size() == 0) {
-                sendMessage(ACLMessage.INFORM, QueryBuilder.newStock(idProduit, quantite, prix, sender.getLocalName()), getBDDAgent(), true);
+                sendMessage(ACLMessage.INFORM, QueryBuilder.newStock(idProduit, quantite, prix, getLocalName()), getBDDAgent(), false);
             } else {
-                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size() + quantite, prix, sender.getLocalName()), getBDDAgent(), true);
+                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size() + quantite, prix, sender.getLocalName()), getBDDAgent(), false);
             }
 
         } catch (ParseException e) {

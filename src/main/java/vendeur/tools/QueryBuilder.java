@@ -64,13 +64,12 @@ public class QueryBuilder {
 
     public static String getRefStock(String ref, String vendeur) {
         String sql = "SELECT REF_PRODUIT, QTE FROM STOCK WHERE VENDEUR_NAME = \"" + vendeur + "\" AND REF_PRODUIT = " + ref;
-
         return JSONRequest("select", sql);
     }
 
 
     public static String newStock(String idProduit, Integer quantite, Float prix, String localName) {
-        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_LIMITE, PRIX_UNITAIRE, QTE) VALUES(" + idProduit + ", " + quantite + ", " + prix + "," + prix * 1.30f + ", \"" + localName + "\") ";
+        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_LIMITE, PRIX_UNITAIRE, QTE) VALUES(" + idProduit + ",\"" + localName + "\", " + prix + "," + prix * 1.30f + ", " + quantite + " ) ";
 
         return JSONRequest("insert", sql);
     }

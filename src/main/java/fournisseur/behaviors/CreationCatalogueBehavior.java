@@ -1,6 +1,7 @@
 package fournisseur.behaviors;
 
 import fournisseur.utils.Produit;
+import fournisseur.utils.StocksEtTransaction;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -101,8 +102,7 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             for (Integer numProduit : listProduitFournisseur) {
                 getDataStore().put(listProduit.get(numProduit), 0);
             }
-            
-            getDataStore().put("Tresorerie", new Double(100000));// set du montant initial de pesos
+            ((StocksEtTransaction) getDataStore()).initPesos(100000);// set du montant initial de pesos
         } catch (ParseException ex) {
             Logger.getLogger(CreationCatalogueBehavior.class.getName()).log(Level.SEVERE, "Format de message BDD incorrect");
         }

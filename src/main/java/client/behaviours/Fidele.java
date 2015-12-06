@@ -1,6 +1,7 @@
 package client.behaviours;
 
 import client.ClientAgent;
+import client.UI.FXMLController;
 import client.outils.Log;
 import client.outils.Produit;
 import jade.core.Agent;
@@ -103,6 +104,10 @@ public class Fidele extends CyclicBehaviour {
                 // Laisser avis erep sur vendeur/fournisseur + produit
                 fidele.donneAvis(fidele.getTypeAgentCible(), fidele.nomAgent(message));
                 fidele.donneAvisProduit(obj.get("idProduit").toString());
+                
+                //ajoute l'achat
+                Produit p = new Produit(obj,message.getSender().getName());
+                FXMLController.lAchatsEffectues.put(fidele.getName(),p);
                 
                 // Arreter agent
                 fidele.arretAgent();

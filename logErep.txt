@@ -1,0 +1,2 @@
+2015-12-07 00:44:08.143:[INFO]:morpheus:(morpheus) Message reçu : {"demandeDesirabilite":{"id":"2","type":"Produit"}} de trinity@192.168.1.48:1099/JADE
+2015-12-07 00:44:08.298:[INFO]:morpheus:(morpheus) Message envoyé : {"retourDesirabilite":{"id":"2","type":"Produit","desirabilite":1.9}}

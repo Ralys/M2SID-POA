@@ -54,7 +54,7 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public boolean removeTransaction(int idProduit, Long dateLivraison, String client, double prix) {
+    public boolean removeTransaction(int idProduit, Long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {
@@ -63,8 +63,7 @@ public class StocksEtTransaction extends DataStore {
                 Transaction t = (Transaction) o;
                 if (t.getClient().compareTo(client) == 0
                         && t.getIdProduit() == idProduit
-                        && t.getDateLivraison() == dateLivraison
-                        & t.getPrixPropose() == prix) {
+                        && t.getDateLivraison() == dateLivraison) {
                     t.setAbouti(true);
                     return true;
                 }

@@ -274,23 +274,24 @@ public class ClientAgent extends SuperAgent {
         Log.envoi(nomAgent(adresseAgentErep), demandeDesirabilite.toString());
     }
     
-    public void achatEffectue(String adresseAgentErep,Boolean reussi, int NbNegociation){
-        AID aid = new AID(adresseAgentErep);
+    public void achatEffectue( Boolean reussi, int NbNegociation) {
         
+        AID[] agent = findAgentsFromService(TypeAgent.EReputation);
+
         // construction de l'objet JSON à envoyé
         JSONObject achatEffectue = new JSONObject();
         JSONObject contenu = new JSONObject();
-        contenu.put("success",reussi );
-        contenu.put("comportement",typeAgentClient);
-        contenu.put("nbNegociations",NbNegociation);
+        contenu.put("success", reussi);
+        contenu.put("comportement", typeAgentClient);
+        contenu.put("nbNegociations", NbNegociation);
         achatEffectue.put("achatEffectue", contenu);
-        
-        // envoi du message + afficahge dans les logs
-        envoyerMessage(this, ACLMessage.INFORM, aid, achatEffectue.toString());
-        Log.envoi(nomAgent(adresseAgentErep), achatEffectue.toString());
-        
-    }
 
+        // envoi du message + afficahge dans les logs
+        envoyerMessage(this, ACLMessage.INFORM, agent[0], achatEffectue.toString());
+        Log.envoi(agent[0].getLocalName(), achatEffectue.toString());
+
+    }
+    
     // **************************************************************** //
     //
     //  Méthodes de traitement

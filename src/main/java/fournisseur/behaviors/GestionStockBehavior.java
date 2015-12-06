@@ -18,7 +18,7 @@ public abstract class GestionStockBehavior extends TickerBehaviour {
     private double reducQte = 0.01; //1%*qte de produit fabriqué de reduction sur le prix unitaire lors de la fabrication d'un produit
 
     public GestionStockBehavior(Agent a) {
-        super(a, 60000);
+        super(a, 20000);
     }
 
     @Override
@@ -29,7 +29,8 @@ public abstract class GestionStockBehavior extends TickerBehaviour {
     public abstract void creationproduit();
 
     public void dataStoreOperation(Produit p, int qteProduite) {
-        Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, "Produit : {0}", p.getNomProduit());
+        //Spam de trop
+        // Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, "Produit : {0}, création de " + qteProduite, p.getNomProduit());
         double prixProduction = p.getPrixDeBase();
         double prixProductionTotal = (prixProduction * (1 - (qteProduite * reducQte))) * qteProduite;
         ((StocksEtTransaction) this.getDataStore()).incrementerStock(p, qteProduite);

@@ -77,7 +77,7 @@ public class FournisseurAgent extends SuperAgent {
                 }
                 gestionStockBehavior = new GestionStockBehaviorDesir(this, agentERep);
                 waitRequestBehaviorStrategie = new WaitRequestStrategie3();
-                waitNegociationBehaviorStrategie = new WaitNegociationStrategie3(agentERep);
+                waitNegociationBehaviorStrategie = new WaitNegociationStrategie3();
                 break;
             default:
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Paramètre incorrect");

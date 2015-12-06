@@ -29,12 +29,11 @@ public class ACLController extends CyclicBehaviour {
         VendeurAgent vendeur = (VendeurAgent) myAgent;
 
         vendeur.CheckStock();
-
         //MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
         ACLMessage msg = myAgent.receive();
 
 
-        if (msg != null) {
+        while (msg != null) {
             //Réception
             String content = msg.getContent();
 
@@ -50,6 +49,7 @@ public class ACLController extends CyclicBehaviour {
                     vendeur.ClientRecherche((JSONObject) object.get("jeChercheRef"), msg.getSender(), "ChercheRef");
                 }
                 else if (object.containsKey("jePropose")) {
+                    System.out.println("teeeeeest");
                     if(object.get("jePropose") instanceof JSONObject)
                         vendeur.fournisseurPropose((JSONObject) object.get("jePropose"), msg.getSender());
                     else if(object.get("jePropose") instanceof JSONArray)
@@ -62,6 +62,8 @@ public class ACLController extends CyclicBehaviour {
             } catch (ParseException ex) {
                 Logger.getLogger(myAgent.getLocalName()).log(Level.WARNING, "("+vendeur.getLocalName()+") Format de message invalide");
             }
+
+            msg = myAgent.receive();
         }
     }
 

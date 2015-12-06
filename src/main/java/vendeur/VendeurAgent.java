@@ -175,7 +175,6 @@ public class VendeurAgent extends SuperAgent {
     public void CheckStock() {
 
         // Get quantity for each product
-
         ACLMessage stockProducts = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefListStock(getLocalName()), getBDDAgent(), true);
 
 

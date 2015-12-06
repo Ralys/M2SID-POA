@@ -288,10 +288,10 @@ public class FXMLController implements Initializable {
      * @param tf Le champ "limite" à vérifier 
      * @return true si la limite est un entier, sinon false
      */
-    public boolean testerLimite(TextField tf){
-        boolean res = false;
+   public boolean testerLimite(TextField tf){
+        boolean res = true;
+        if(limite.isVisible()){
         if(!limite.getText().isEmpty()){
-               res = true;
                try {
                    int lim = Integer.parseInt(limite.getText().toString());
                }
@@ -302,8 +302,9 @@ public class FXMLController implements Initializable {
                 res = false;
             }
         }
-        return res;
-    }
+        
+    } return res;
+   }
 
     /**
      * Permet de vérifié si un choix à bien été fait dans une combobox

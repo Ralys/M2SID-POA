@@ -153,10 +153,10 @@ public class VendeurAgent extends SuperAgent {
                     put("demandeDesirabilite", demande);
                 }}).toJSONString(), getERepAgent(), true);
                 JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
-                Integer desir = 0;
+                Double desir = 0.0;
                 for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
                     JSONObject retour = (JSONObject) it.next();
-                    desir = Integer.valueOf(retour.get("desirabilite") + "");
+                    desir = Double.valueOf(retour.get("desirabilite") + "");
                 }
                 //int qte = 1;
                 if (qteProd > 0) { // il y a assez de stock
@@ -243,7 +243,7 @@ public class VendeurAgent extends SuperAgent {
                     JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
                     for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
                         JSONObject retour = (JSONObject) it.next();
-                        Integer desir = Integer.valueOf(retour.get("desirabilite") + "");
+                        Double desir = Double.valueOf(retour.get("desirabilite") + "");
 
                     }
                 }
@@ -378,7 +378,7 @@ public class VendeurAgent extends SuperAgent {
                 JSONArray resultats = (JSONArray) this.parser.parse(desirabilite.getContent());
                 for (Iterator it = resultats.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
                     JSONObject retour = (JSONObject) it.next();
-                    Integer desir = Integer.valueOf(retour.get("desirabilite") + "");
+                    Double desir = Double.valueOf(retour.get("desirabilite") + "");
 
                     Double newPrice;
                     if (enSoldes) {

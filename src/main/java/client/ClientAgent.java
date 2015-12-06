@@ -12,8 +12,8 @@ import client.behaviours.Econome;
 import client.behaviours.Mefiant;
 import client.behaviours.Negociateur;
 import client.behaviours.Presse;
+import client.behaviours.Fidele;
 import jade.core.AID;
-import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -22,8 +22,6 @@ import org.json.simple.JSONObject;
 import common.*;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
-import jade.wrapper.AgentContainer;
-import jade.wrapper.StaleProxyException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -164,6 +162,11 @@ public class ClientAgent extends SuperAgent {
         //ecoute
         if (typeAgentClient.equals(TypeAgentClient.Negociateur)) {
             addBehaviour(new Negociateur(this));
+        }
+
+        //ecoute
+        if (typeAgentClient.equals(TypeAgentClient.Fidele)) {
+            addBehaviour(new Fidele(this));
         }
 
         if (typeRecherche.equalsIgnoreCase("true")) {
@@ -661,7 +664,6 @@ public class ClientAgent extends SuperAgent {
      * @return le produit choisi
      */
     public Produit choixFidelite() {
-//        System.out.println("La fidelite c'est le client");
         Produit produitChoisi = lproposition.get(0);
         String provenanceAncienAchat = "";
 
@@ -671,12 +673,10 @@ public class ClientAgent extends SuperAgent {
             for (Map.Entry<String, Produit> entrySet : FXMLController.lAchatsEffectues.entrySet()) {
                 String key = entrySet.getKey();
                 Produit value = entrySet.getValue();
-//                System.out.println("Dans 1er boucle clé = "+key);
                 // Si l'un d'entre eux a été effectué par le client en question on enregistre la provenance
                 if (key.compareTo(this.getName()) == 0) {
                     provenanceAncienAchat = value.getProvenance();
                     existAncienAchat = true;
-                    System.out.println("Ancien achat client " + this.getName() + " provenance " + value.getProvenance());
                     break;
                 }
             }
@@ -685,16 +685,13 @@ public class ClientAgent extends SuperAgent {
         // On choisit le produit ayant la même provenance
         for (Produit produit : lproposition) {
             if (existAncienAchat) {
-//                System.out.println("test provenance : "+ produit.getProvenance() + " =? " +provenanceAncienAchat);
                 if (produit.getProvenance().compareTo(provenanceAncienAchat) == 0) {
-//                    System.out.println("Dans provenance : "+ produit.getProvenance());
                     // Si plusieurs produit de même provenance on choisit le moins cher
                     if (produit.getPrix() < produitChoisi.getPrix()) {
                         produitChoisi = produit;
                     }
                 }
             } else {
-//                System.out.println("Else pas d'ancien achat");
                 if (produit.getPrix() < produitChoisi.getPrix()) {
                     produitChoisi = produit;
                 }

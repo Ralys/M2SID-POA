@@ -1,6 +1,5 @@
 package vendeur.tools;
 
-import jade.core.AID;
 import org.json.simple.JSONObject;
 
 /**
@@ -36,7 +35,6 @@ public class QueryBuilder {
                 + "AND (LABEL_TAG LIKE \"%" + recherche + "%\" "
                 + "OR NOM_PRODUIT LIKE \"%" + recherche + "%\") "
                 + "AND STOCK.VENDEUR_NAME = \"" + vendeur + "\"";
-        System.out.println(sql);
         return JSONRequest("select", sql);
     }
 

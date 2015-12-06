@@ -340,6 +340,8 @@ public class ClientAgent extends SuperAgent {
         contenu.put("type", typeAgent);
         contenu.put("nom", nomAgent);
         demandeAvis.put("demandeAvis", contenu);
+        
+        nbDemandeAvisRevendeurEnvoye++;
 
         // envoi du message + afficahge dans les logs
         envoyerMessage(this, ACLMessage.REQUEST, agent[0], demandeAvis.toString());

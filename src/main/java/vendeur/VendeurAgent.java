@@ -18,11 +18,9 @@ import java.util.logging.Logger;
 
 import vendeur.tools.Dates;
 
-
 /**
  * @author Aurélien
  */
-
 public class VendeurAgent extends SuperAgent {
 
     private AID BDDAgent;
@@ -74,7 +72,6 @@ public class VendeurAgent extends SuperAgent {
         return messageReponse;
     }
 
-
     public void jeChercheReference(String typeAgent, String reference, int quantite) {
 
         // construction de l'objet JSON à envoyé
@@ -92,7 +89,6 @@ public class VendeurAgent extends SuperAgent {
             sendMessage(ACLMessage.REQUEST, message, f, false);
         }
     }
-
 
     public void ClientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
 
@@ -152,10 +148,19 @@ public class VendeurAgent extends SuperAgent {
                     retour.put("raison", "quantite a zero");
                     reponse.put("requeteInvalide", retour);
                 }
+                reponse.put("jePropose", list);
             }
 
         } else { // si le produit n'existe pas
             //requete invalide, raison n'existe pas
+            JSONObject retourRecherche1 = new JSONObject();
+            if (typeRech.compareTo("ChercheRef") == 0) {
+                retourRecherche1.put("idProduit", ref);
+            } else {
+                retourRecherche1.put("recherche", recherche);
+            }
+            retourRecherche1.put("raison", "n'existe pas");
+            reponse.put("requeteInvalide", retourRecherche1);
         }
 
         String reponseJSON = reponse.toJSONString();

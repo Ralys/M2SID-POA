@@ -23,6 +23,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import org.json.simple.JSONArray;
 
 /**

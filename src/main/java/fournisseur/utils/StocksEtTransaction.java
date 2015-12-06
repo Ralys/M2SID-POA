@@ -12,7 +12,7 @@ import java.util.Iterator;
  * @author Tom
  */
 public class StocksEtTransaction extends DataStore {
-    
+
     public boolean verifierStock(int idProduit, int qte) {
         int qteDispo = (int) this.get(getProduitById(idProduit));
         if (qteDispo < qte) {
@@ -54,8 +54,22 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public void removeTransaction(int idProduit, Long dateLivraison, String client) {
-        this.remove(this.getTransaction(idProduit, dateLivraison, client));
+    public boolean removeTransaction(int idProduit, Long dateLivraison, String client, double prix) {
+        Set cles = this.keySet();
+        Iterator it = cles.iterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (o instanceof Transaction) {
+                Transaction t = (Transaction) o;
+                if (t.getClient().compareTo(client) == 0
+                        && t.getIdProduit() == idProduit
+                        && t.getDateLivraison() == dateLivraison
+                        & t.getPrixPropose() == prix) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void decrementerStock(int id, int qte) {

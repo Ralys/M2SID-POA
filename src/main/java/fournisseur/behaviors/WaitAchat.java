@@ -41,37 +41,39 @@ public class WaitAchat extends CyclicBehaviour {
                 //Vérifier les stocks
                 boolean stockOk = ((StocksEtTransaction) getDataStore()).verifierStock(idProduit, quantite);
 
-                //Json réponse
-                JSONObject replyJson = new JSONObject();
-                JSONObject replyContenu = new JSONObject();
+                if (((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, date, sender, prix)) {
+                    //Json réponse
+                    JSONObject replyJson = new JSONObject();
+                    JSONObject replyContenu = new JSONObject();
+                    replyContenu.put("idProduit", idProduit);
+                    replyContenu.put("nomProduit", nomProduit);
+                    replyContenu.put("prix", prix);
+                    replyContenu.put("quantite", quantite);
+                    replyContenu.put("date", date);
+                    if (stockOk) {
+                        //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
+                        replyJson.put("commandeOk", replyContenu);
+                        replyMessage.setPerformative(ACLMessage.CONFIRM);
 
-                ((StocksEtTransaction) getDataStore()).removeTransaction(idProduit, date, sender);
+                        ((StocksEtTransaction) getDataStore()).decrementerStock(idProduit, quantite);
 
-                replyContenu.put("idProduit", idProduit);
-                replyContenu.put("nomProduit", nomProduit);
-                replyContenu.put("prix", prix);
-                replyContenu.put("quantite", quantite);
-                replyContenu.put("date", date);
-                if (stockOk) {
-                    //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
-                    replyJson.put("commandeOk", replyContenu);
-                    replyMessage.setPerformative(ACLMessage.CONFIRM);
-
-                    ((StocksEtTransaction) getDataStore()).decrementerStock(idProduit, quantite);
-
-                    //TODO incrementation des pesos
+                        //TODO incrementation des pesos
+                    } else {
+                        //{“commandePasOK”:{“raison”:”Stock insuffisant”}}
+                        replyJson.put("commandePasOK", replyContenu);
+                        replyContenu.put("raison", "Stock insuffisant");
+                        replyMessage.setPerformative(ACLMessage.DISCONFIRM);
+                    }
+                    String contenuMessage = replyJson.toJSONString().replace("\\", "");
+                    replyMessage.setContent(contenuMessage);
+                    myAgent.send(replyMessage);
+                    //Log
+                    String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
+                    Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
                 } else {
-                    //{“commandePasOK”:{“raison”:”Stock insuffisant”}}
-                    replyJson.put("commandePasOK", replyContenu);
-                    replyContenu.put("raison", "Stock insuffisant");
-                    replyMessage.setPerformative(ACLMessage.DISCONFIRM);
+                    Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Prix donné != du prix proposé !");
                 }
-                String contenuMessage = replyJson.toJSONString().replace("\\", "");
-                replyMessage.setContent(contenuMessage);
-                myAgent.send(replyMessage);
-                //Log
-                String envoiMessage = "(" + myAgent.getLocalName() + ") Message envoyé : " + contenuMessage + " : envoyé à " + sender;
-                Logger.getLogger(FournisseurAgent.class.getName()).log(Level.INFO, envoiMessage);
+
             } catch (ParseException ex) {
                 Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, "Format de message invalide");
             }

@@ -71,12 +71,13 @@ public abstract class WaitRequest extends CyclicBehaviour {
                         int stockDispo = (int) ((StocksEtTransaction) getDataStore()).get(p);
                         //Pour les trois date possible
                         for (Integer delai : listDelai) {
-                            Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai);
+                            double prix = this.definirPrix(p.getIdProduit(), quantite, delai);
+                            Transaction t = new Transaction(p.getIdProduit(), listDate.get(delai), sender, quantite, delai, prix);
                             ((StocksEtTransaction) getDataStore()).put(t, p);
                             JSONObject produitJson = new JSONObject();
                             produitJson.put("idProduit", p.getIdProduit());
                             produitJson.put("nomProduit", p.getNomProduit());
-                            produitJson.put("prix", this.definirPrix(p.getIdProduit(), quantite, delai));
+                            produitJson.put("prix", prix);
 
                             produitJson.put("date", listDate.get(delai));
                             if (stockDispo >= quantite) {

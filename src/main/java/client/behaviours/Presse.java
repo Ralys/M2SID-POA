@@ -31,7 +31,7 @@ public class Presse extends CyclicBehaviour {
     /**
      * Entier représentant 1 jour en timestand
      */
-    private final long timeStamp = 86400000;
+    private final long timeStamp = 86400;
 
     /**
      * Constructeur permettant d'affecter le comportement pressé à un client

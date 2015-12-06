@@ -74,10 +74,9 @@ public class Presse extends CyclicBehaviour {
                     // on nettoye les propositions en fonction du critère du temps max
                     Long dateJour = new Date().getTime() / 1000;
                     long result = presse.getLimiteDate()*timeStamp+dateJour;
+                    // on nettoye les propositions en fonction du critère du temps max
                     presse.nettoyerPropositionDate(result);
                     if (presse.getLproposition().size() > 0) {
-                        // on nettoye les propositions en fonction du critère du temps max
-                        presse.nettoyerPropositionDate(result);
                         presse.jeChoisis(presse.plusTot());
                     } else {
                         Log.arretRecherche();
@@ -92,6 +91,12 @@ public class Presse extends CyclicBehaviour {
                 JSONArray array = (JSONArray) object.get("quantiteInsuffisante");
                 Log.reception(presse.nomAgent(message), message.getContent());
                 if (presse.getNbReponseReçu() == presse.getNbRechercheEnvoye()) {
+                    
+                    // on nettoye les propositions en fonction du critère du temps max
+                    Long dateJour = new Date().getTime() / 1000;
+                    long result = presse.getLimiteDate()*timeStamp+dateJour;
+                    // on nettoye les propositions en fonction du critère du temps max
+                    presse.nettoyerPropositionDate(result);
                     if (presse.getLproposition().size() > 0) {
                         presse.jeChoisis(presse.plusTot());
                     } else {
@@ -107,16 +112,7 @@ public class Presse extends CyclicBehaviour {
                 Log.reception(presse.nomAgent(message), message.getContent());
                 presse.afficherRaisonInvalide(object, message);
 
-                // il n'y a pus d'attendre de réponse et aucune propostion existe dans la liste 
-                if ((presse.getNbReponseReçu() == presse.getNbRechercheEnvoye())
-                        && presse.getLproposition().isEmpty()) {
-                    Log.arretRecherche();
-                    presse.takeDown();
-                }
-                
-                // il n'y a pus d'attendte de réponse et des propostions existent dans la liste 
-                if ((presse.getNbReponseReçu() == presse.getNbRechercheEnvoye())
-                    && !presse.getLproposition().isEmpty()){
+                if ((presse.getNbReponseReçu() == presse.getNbRechercheEnvoye())){
                     
                     // on nettoye les propositions en fonction du critère de prix max
                     Long dateJour = new Date().getTime() / 1000;

@@ -98,18 +98,9 @@ public class Econome extends CyclicBehaviour {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 Log.reception(econome.nomAgent(message), message.getContent());
 
-
                 econome.afficherRaisonInvalide(object, message);
-                // il n'y a pus d'attendte de réponse et aucune propostion existe dans la liste 
-                if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())
-                        && econome.getLproposition().isEmpty()) {
-                    Log.arretRecherche();
-                    econome.takeDown();
-                }
                 
-                // il n'y a pus d'attendte de réponse et des propostions existent dans la liste 
-                if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())
-                    && !econome.getLproposition().isEmpty()){
+                if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())){
                     
                     // on nettoye les propositions en fonction du critère de prix max
                     econome.nettoyerPropositionPrix(econome.getLimitePrix());

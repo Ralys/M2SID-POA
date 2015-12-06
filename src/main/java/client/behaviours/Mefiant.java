@@ -236,16 +236,15 @@ public class Mefiant extends CyclicBehaviour {
 
             }
 
-            // A FAIRE
-            if (object.containsKey("retourDesirabilite")) {
-                JSONObject obj = (JSONObject) object.get("retourDesirabilite");
-            }
-
         } catch (org.json.simple.parser.ParseException ex) {
             Logger.getLogger(ClientAgent.class.getName()).log(Level.SEVERE, "Parse impossible, format JSON invalide");
         }
     }
 
+    /**
+     * Méthode qui supprime de la liste des proposition
+     * les produits venant de revendeur peut fiable
+     */
     public void nettoyerPropositionRevendeur() {
         
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
@@ -265,13 +264,21 @@ public class Mefiant extends CyclicBehaviour {
     }
     
     
-
+    /**
+     * Méthode qui met à jour les produit avec leur avis
+     * récupéré auprès de l'ereputation
+     */
     public void miseAJourPropositionProduit() {
         for (Produit produit : mefiant.getLproposition()) {
             produit.setAvis(hmAvisProduit.get(produit.getId()));
         }
     }
     
+    /**
+     * Méthode de suppression de produits ne correspondant pas à l'id 
+     * en paramètre
+     * @param idProduit 
+     */
     public void supprimerAutresProduits(String idProduit){
         ArrayList<Produit> lisProduitASupprimer = new ArrayList<Produit>();
         for (Produit produit : mefiant.getLproposition()) {

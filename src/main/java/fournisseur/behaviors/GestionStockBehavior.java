@@ -16,6 +16,7 @@ public abstract class GestionStockBehavior extends TickerBehaviour {
 
     public GestionStockBehavior(Agent a) {
         super(a, 20000);
+        // this.creationproduit();
     }
 
     @Override

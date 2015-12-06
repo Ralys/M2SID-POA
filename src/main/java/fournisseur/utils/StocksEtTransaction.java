@@ -37,7 +37,7 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public Transaction getTransaction(int idProduit, Long dateLivraison, String client) {
+    public Transaction getTransaction(int idProduit, long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {

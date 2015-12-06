@@ -27,13 +27,16 @@ public class QueryBuilder {
     }
 
     public static String recherche(String recherche, String typeProduit) {
-        String sql = "SELECT REF_PRODUIT "
-                + "FROM PRODUIT, CATEGORIE, POSSEDE, TAGS "
+        String sql = "SELECT PRODUIT.REF_PRODUIT "
+                + "FROM PRODUIT, STOCK, CATEGORIE, POSSEDE, TAGS "
                 + "WHERE PRODUIT.ID_CATEGORIE = CATEGORIE.ID_CATEGORIE "
                 + "AND PRODUIT.REF_PRODUIT = POSSEDE.REF_PRODUIT "
+                + "AND STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT "
                 + "AND POSSEDE.ID_TAG = TAGS.ID_TAG "
                 + "AND NOM_CATEGORIE LIKE \"" + typeProduit + "\" "
-                + "AND LABEL_TAG LIKE \"" + recherche + "\"";
+                + "AND (LABEL_TAG LIKE \"%" + recherche + "%\" "
+                + "OR NOM_PRODUIT LIKE \"%" + recherche + "%\") ";
+        System.out.println(sql);
         return JSONRequest("select", sql);
     }
 
@@ -43,7 +46,6 @@ public class QueryBuilder {
                 + "WHERE PRODUIT.REF_PRODUIT = \"" +reference+"\" "
                 + "AND STOCK.REF_PRODUIT = \""+reference+"\" "
                 + "AND STOCK.VENDEUR_NAME = \""+ vendeur +"\"";
-        System.out.println(sql);
         return JSONRequest("select", sql);
     }
 

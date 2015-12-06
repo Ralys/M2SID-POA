@@ -4,7 +4,6 @@ import jade.core.AID;
 import org.json.simple.JSONObject;
 
 /**
- *
  * @author Aurélien
  */
 public class QueryBuilder {
@@ -21,8 +20,8 @@ public class QueryBuilder {
     public static String getStock(String vendeur, String ref_prod) {
         String sql = "SELECT QTE "
                 + "FROM STOCK "
-                + "WHERE STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT "
-                + "AND VENDEUR_NAME = \""+ vendeur + "\" ";
+                + "WHERE STOCK.REF_PRODUIT = \"" + ref_prod + "\" "
+                + "AND VENDEUR_NAME = \"" + vendeur + "\" ";
         return JSONRequest("select", sql);
     }
 
@@ -43,20 +42,20 @@ public class QueryBuilder {
     public static String rechercheRef(String reference, String vendeur) {
         String sql = "SELECT STOCK.REF_PRODUIT, NOM_PRODUIT, PRIX_UNITAIRE, PRIX_LIMITE, QTE "
                 + "FROM PRODUIT,STOCK "
-                + "WHERE PRODUIT.REF_PRODUIT = \"" +reference+"\" "
-                + "AND STOCK.REF_PRODUIT = \""+reference+"\" "
-                + "AND STOCK.VENDEUR_NAME = \""+ vendeur +"\"";
+                + "WHERE PRODUIT.REF_PRODUIT = STOCK.REF_PRODUIT "
+                + "AND STOCK.VENDEUR_NAME = \"" + vendeur + "\"";
         return JSONRequest("select", sql);
     }
 
     /**
      * Get list of product's refs and stock
+     *
      * @return
      */
     public static String getRefListStock(String vendeur) {
         String sql = "SELECT PRODUIT.REF_PRODUIT, QTE "
                 + "FROM PRODUIT LEFT JOIN STOCK ON STOCK.REF_PRODUIT = PRODUIT.REF_PRODUIT"
-                + " WHERE VENDEUR_NAME = \"vendeur_"+ vendeur + "\" OR VENDEUR_NAME IS NULL";
+                + " WHERE VENDEUR_NAME = \"" + vendeur + "\" OR VENDEUR_NAME IS NULL";
 
 
         return JSONRequest("select", sql);
@@ -64,20 +63,20 @@ public class QueryBuilder {
 
 
     public static String getRefStock(String ref, String vendeur) {
-        String sql = "SELECT REF_PRODUIT, QTE FROM STOCK WHERE VENDEUR_NAME = \""+vendeur+"\" AND REF_PRODUIT = "+ref;
+        String sql = "SELECT REF_PRODUIT, QTE FROM STOCK WHERE VENDEUR_NAME = \"" + vendeur + "\" AND REF_PRODUIT = " + ref;
 
         return JSONRequest("select", sql);
     }
 
 
     public static String newStock(String idProduit, Integer quantite, Float prix, String localName) {
-        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_UNITAIRE, QTE) VALUES("+idProduit+", "+quantite+", "+prix+", \""+localName+"\") ";
+        String sql = "INSERT INTO STOCK(REF_PRODUIT, VENDEUR_NAME, PRIX_UNITAIRE, QTE) VALUES(" + idProduit + ", " + quantite + ", " + prix + ", \"" + localName + "\") ";
 
         return JSONRequest("insert", sql);
     }
 
-    public static String updateStock(String idProduit,  Integer quantite, Float prix,String localName) {
-        String sql = "UPDATE STOCK SET QTE = "+quantite+", PRIX_UNITAIRE = "+prix+" WHERE VENDEUR_NAME = \""+localName+"\" AND REF_PRODUIT = "+idProduit;
+    public static String updateStock(String idProduit, Integer quantite, Float prix, String localName) {
+        String sql = "UPDATE STOCK SET QTE = " + quantite + ", PRIX_UNITAIRE = " + prix + " WHERE VENDEUR_NAME = \"" + localName + "\" AND REF_PRODUIT = " + idProduit;
 
         return JSONRequest("insert", sql);
     }

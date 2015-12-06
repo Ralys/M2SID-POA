@@ -138,7 +138,7 @@ public class ClientAgent extends SuperAgent {
         }
 
         if (typeAgentClient.equalsIgnoreCase(TypeAgentClient.Presse)) {
-            limitePrix = Long.parseLong(arguments[7].toString());
+            limiteDate = Long.parseLong(arguments[7].toString());
         }
         this.lproposition = new ArrayList<Produit>();
         this.lAgentsRepond = new ArrayList<String>();
@@ -650,6 +650,7 @@ public class ClientAgent extends SuperAgent {
         // suppression des proposition ne correspondant pas aux critères
         for (Produit produit : lisProduitASupprimer) {
             lproposition.remove(produit);
+            Logger.getLogger(Presse.class.getName()).log(Level.INFO,"suppression");
         }
     }
 

@@ -27,3 +27,5 @@ test.db
 
 # IntelliJ
 .idea/
+*.iml
+*.iws

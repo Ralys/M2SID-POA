@@ -140,7 +140,7 @@ create table AVIS (
   ID_AVIS INTEGER PRIMARY KEY AUTOINCREMENT,
   NOM_EMETTEUR varchar(255) not null,
   NOM_DESTINATAIRE varchar(255) not null,
-  AVIS int not null,
+  AVIS int not null
 );
 
 create table FOURNISSEUR_PRODUIT

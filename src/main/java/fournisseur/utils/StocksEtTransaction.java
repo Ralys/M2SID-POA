@@ -125,6 +125,15 @@ public class StocksEtTransaction extends DataStore {
     }
 
     public ArrayList<Produit> rechercheProduit(String motRecherche, String typeProduit, int qte) {
-        return null; //TODO
+        ArrayList<Produit> listProduit = this.listProduit();
+        ArrayList<Produit> res = new ArrayList<>();
+        for (Produit p : listProduit) {
+            if (p.getTypeProduit().compareToIgnoreCase(typeProduit) == 0) {
+                if (p.getNomProduit().contains(motRecherche)) {
+                    res.add(p);
+                }
+            }
+        }
+        return res;
     }
 }

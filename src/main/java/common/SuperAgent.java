@@ -17,7 +17,7 @@ public class SuperAgent extends Agent {
 
     /**
      * Enregistrement des services
-     * @param type, le type de son agent (TypeAgent)
+     * @param type le type de son agent (TypeAgent)
      */
     protected void registerService(String type) {
         DFAgentDescription dfd = new DFAgentDescription();
@@ -37,6 +37,11 @@ public class SuperAgent extends Agent {
         }
     }
     
+    /**
+     * Permet de trouver tous les agents en fonction d'un service
+     * @param service
+     * @return tableau d'adresses d'agents
+     */
     protected AID[] findAgentsFromService(String service) {
         DFAgentDescription dfd = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();

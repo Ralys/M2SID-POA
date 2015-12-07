@@ -82,7 +82,7 @@ public class QueryBuilder {
                     "AND " +
                 "(DATE_VENTE < ANY (SELECT DATE_END FROM SOLDE WHERE VENDEUR ='DARTY')))) AS statusVente " +
                 "FROM `VENTE` INNER JOIN `PRODUIT` ON VENTE.REF_PRODUIT = PRODUIT.REF_PRODUIT " +
-                "WHERE ID_VENTE = 1";
+                "WHERE ID = "+idVente;
         return JSONRequest("select", sql);
     }
     

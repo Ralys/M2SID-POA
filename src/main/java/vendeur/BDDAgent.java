@@ -94,13 +94,13 @@ public class BDDAgent extends SuperAgent {
         }
     }
 
-     protected void insert(String sql) {
+     protected void insert(String sql, AID agent) {
          try {
              Statement  stmt = connection.createStatement();
              stmt.executeUpdate(sql);
              stmt.close();
          } catch ( Exception e ) {
-             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+             System.err.println(agent.getLocalName() + " -> "+ e.getClass().getName() + ": " + e.getMessage() );
              System.exit(3);
          }
      }
@@ -129,7 +129,7 @@ public class BDDAgent extends SuperAgent {
             messsage.addReceiver(agent);
             this.send(messsage);
         } catch ( Exception e ) {
-             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+             System.err.println(agent.getLocalName() + " -> "+ e.getClass().getName() + ": " + e.getMessage() );
              System.exit(3);
         }
      }
@@ -156,7 +156,7 @@ public class BDDAgent extends SuperAgent {
                 String type = object.get("type").toString();
                 
                 if(type.equals("insert"))
-                    insert(object.get("sql").toString());
+                    insert(object.get("sql").toString(), msg.getSender());
 
                 if(type.equals("select"))
                     select(object.get("sql").toString(), msg.getSender());

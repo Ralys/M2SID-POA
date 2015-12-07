@@ -134,7 +134,7 @@ public class HandleInform extends CyclicBehaviour {
          EReputationAgent erep = (EReputationAgent)myAgent;
          
         // recherche en base de données
-        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.verifierVente(idVente), erep.getBDDAgent(), true);
+        ACLMessage messageBDD = erep.sendMessage(ACLMessage.REQUEST, QueryBuilder.verifierVente(idVente, agent.getLocalName()), erep.getBDDAgent(), true);
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject resultat = (JSONObject) resultatsBDD.get(0);
         

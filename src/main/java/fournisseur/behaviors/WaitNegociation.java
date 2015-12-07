@@ -50,7 +50,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 replyContenu.put("date", date);
                 replyContenu.put("nomProduit", nomProduit);
                 replyContenu.put("quantite", qte);
-                if (newPrix == prix) {
+                if (newPrix <= prix) {
                     //Send commande OK
                     //{“commandeOk”:{“idProduit”:”67D”,”nomProduit”:”Spectre”,”quantite”:1,”prix”:17.3,”date”:”20/02/2105”}}
                     replyContenu.put("prix", newPrix);

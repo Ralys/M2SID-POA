@@ -17,7 +17,10 @@ public class LogEreputation {
     private static LogEreputation uniqueInstance = new LogEreputation();
     private static FileHandler fileHandler;
     
-    //pemret de crer une instance de la class LogEreputation
+    /**
+     * Permet de créer une instance unique de la classe
+     * @return singleton de LogEreputation
+     */
     public static synchronized LogEreputation instance() {
         if (null == uniqueInstance) { // Premier appel
             uniqueInstance = new LogEreputation();
@@ -26,7 +29,7 @@ public class LogEreputation {
     }
     
     private LogEreputation(){
-            try {
+        try {
             //On crée un gestionnaire de fichier "simple"
             fileHandler = new FileHandler("logErep.txt");
             //On assigne une mise en forme simple
@@ -38,17 +41,26 @@ public class LogEreputation {
         }
     }
     
-    //on enregistre une info
-    public void Info(String messgae){
-        Logger.getLogger("logErep").info(messgae);
-    }
-    //on enregistre une erreur
-    public void Erreur(String messgae){
-        Logger.getLogger("logErep").warning(messgae);
+    /**
+     * Enregistrement d'un information
+     * @param message message lié à l'information 
+     */
+    public void Info(String message){
+        Logger.getLogger("logErep").info(message);
     }
     
-    //class permettant de definir un format
-    static class MonFormateur extends Formatter {
+    /**
+     * Enregistrement d'une erreur
+     * @param message message lié à l'erreur
+     */
+    public void Erreur(String message){
+        Logger.getLogger("logErep").warning(message);
+    }
+    
+    /**
+     * Classe dont le but est de gérer le format des logs
+     */
+    private static class MonFormateur extends Formatter {
 
         @Override
         public String format(LogRecord record) {

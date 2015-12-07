@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import vendeur.behaviours.ACLController;
+import vendeur.behaviours.strategies.Normale;
+import vendeur.behaviours.strategies.Soldes;
 import vendeur.tools.QueryBuilder;
 
 import java.util.Iterator;
@@ -25,6 +27,9 @@ public class VendeurAgent extends SuperAgent {
 
     private AID BDDAgent;
     private final JSONParser parser = new JSONParser();
+    private boolean enSoldes;
+    private int nbNegoce = 0;
+    private AID ERepAgent;
 
     @Override
     protected void setup() {
@@ -41,8 +46,15 @@ public class VendeurAgent extends SuperAgent {
         return this.BDDAgent;
     }
 
+    public AID getERepAgent() {
+        if (this.ERepAgent == null) {
+            this.ERepAgent = findERepAgent();
+        }
+
+        return this.ERepAgent;
+    }
+
     private AID findBDDAgent() {
-        //Parametre : numero du fournisseur
         try {
             return this.findAgentsFromService(TypeAgent.BDD)[0];
         } catch (IndexOutOfBoundsException io) {
@@ -51,6 +63,22 @@ public class VendeurAgent extends SuperAgent {
         }
 
         return null;
+    }
+
+    private AID findERepAgent() {
+        try {
+            return this.findAgentsFromService(TypeAgent.EReputation)[0];
+        } catch (IndexOutOfBoundsException io) {
+            System.out.println("Error Vendeur : Can't find ERepAgent");
+            this.takeDown();
+        }
+
+        return null;
+    }
+
+    public ACLMessage sendMessageAndGetId(int typeMessage, String contenu, AID destinataire) {
+        this.sendMessage(typeMessage, contenu, destinataire, false);
+        return sendMessage(typeMessage, QueryBuilder.getID(), destinataire, true);
     }
 
     public ACLMessage sendMessage(int typeMessage, String contenu, AID destinataire) {
@@ -68,7 +96,10 @@ public class VendeurAgent extends SuperAgent {
         }
 
         MessageTemplate mt = MessageTemplate.MatchSender(destinataire);
-        ACLMessage messageReponse = this.blockingReceive(mt);
+        ACLMessage messageReponse = this.blockingReceive(mt, 5000);
+
+        Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message reçu de " + destinataire.getLocalName() + " : " + messageReponse.getContent());
+
         return messageReponse;
     }
 
@@ -87,11 +118,11 @@ public class VendeurAgent extends SuperAgent {
         for (AID f : agent) {
             String message = jeChercheReference.toString();
             sendMessage(ACLMessage.REQUEST, message, f, false);
-            Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à " + f.getLocalName() + " : " + message);
+            Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message envoyé à " + f.getLocalName() + " : " + message);
         }
     }
 
-    public void ClientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
+    public void clientRecherche(JSONObject jsonObject, AID sender, String typeRech) throws ParseException {
 
         String ref = (typeRech.compareTo("ChercheRef") == 0) ? jsonObject.get("reference").toString() : "";
         int quantite = Integer.parseInt(jsonObject.get("quantite").toString());
@@ -99,14 +130,15 @@ public class VendeurAgent extends SuperAgent {
         String typeProduit = (typeRech.compareTo("Cherche") == 0) ? jsonObject.get("typeProduit").toString() : "";
 
         ACLMessage messageBDD;
+        messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.isSoldes(getLocalName(), Dates.dateJour), getBDDAgent(), true);
+        enSoldes = !messageBDD.getContent().isEmpty();
+
         if (typeRech.compareTo("Cherche") == 0) {
-            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit), getBDDAgent(), true);
+            messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.recherche(recherche, typeProduit, getLocalName()), getBDDAgent(), true);
 
         } else {
             messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.rechercheRef(ref, getLocalName()), getBDDAgent(), true);
         }
-
-        System.out.println(messageBDD.toString());
 
         JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
         JSONObject reponse = new JSONObject();
@@ -122,34 +154,45 @@ public class VendeurAgent extends SuperAgent {
                 Long qteProd = (Long) resultat.get("QTE");
 
                 // /!\ faire un truc avec le prix pour savoir a combien vendre /!\
-
+                final JSONObject demande = new JSONObject();
+                demande.put("type", "Produit");
+                demande.put("id", refProd);
+                ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
+                    put("demandeDesirabilite", demande);
+                }}).toJSONString(), getERepAgent(), true);
+                JSONObject resultats = (JSONObject) this.parser.parse(desirabilite.getContent());
+                Double desir = 5.0;
+                if (!(resultats.get("desirabilite") + "").contains("null"))
+                    desir = Double.valueOf(resultats.get("desirabilite") + "");
                 //int qte = 1;
                 if (qteProd > 0) { // il y a assez de stock
                     //proposer 3 prix a chaque fois
 
                     int[] range = {1, 3, 10}; //jour de livraison
-                    for (int i : range) {
+                    for (int jour : range) {
                         JSONObject retour = new JSONObject();
                         retour.put("idProduit", refProd);
                         retour.put("nomProduit", nomProd);
                         retour.put("quantite", quantite);
-                        retour.put("prix", prixLProd);
-                        retour.put("date", Dates.addDays(i).toString());
+                        if (!enSoldes)
+                            retour.put("prix", Normale.getPrix(prixUProd, jour, desir));
+                        else
+                            retour.put("prix", Soldes.getPrix(prixUProd, prixLProd, jour, desir));
+                        retour.put("date", Dates.addDays(jour).toString());
                         list.add(retour);
                     }
                     if (qteProd >= quantite) {
                         reponse.put("jePropose", list);
                     } else {
                         reponse.put("quantiteInsuffisante", list);
-
                     }
+                    reponse.put("jePropose", list);
                 } else if (qteProd == 0) {
                     JSONObject retour = new JSONObject();
                     retour.put("idProduit", resultat.get("REF_PRODUIT"));
                     retour.put("raison", "quantite a zero");
                     reponse.put("requeteInvalide", retour);
                 }
-                reponse.put("jePropose", list);
             }
 
         } else { // si le produit n'existe pas
@@ -169,22 +212,18 @@ public class VendeurAgent extends SuperAgent {
         // envoi de la réponse
         sendMessage(ACLMessage.PROPOSE, reponseJSON, sender);
 
-        Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à " + sender.getLocalName() + " : " + reponseJSON);
+        Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message envoyé à " + sender.getLocalName() + " : " + reponseJSON);
     }
 
     public void CheckStock() {
 
         // Get quantity for each product
-
         ACLMessage stockProducts = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefListStock(getLocalName()), getBDDAgent(), true);
 
 
         JSONArray resultatsStockProducts = null;
         try {
             resultatsStockProducts = (JSONArray) this.parser.parse(stockProducts.getContent());
-
-            JSONObject reponse = new JSONObject();
-            JSONArray list = new JSONArray();
 
             for (Iterator iterator = resultatsStockProducts.iterator(); iterator.hasNext(); ) {
                 JSONObject resultat = (JSONObject) iterator.next();
@@ -197,6 +236,22 @@ public class VendeurAgent extends SuperAgent {
                     prendreCommande(REF_PRODUIT, 5);
                 } else {
                     Integer QTE = Integer.valueOf(QTE_);
+                    final JSONObject demande = new JSONObject();
+                    demande.put("type", "Produit");
+                    demande.put("id", REF_PRODUIT);
+                    ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
+                        put("demandeDesirabilite", demande);
+                    }}).toJSONString(), getERepAgent(), true);
+
+                    JSONObject resultats = (JSONObject) this.parser.parse(desirabilite.getContent());
+                    Double desir = 5.0;
+                    if (!(resultats.get("desirabilite") + "").contains("null")) {
+                        desir = Double.valueOf(resultats.get("desirabilite") + "");
+                        int stockCible = (int) (3 * desir - QTE);
+                        if (stockCible > 0)
+                            prendreCommande(REF_PRODUIT, stockCible);
+                    } else
+                        prendreCommande(REF_PRODUIT, 5);
                 }
             }
 
@@ -233,39 +288,144 @@ public class VendeurAgent extends SuperAgent {
         JSONObject jeChercheReference = new JSONObject();
         JSONObject elementRecherche = new JSONObject();
 
-        elementRecherche.put("idProduit", jePropose.get("idProduit")+"");
-        elementRecherche.put("nomProduit", jePropose.get("nomProduit")+"");
-        elementRecherche.put("prix", jePropose.get("prix")+"");
-        elementRecherche.put("quantite", jePropose.get("quantite")+"");
-        elementRecherche.put("date", jePropose.get("date")+"");
+        elementRecherche.put("idProduit", jePropose.get("idProduit") + "");
+        elementRecherche.put("nomProduit", jePropose.get("nomProduit") + "");
+        elementRecherche.put("prix", jePropose.get("prix") + "");
+        elementRecherche.put("quantite", jePropose.get("quantite") + "");
+        elementRecherche.put("date", jePropose.get("date") + "");
 
         jeChercheReference.put("jeChoisis", elementRecherche);
 
-        Logger.getLogger(getLocalName()).log(Level.INFO, "("+getLocalName()+") Message envoyé à "+sender.getLocalName()+" : "+jeChercheReference.toJSONString());
+        Logger.getLogger(getLocalName()).log(Level.INFO, "(" + getLocalName() + ") Message envoyé à " + sender.getLocalName() + " : " + jeChercheReference.toJSONString());
 
         sendMessage(ACLMessage.ACCEPT_PROPOSAL, jeChercheReference.toJSONString(), sender, false);
     }
 
 
     public void ajoutStock(JSONObject commandeOK, AID sender) {
-        String idProduit =  commandeOK.get("idProduit")+"";
-        Integer quantite =  Integer.valueOf(commandeOK.get("quantite")+"");
-        Float prix = Double.valueOf(commandeOK.get("prix")+"").floatValue() ;
+        String idProduit = commandeOK.get("idProduit") + "";
+        Integer quantite = Integer.valueOf(commandeOK.get("quantite") + "");
+        Float prix = Double.valueOf(commandeOK.get("prix") + "").floatValue();
 
-        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(idProduit, sender.getLocalName()), getBDDAgent(), true);
+        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(idProduit, getLocalName()), getBDDAgent(), true);
 
 
         try {
             JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
-            if(resultatsBDD.size() == 0) {
-                sendMessage(ACLMessage.INFORM, QueryBuilder.newStock(idProduit, quantite, prix, sender.getLocalName()), getBDDAgent(), true);
-            }
-            else {
-                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size()+quantite, prix, sender.getLocalName()), getBDDAgent(), true);
+
+            if (resultatsBDD.size() == 0) {
+                sendMessage(ACLMessage.INFORM, QueryBuilder.newStock(idProduit, quantite, prix, getLocalName()), getBDDAgent(), false);
+            } else {
+                sendMessage(ACLMessage.INFORM, QueryBuilder.updateStock(idProduit, resultatsBDD.size() + quantite, prix, sender.getLocalName()), getBDDAgent(), false);
             }
 
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void clientChoisis(final JSONObject jeChoisis, AID sender) {
+        String reference = jeChoisis.get("idProduit") + "";
+        Integer quantite = Integer.valueOf(jeChoisis.get("quantite") + "");
+        Float prix = Double.valueOf(jeChoisis.get("prix") + "").floatValue();
+        long date = Long.valueOf(jeChoisis.get("date") + "");
+
+        ACLMessage messageBDD = sendMessage(ACLMessage.REQUEST, QueryBuilder.getRefStock(reference, getLocalName()), getBDDAgent(), true);
+
+        try {
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+            if (resultatsBDD.size() == 0) {
+                jeChoisis.put("raison", "stock insuffisant");
+                sendMessage(ACLMessage.DISCONFIRM, (new JSONObject() {{
+                    put("commandePasOK", jeChoisis);
+                }}).toJSONString(), sender);
+            } else {
+                ACLMessage rep = sendMessageAndGetId(ACLMessage.REQUEST, QueryBuilder.vente(reference, quantite, prix, date, getLocalName(), sender.getLocalName()), getBDDAgent());
+                sendMessage(ACLMessage.REQUEST, QueryBuilder.updateStock(reference, quantite, getLocalName()), getBDDAgent());
+                sendMessage(ACLMessage.CONFIRM, (new JSONObject() {{
+                    put("commandeOk", jeChoisis);
+                }}).toJSONString(), sender);
+                JSONArray resp = (JSONArray) this.parser.parse(rep.getContent());
+                final int id = Integer.valueOf(((JSONObject)resp.get(0)).get("idProduit") + "");
+                sendMessage(ACLMessage.INFORM, (new JSONObject() {{
+                    put("venteEffectuee", new JSONObject(){{put("id",id);}});
+                }}).toJSONString(), getERepAgent());
+            }
+            nbNegoce = 0;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clientNegocie(final JSONObject jeNegocie, AID sender) throws ParseException {
+        String reference = jeNegocie.get("idProduit") + "";
+        Double prix = Double.valueOf(jeNegocie.get("prix") + "");
+        int max = 0;
+        if (enSoldes) {
+            max = 2;
+        } else {
+            max = 4;
+        }
+        if (nbNegoce < max) {
+            nbNegoce++;
+            ACLMessage messageBDD = sendMessage(ACLMessage.PROPOSE, QueryBuilder.rechercheRef(reference, getLocalName()), getBDDAgent(), true);
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+
+            for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                JSONObject resultat = (JSONObject) iterator.next();
+                String refProd = (String) resultat.get("REF_PRODUIT");
+                Double prixUProd = Double.valueOf(resultat.get("PRIX_UNITAIRE") + "");
+                Double prixLProd = Double.valueOf(resultat.get("PRIX_LIMITE") + "");
+
+                final JSONObject demande = new JSONObject();
+                demande.put("type", "Produit");
+                demande.put("id", refProd);
+                ACLMessage desirabilite = sendMessage(ACLMessage.REQUEST, (new JSONObject() {{
+                    put("demandeDesirabilite", demande);
+                }}).toJSONString(), getERepAgent(), true);
+
+                JSONObject resultats = (JSONObject) this.parser.parse(desirabilite.getContent());
+                Double desir = 5.0;
+                if (!(resultats.get("desirabilite") + "").contains("null")) {
+                    desir = Double.valueOf(resultats.get("desirabilite") + "");
+                }
+                Double newPrice;
+                if (enSoldes) {
+                    newPrice = Normale.getNegoce(prix, nbNegoce, desir);
+                    if (newPrice < prixLProd) {
+                        newPrice = prixLProd;
+                        nbNegoce = max;
+                    }
+                } else {
+                    newPrice = Normale.getNegoce(prix, nbNegoce, desir);
+                    if (newPrice < prixLProd - (max * 10 * prixUProd / 100)) {
+                        newPrice = prixLProd - (max * 10 * prixUProd / 100);
+                        nbNegoce = max;
+                    }
+                }
+
+                jeNegocie.replace("prix", newPrice);
+                sendMessage(ACLMessage.PROPOSE, (new JSONObject() {{
+                    put("jeNegocie", jeNegocie);
+                }}).toJSONString(), sender, true);
+            }
+        } else {
+            ACLMessage messageBDD = sendMessage(ACLMessage.PROPOSE, QueryBuilder.rechercheRef(reference, getLocalName()), getBDDAgent(), true);
+            JSONArray resultatsBDD = (JSONArray) this.parser.parse(messageBDD.getContent());
+
+            for (Iterator iterator = resultatsBDD.iterator(); iterator.hasNext(); ) { //iterator sur chaque objet
+                JSONObject resultat = (JSONObject) iterator.next();
+                Double prixLProd = Double.valueOf(resultat.get("PRIX_LIMITE") + "");
+
+                if (!enSoldes && prix < prixLProd) {
+                    jeNegocie.put("raison", "je vend pas à perte !");
+                    sendMessage(ACLMessage.DISCONFIRM, (new JSONObject() {{
+                        put("commandePasOK", jeNegocie);
+                    }}).toJSONString(), sender, true);
+                } else {
+                    clientChoisis(jeNegocie, sender);
+                }
+            }
         }
     }
 }

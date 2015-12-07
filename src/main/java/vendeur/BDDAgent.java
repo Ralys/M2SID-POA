@@ -11,11 +11,7 @@ import jade.lang.acl.ACLMessage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -45,13 +41,20 @@ public class BDDAgent extends SuperAgent {
 
         try {
             Files.delete(Paths.get(DB_FILE));
+        } catch ( Exception e ) {
+        }
+
+        try {
             Class.forName(DB_DRIVER);
             connection = DriverManager.getConnection(DB_URL);
-        } catch ( Exception e ) {
+        } catch (SQLException e) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.exit(2);
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        
+
         System.out.println("Opened database successfully");
 
 
@@ -64,7 +67,7 @@ public class BDDAgent extends SuperAgent {
                 res += line;
             }
 
-            insert(res);
+            insert(res, this.getAID());
 
             System.out.println("registered database successfully");
 
@@ -91,13 +94,13 @@ public class BDDAgent extends SuperAgent {
         }
     }
 
-     protected void insert(String sql) {
+     protected void insert(String sql, AID agent) {
          try {
              Statement  stmt = connection.createStatement();
              stmt.executeUpdate(sql);
              stmt.close();
          } catch ( Exception e ) {
-             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+             System.err.println(agent.getLocalName() + " -> "+ e.getClass().getName() + ": " + e.getMessage() );
              System.exit(3);
          }
      }
@@ -126,7 +129,7 @@ public class BDDAgent extends SuperAgent {
             messsage.addReceiver(agent);
             this.send(messsage);
         } catch ( Exception e ) {
-             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+             System.err.println(agent.getLocalName() + " -> "+ e.getClass().getName() + ": " + e.getMessage() );
              System.exit(3);
         }
      }
@@ -153,7 +156,7 @@ public class BDDAgent extends SuperAgent {
                 String type = object.get("type").toString();
                 
                 if(type.equals("insert"))
-                    insert(object.get("sql").toString());
+                    insert(object.get("sql").toString(), msg.getSender());
 
                 if(type.equals("select"))
                     select(object.get("sql").toString(), msg.getSender());

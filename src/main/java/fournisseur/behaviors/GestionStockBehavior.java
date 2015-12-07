@@ -23,6 +23,11 @@ public abstract class GestionStockBehavior extends TickerBehaviour {
         this.creationproduit();
     }
 
+    @Override
+    public void onStart() {
+        creationproduit();
+    }
+
     public abstract void creationproduit();
 
     public void dataStoreOperation(Produit p, int qteProduite) {

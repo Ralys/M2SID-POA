@@ -16,9 +16,11 @@ import fournisseur.behaviors.strategie.WaitNegociationStrategie2;
 import fournisseur.behaviors.strategie.WaitNegociationStrategie3;
 import fournisseur.behaviors.strategie.WaitRequestStrategie2;
 import fournisseur.behaviors.strategie.WaitRequestStrategie3;
+import fournisseur.utils.Transaction;
 import jade.core.AID;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,13 +30,14 @@ import java.util.logging.Logger;
  */
 public class FournisseurAgent extends SuperAgent {
 
-    private StocksEtTransaction catalogue = new StocksEtTransaction();
+    private StocksEtTransaction catalogue;
 
     /**
      * Méthode de mise en place de l'agent
      */
     @Override
     protected void setup() {
+        this.catalogue = new StocksEtTransaction();
         this.registerService(TypeAgent.Fournisseur);
         AID agentBDD = null;
         //Parametre : numero du fournisseur
@@ -111,6 +114,21 @@ public class FournisseurAgent extends SuperAgent {
     protected void takeDown() {
         try {
             DFService.deregister(this);
+            ArrayList<Transaction> listTrans = catalogue.listTransaction();
+            int nbProposition = 0;
+            int nbPropositionAbouti = 0;
+            int totalVentePesos = 0;
+            for (Transaction t : listTrans) {
+                nbProposition++;
+                if (t.isAbouti()) {
+                    nbPropositionAbouti++;
+                    totalVentePesos += t.getPrixPropose();
+                }
+            }
+            System.out.println("Nombre de proposition faites : " + nbProposition / 3);
+            System.out.println("Tresorerie : " + nbPropositionAbouti);
+            System.out.println("Vente total : " + totalVentePesos);
+            System.out.println("Tresorerie : " + catalogue.getPesos());
             Logger.getLogger(this.getLocalName()).log(Level.INFO, "Fin de l'agent ! " + this.getName());
         } catch (FIPAException ex) {
             Logger.getLogger(FournisseurAgent.class.getName()).log(Level.SEVERE, null, ex);

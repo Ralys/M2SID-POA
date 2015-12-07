@@ -1,6 +1,7 @@
 package fournisseur.behaviors;
 
 import fournisseur.utils.Produit;
+import fournisseur.utils.StocksEtTransaction;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -57,7 +58,20 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             long date = Long.valueOf(jsonProduit.get("DATE_SORTIE").toString());
             String nomProduit = jsonProduit.get("NOM_PRODUIT").toString();
             String typeProduit = jsonProduit.get("NOM_CATEGORIE").toString();
-            Produit p = new Produit(idProduit, nomProduit, prixProduit, typeProduit, date);
+
+            //Récupération des tags
+            ArrayList<String> listTag = new ArrayList<>();
+            SQL = "SELECT LABEL_TAG "
+                    + "FROM POSSEDE,TAGS "
+                    + "WHERE POSSEDE.ID_TAG=TAGS.ID_TAG AND REF_PRODUIT=" + idProduit;
+            JSONArray tabTag = sendRequete(SQL);
+            for (Object tagObject : tabTag) {
+                JSONObject jsonTag = (JSONObject) tagObject;
+                String tag = jsonTag.get("LABEL_TAG").toString();
+                listTag.add(tag);
+            }
+
+            Produit p = new Produit(idProduit, nomProduit, prixProduit, typeProduit, date, listTag);
             listProduit.put(idProduit, p);
         }
         return listProduit;
@@ -88,8 +102,7 @@ public class CreationCatalogueBehavior extends OneShotBehaviour {
             for (Integer numProduit : listProduitFournisseur) {
                 getDataStore().put(listProduit.get(numProduit), 0);
             }
-
-            getDataStore().put("Tresorerie", new Double(10000));// set du montant initial de pesos
+            ((StocksEtTransaction) getDataStore()).initPesos(100000);// set du montant initial de pesos
         } catch (ParseException ex) {
             Logger.getLogger(CreationCatalogueBehavior.class.getName()).log(Level.SEVERE, "Format de message BDD incorrect");
         }

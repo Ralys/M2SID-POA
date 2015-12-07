@@ -7,11 +7,9 @@ package client.behaviours;
 import client.ClientAgent;
 import client.outils.Log;
 import client.outils.Produit;
-import client.outils.TypeAgentClient;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -19,17 +17,27 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- *
+ * Classe qui permet de définir le comportement économe d'un client.
  * @author Aymeric
  */
 public class Econome extends CyclicBehaviour {
 
+    /**
+     * Le client en question
+     */
     private final ClientAgent econome;
 
+    /**
+     * Constructeur permettant d'affecter le comportement économe à un client
+     * @param agent Agent qui possèdera le comportement econome
+     */
     public Econome(Agent agent) {
         this.econome = (ClientAgent) agent;
     }
 
+    /**
+     * Action effectuée par le type comportement économe.
+     */
     @Override
     public void action() {
         ACLMessage msg = myAgent.receive();
@@ -39,6 +47,10 @@ public class Econome extends CyclicBehaviour {
         }
     }
 
+    /**
+     * Comportement effectué pour traiter un message en fonction de son type
+     * @param message Le message à traiter.
+     */
     public void traiterMessage(ACLMessage message) {
 
         try {
@@ -57,12 +69,10 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
-
-
 
             if (object.containsKey("quantiteInsuffisante")) {
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
@@ -76,17 +86,18 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
 
             if (object.containsKey("requeteInvalide")) {
+                JSONObject jsonObject = (JSONObject) object.get("requeteInvalide");
                 // aucune proposition correspond à la recherche pour cet agent
                 econome.setNbReponseReçu(econome.getNbReponseReçu() + 1);
                 Log.reception(econome.nomAgent(message), message.getContent());
 
-                econome.afficherRaisonInvalide(object, message);
+                econome.afficherRaisonInvalide(jsonObject, message);
                 
                 if ((econome.getNbReponseReçu() == econome.getNbRechercheEnvoye())){
                     
@@ -96,7 +107,7 @@ public class Econome extends CyclicBehaviour {
                         econome.jeChoisis(econome.moinsCher());
                     } else {
                         Log.arretRecherche();
-                        econome.takeDown();
+                        econome.arretAgent();
                     }
                 }
             }
@@ -110,7 +121,7 @@ public class Econome extends CyclicBehaviour {
                 econome.donneAvisProduit(obj.get("idProduit").toString());
                 
                 // arreter agent
-                econome.takeDown();
+                econome.arretAgent();
             }
 
             if (object.containsKey("commandePasOK")) {
@@ -127,7 +138,7 @@ public class Econome extends CyclicBehaviour {
                     econome.jeChoisis(econome.moinsCher());
                 } else {
                     Log.arretRecherche();
-                    econome.takeDown();
+                    econome.arretAgent();
                 }
 
             }

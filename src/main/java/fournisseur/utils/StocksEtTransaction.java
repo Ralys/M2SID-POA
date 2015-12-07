@@ -13,6 +13,8 @@ import java.util.Iterator;
  */
 public class StocksEtTransaction extends DataStore {
 
+    private String tresorerie = "Tresorerie";
+
     public boolean verifierStock(int idProduit, int qte) {
         int qteDispo = (int) this.get(getProduitById(idProduit));
         if (qteDispo < qte) {
@@ -37,7 +39,7 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public Transaction getTransaction(int idProduit, Long dateLivraison, String client) {
+    public Transaction getTransaction(int idProduit, long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {
@@ -54,7 +56,7 @@ public class StocksEtTransaction extends DataStore {
         return null;
     }
 
-    public boolean removeTransaction(int idProduit, Long dateLivraison, String client) {
+    public boolean removeTransaction(int idProduit, long dateLivraison, String client) {
         Set cles = this.keySet();
         Iterator it = cles.iterator();
         while (it.hasNext()) {
@@ -117,14 +119,42 @@ public class StocksEtTransaction extends DataStore {
     }
 
     public double getPesos() {
-        return (double) this.get("Tresorerie");
+        return (double) this.get(tresorerie);
     }
 
     public void changePesos(double valeur) {
-        this.put("Tresorerie", getPesos() + valeur);
+        this.put(tresorerie, getPesos() + valeur);
+    }
+
+    public void initPesos(double valeur) {
+        this.put(tresorerie, valeur);
     }
 
     public ArrayList<Produit> rechercheProduit(String motRecherche, String typeProduit, int qte) {
-        return null; //TODO
+        ArrayList<Produit> listProduit = this.listProduit();
+        ArrayList<Produit> res = new ArrayList<>();
+        for (Produit p : listProduit) {
+            if (p.getTypeProduit().compareToIgnoreCase(typeProduit) == 0) {
+                if (p.getNomProduit().contains(motRecherche) || p.containsTag(motRecherche)) {
+                    res.add(p);
+                }
+            }
+        }
+        return res;
     }
+
+    public ArrayList<Transaction> listTransaction() {
+        ArrayList<Transaction> res = new ArrayList<>();
+        Set cles = this.keySet();
+        Iterator it = cles.iterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (o instanceof Transaction) {
+                Transaction t = (Transaction) o;
+                res.add(t);
+            }
+        }
+        return res;
+    }
+
 }

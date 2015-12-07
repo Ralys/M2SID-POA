@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * L'agent E-réputation
  * @author Team E-réputation
  */
 public class EReputationAgent extends SuperAgent {
@@ -33,6 +33,9 @@ public class EReputationAgent extends SuperAgent {
         this.addBehaviour(new HandleInform(this));
     }
     
+    /**
+     * Méthode lorsque l'agent a été "éliminé"
+     */
     @Override
     protected void takeDown() {
         try {
@@ -43,6 +46,10 @@ public class EReputationAgent extends SuperAgent {
         }
     }
     
+    /**
+     * Permet d'obtenir l'adresse de l'agent BDD
+     * @return l'adresse de l'agent BDD
+     */
     public AID getBDDAgent() {
         if(this.BDDAgent == null) {
             AID[] agents = this.findAgentsFromService(TypeAgent.BDD);
@@ -55,10 +62,25 @@ public class EReputationAgent extends SuperAgent {
         return this.BDDAgent;
     }
     
+    /**
+     * Surcharge de la méthode sendMessage
+     * @param typeMessage Inform | Request
+     * @param contenu le contenu JSON du message
+     * @param destinataire l'agent destinaire
+     * @return null
+     */
     public ACLMessage sendMessage(int typeMessage, String contenu, AID destinataire) {
         return this.sendMessage(typeMessage, contenu, destinataire, false);
     }
     
+    /**
+     * 
+     * @param typeMessage Inform | Request
+     * @param contenu le contenu JSON du message
+     * @param destinataire l'agent destinaire
+     * @param withResponse si on souhaite attendre et récupérer une réponse
+     * @return null | un message de réponse
+     */
     public ACLMessage sendMessage(int typeMessage, String contenu, AID destinataire, boolean withResponse) {
         ACLMessage messsage = new ACLMessage(typeMessage);
         messsage.setContent(contenu);

@@ -39,7 +39,7 @@ public abstract class WaitNegociation extends CyclicBehaviour {
                 long date = Long.valueOf(nego.get("date").toString());
                 int idProduit = Integer.valueOf(nego.get("idProduit").toString());
                 double prix = Double.valueOf(nego.get("prix").toString());
-                String nomProduit = nego.get("nomPrix").toString();
+                String nomProduit = nego.get("nomProduit").toString();
                 int qte = Integer.valueOf(nego.get("quantite").toString());
 
                 //Json réponse

@@ -106,7 +106,7 @@ public class QueryBuilder {
      * @return le message JSON contenant la requête SQL
      */
     public static String insertSolde(String vendeur, String dateDebut, String dateFin) {
-        String sql = "INSERT INTO SOLDES(VENDEUR, DATE_START, DATE_END) VALUES(\"" + vendeur + "\"," + dateDebut+ "," +  dateFin + ")";
+        String sql = "INSERT INTO SOLDE(VENDEUR, DATE_START, DATE_END) VALUES(\"" + vendeur + "\"," + dateDebut+ "," +  dateFin + ")";
         return JSONRequest("insert", sql);
     }
     

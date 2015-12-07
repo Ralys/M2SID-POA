@@ -75,13 +75,13 @@ public class QueryBuilder {
      * @param idVente l'identifiant en base de données de la vente
      * @return le message JSON contenant la requête SQL
      */
-    public static String verifierVente(String idVente) {
-        String sql = "SELECT  ((VENTE.PRIX>=PRIX_CREATION) " +
+    public static String verifierVente(String idVente, String vendeur) {
+        String sql = "SELECT  ((VENTE.PRIX>=PRIX_UNITAIRE) " +
                     "OR " +
-                "((DATE_VENTE < ANY(SELECT DATE_START FROM SOLDE WHERE VENDEUR ='DARTY')) " +
+                "((DATE_VENTE < ANY(SELECT DATE_START FROM SOLDE WHERE VENDEUR ='"+vendeur+"')) " +
                     "AND " +
-                "(DATE_VENTE < ANY (SELECT DATE_END FROM SOLDE WHERE VENDEUR ='DARTY')))) AS statusVente " +
-                "FROM `VENTE` INNER JOIN `PRODUIT` ON VENTE.REF_PRODUIT = PRODUIT.REF_PRODUIT " +
+                "(DATE_VENTE < ANY (SELECT DATE_END FROM SOLDE WHERE VENDEUR ='"+vendeur+"')))) AS statusVente " +
+                "FROM `VENTE` INNER JOIN `STOCK` ON VENTE.REF_PRODUIT = STOCK.REF_PRODUIT " +
                 "WHERE ID = "+idVente;
         return JSONRequest("select", sql);
     }
